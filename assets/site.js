@@ -46,6 +46,10 @@ window.PRAJNA = window.PRAJNA || {
     if(d){ d.textContent = "Security deposit: " + inr(C.deposit) + " (refundable per agreement)"; d.style.display = "list-item"; }
   }
 
+  /* first-month cost card (v5) */
+  set("costTwin", (C.twinRent && C.deposit) ? inr(C.twinRent + C.deposit) + " in month one" : "Ask on WhatsApp");
+  set("costSingle", (C.singleRent && C.deposit) ? inr(C.singleRent + C.deposit) + " in month one" : "Ask on WhatsApp");
+
   /* whatsapp + call links (data-wamsg allows custom prefill per button) */
   var wlinks = document.querySelectorAll(".wa-link");
   for(var j=0;j<wlinks.length;j++){
@@ -93,8 +97,11 @@ window.PRAJNA = window.PRAJNA || {
   if(board){
     var seed = [
       { name:"Owner", topic:"Welcome", msg:"Ask anything about vehicles around the Bhosari\u2013Chakan belt: mechanics you trust, spare-part shops, used bike deals, RTO and insurance doubts, or carpooling to shifts. Keep it helpful and on-topic." },
-      { name:"Demo post", topic:"Mechanic", msg:"This is a sample post so you can see how the board reads. Real posts arrive once the free backend is connected and moderation is switched on." },
-      { name:"Demo post", topic:"Carpool", msg:"Another sample: shift workers from the same MIDC gate can find each other here and share rides." }
+      { name:"Sample post", topic:"Mechanic", msg:"Need a trusted mechanic on the Bhosari gaon side for a Pulsar 150 clutch-plate change. Who do you people go to? Asking for a friend on night shift." },
+      { name:"Sample post", topic:"Spare parts", msg:"Looking for an original headlamp assembly for an Activa 6G. The shop near Moshi chowk quoted \u20B92,200. Anyone know a better rate around the belt?" },
+      { name:"Sample post", topic:"Used bike / sale", msg:"Selling my 2019 Splendor \u2014 28,000 km, single owner, papers clear, new tyres. Serious buyers can reach me through the owner." },
+      { name:"Sample post", topic:"Carpool", msg:"I ride to Gate 4, MIDC Bhosari for the 7:30 shift. Anyone from the Moshi / Borhadewadi side want to split fuel? Same timing, same gate." },
+      { name:"Sample post", topic:"RTO / insurance", msg:"Renewed my two-wheeler insurance online last week \u2014 took ten minutes, no agent. Happy to walk anyone through it. Ask here, not in DMs." }
     ];
     function render(list, demo){
       board.innerHTML = "";
@@ -174,5 +181,17 @@ window.PRAJNA = window.PRAJNA || {
         el.addEventListener("mouseleave", function(){ el.style.transform = ""; });
       })(tilts[t]);
     }
+  }
+
+  /* desktop floating WhatsApp button (v5) — mobile keeps its bottom bar */
+  if(!document.querySelector(".wa-float")){
+    var wf = document.createElement("a");
+    wf.className = "wa-float";
+    wf.setAttribute("aria-label", "WhatsApp us");
+    wf.setAttribute("target", "_blank");
+    wf.setAttribute("rel", "noopener");
+    wf.href = wa("Hi, I have a question about Prajna Co-hab.");
+    wf.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4.6 28l6.3-1.6c1.6.9 3.3 1.3 5.1 1.3 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.6 0-3.2-.4-4.6-1.2l-.3-.2-3.7 1 1-3.6-.2-.3c-1.2-1.9-1.8-4-1.8-6.1 0-5.5 4.5-9.9 9.6-9.9s9.6 4.4 9.6 9.9-4.5 10.4-9.6 10.4zm5.5-7.4c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.1-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1s0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5s0-.4 0-.6-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.6 5.7 5 3.4 1.3 3.4.9 4 .8.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg>';
+    document.body.appendChild(wf);
   }
 })();
