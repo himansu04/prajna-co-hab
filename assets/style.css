@@ -186,7 +186,7 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 /* ---------- v5: conversion core ---------- */
 .familyband{text-align:center;padding:2.4rem 1rem .8rem;border-top:1px solid var(--line)}
 .familyband .dia{display:inline-block;width:.55rem;height:.55rem;transform:rotate(45deg);background:var(--ochre);opacity:.75;margin:0 .9rem;vertical-align:.35rem}
-.fblarge{font-size:clamp(1.45rem,3.4vw,2.15rem);font-weight:700;letter-spacing:-.01em;color:var(--ink);margin:.5rem 0 .2rem}
+.fblarge{font-size:clamp(1.05rem,2vw,1.3rem);font-weight:400;letter-spacing:.02em;color:var(--muted,#6b5d4f);margin:.5rem 0 .2rem}
 .fbsub{max-width:34rem;margin:0 auto}
 .persona{font-family:Verdana,Arial,sans-serif;font-size:.78rem;color:var(--terra-dark);margin:-.3rem 0 .35rem}
 .promises{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.7rem;margin-top:1.4rem}
