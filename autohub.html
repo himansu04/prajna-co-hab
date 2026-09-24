@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Pit — Where Machines and Their People Get Sorted | Prajna Co-hab, Bhosari</title>
+<meta name="description" content="The Pit: the Bhosari–Chakan belt’s automotive community board — trusted mechanics, spare parts, used bikes, RTO and insurance answers, carpooling for shift workers. No membership, no fee, owner-moderated.">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23c05a2e'/%3E%3Ctext x='16' y='22' font-size='18' font-family='Georgia' fill='%23faf6f0' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<div class="folkline"></div>
+<div class="wrap">
+  <header>
+    <nav class="nav">
+      <a class="brand" href="index.html"><span class="fmark"></span>Prajna <span>Co-hab</span></a>
+      <div class="navlinks">
+        <a href="index.html">Home</a><a href="autohub.html">The Pit</a><a href="gallery.html">Gallery</a><a href="pune.html">About Pune</a><a href="discover.html">Near the PG</a><a href="about.html">About Us</a><a href="contact.html">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="pagehead">
+    <span class="tag gold">The community pit</span>
+    <h1>The Pit.</h1>
+    <p class="lede">Pune runs on vehicles — and every belt has a garage floor where the real talk happens. This is ours. Mechanics who don’t loot you, where the right part lives, which RTO counter to avoid, who’s riding to your gate at shift hour. Pit rules apply: straight answers, no spam, and the owner has the final word.</p>
+  </div>
+
+  <section class="flat">
+    <div class="grid g3">
+      <div class="card tilt reveal"><h3>Ask and recommend</h3><p>Mechanics, puncture shops, battery and tyre places, spare-part dealers — post what you know, ask what you don't.</p></div>
+      <div class="card tilt reveal"><h3>Buy, sell, carpool</h3><p>Used bikes and gear, and shared rides for people working the same gate or shift timing.</p></div>
+      <div class="card tilt reveal"><h3>RTO and insurance</h3><p>Licence, transfer, PUC, insurance renewals — plain answers from people who just did it.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead reveal">
+      <span class="tag">The board</span>
+      <h2>Latest posts.</h2>
+      <p class="lede">Real questions, real answers. Every post is checked by the owner before it appears — that is what keeps this board useful.</p>
+    </div>
+    <div class="board" id="board"></div>
+    <form class="pform reveal" data-formtype="board">
+      <h3>Post to the board</h3>
+      <div class="row">
+        <div><label for="bname">Your name</label><input id="bname" name="name" required maxlength="40" placeholder="First name is fine"></div>
+        <div><label for="btopic">Topic</label><select id="btopic" name="topic"><option>Mechanic</option><option>Spare parts</option><option>Used bike / sale</option><option>Carpool</option><option>RTO / insurance</option><option>General</option></select></div>
+      </div>
+      <label for="bmsg">Message</label>
+      <textarea id="bmsg" name="message" rows="4" required maxlength="500" placeholder="Keep it useful and on-topic. No phone-number spam — people can reply through the owner."></textarea>
+      <div style="margin-top:1.2rem"><button class="btn" type="submit">Post to Board</button></div>
+      <div class="fresult"></div>
+    </form>
+    <p class="note reveal">Every post goes to the owner first and appears after a quick check — this keeps the board clean of spam and fake numbers. Be civil, no tenant addresses, no business spam. The owner can remove anything off-topic.</p>
+  </section>
+
+  <section>
+    <div class="shead reveal">
+      <span class="tag">Faster chat</span>
+      <h2>Or take The Pit to WhatsApp.</h2>
+      <p class="lede">For quick back-and-forth, residents and neighbours can join The Pit’s WhatsApp community — same topics, live conversation, straight from your phone.</p>
+    </div>
+    <a id="communitylink" class="btn reveal" href="#">Join the WhatsApp Community</a>
+    <p class="note reveal">Invite link is managed by the owner and rotated if shared outside the belt.</p>
+  </section>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div class="fcols">
+      <div class="fbrand">
+        <div class="fbrandname"><span class="fmark" style="display:inline-block;vertical-align:-3px"></span> Prajna <span>Co-hab</span></div>
+        <p>Family-run co-living PG at Bhosari Industrial Estate, Pune. Owner-managed, no broker, straight pricing.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <a href="index.html">Home</a><a href="gallery.html">Gallery</a><a href="autohub.html">The Pit</a>
+      </div>
+      <div>
+        <h4>Guides</h4>
+        <a href="pune.html">About Pune</a><a href="discover.html">Near the PG</a><a href="about.html">About Us</a>
+      </div>
+      <div>
+        <h4>Reach us</h4>
+        <a class="wa-link" href="#">WhatsApp the owner</a><a href="contact.html">Contact &amp; visits</a><a href="feedback.html">Feedback</a>
+      </div>
+    </div>
+    <div class="fbottom"><span>Prajna Co-hab · owner-managed, no broker</span><span>© <span id="yr"></span></span></div>
+  </footer>
+</div>
+
+  <div class="mobilebar">
+    <a href="#" class="call" id="calllink">Call</a>
+    <a href="#" class="wa wa-link">WhatsApp</a>
+  </div>
+<script src="config.js"></script><script src="assets/site.js"></script>
+</body>
+</html>
