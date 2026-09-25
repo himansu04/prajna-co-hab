@@ -20,7 +20,7 @@ window.PRAJNA = {
     var r = document.createElement("div");
     r.id = "mockupRibbon";
     r.textContent = "MOCKUP BUILD — SAMPLE DATA, NOT LIVE PRICES";
-    r.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#6b6b2a;color:#fff;font-family:Verdana,Arial,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:.3rem 0;pointer-events:none";
+    r.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#6b6b2a;color:#fff;font-family:ui-sans-serif,-apple-system,Helvetica,Arial,sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:.3rem 0;pointer-events:none";
     document.body.appendChild(r);
   }
   if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", ribbon); } else { ribbon(); }
