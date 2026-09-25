@@ -6,7 +6,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:var(--font-head);background:var(--paper);color:var(--ink);line-height:1.68;font-size:1.02rem;padding-bottom:64px;animation:bodyin .5s ease both}
+body{font-family:var(--font-head);background:transparent;color:var(--ink);line-height:1.68;font-size:1.02rem;padding-bottom:64px;animation:bodyin .5s ease both}
 @keyframes bodyin{from{opacity:0}to{opacity:1}}
 .wrap{max-width:1020px;margin:0 auto;padding:0 22px}
 h1,h2,h3,h4{font-weight:700;letter-spacing:-.012em;line-height:1.18}
@@ -310,7 +310,14 @@ body>*:not(.bgfx):not(.vignette):not(.vignette){position:relative;z-index:auto}
 /* v8: motion lives BEHIND everything, never beside it */
 html{background:var(--paper-deep)}
 body{position:relative;isolation:isolate}
-.bgfx{z-index:-3!important}
+.bgfx{
+  position:fixed!important;
+  top:0;left:0;
+  width:100vw;height:100vh;
+  z-index:-3!important;
+  pointer-events:none;
+  display:block;
+}
 body::before{z-index:-2!important}
 .vignette{z-index:-1!important}
 /* cards, forms and the dark panels get a hand-made surface */
@@ -424,4 +431,80 @@ footer{margin-top:2.4rem}
 .feature,.cta-strip,.tourbox,.plaque,.familyband,.mobilebar,footer,.statrow>div,.voice,.post,.card,
 .promises div,.amen div,.menucard .day,.faq details,.mapbox,form.pform,.costrows>div{
   background-clip:padding-box;
+}
+
+/* ============================================================
+   v12 — ONE SURFACE, TOP TO BOTTOM.
+   Every band, panel and block lets the ambient layer read through.
+   This block is last on purpose: it wins the cascade outright.
+   ============================================================ */
+
+/* no element anywhere may paint an opaque page-covering fill again */
+body, html, main, .wrap, section, header, footer, .pagehead, .hero,
+.band, .strip, .familyband, .voice, .loc, .picker, .day, .costrows,
+.costrows>div, .statrow, .statrow>div, .plaque, .board, .post, .amen,
+.amen div, .promises, .promises div, .menucard, .menucard .day,
+.mapbox, .faq, .faq details, .tourbox, .tourbox video, form.pform,
+.card, .tile, .voice .q {
+  background-color: transparent !important;
+}
+
+/* glass, not walls: 45-52% so the folk art is plainly visible through every panel */
+.card, .promises div, .amen div, .menucard .day, .post, .mapbox,
+form.pform, .plaque, .statrow>div, .faq details, .costrows>div, .voice {
+  background-image: linear-gradient(180deg, rgba(255,255,255,.50), rgba(253,248,241,.44)) !important;
+  background-color: transparent !important;
+  backdrop-filter: blur(10px) saturate(1.1) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.1) !important;
+}
+
+/* the dark bands stay dark but only as a veil: the ground shows through them too */
+.feature {
+  background-image: linear-gradient(180deg, rgba(43,38,32,.72), rgba(43,38,32,.64)) !important;
+  background-color: transparent !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.cta-strip {
+  background-image: linear-gradient(180deg, rgba(43,38,32,.68), rgba(43,38,32,.60)),
+                    radial-gradient(90% 130% at 82% 0%, rgba(217,164,65,.20), transparent 60%) !important;
+  background-color: transparent !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.tourbox {
+  background-image: linear-gradient(180deg, rgba(43,38,32,.62), rgba(43,38,32,.55)) !important;
+  background-color: transparent !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.tourbox video { background: linear-gradient(135deg, rgba(43,38,32,.55), rgba(58,50,42,.5)) !important; }
+
+/* the sticky header is a thin glass lid, never a slab */
+header {
+  background: rgba(250,246,240,.55) !important;
+  backdrop-filter: blur(14px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.08) !important;
+}
+
+/* the bottom bar too */
+.mobilebar { background: rgba(255,255,255,.62) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; }
+
+/* footer fades into the ground rather than covering it */
+footer { background-image: linear-gradient(180deg, rgba(255,255,255,0), rgba(244,236,223,.35)) !important; background-color: transparent !important; }
+
+/* form fields stay readable: paper-white but see-through enough */
+.pform input, .pform select, .pform textarea { background: rgba(255,255,255,.72) !important; }
+
+/* photo placeholders keep their wash but let motion through */
+.ph { background-color: rgba(239,231,218,.62) !important; }
+
+/* on phones keep it cheap */
+@media(max-width:640px){
+  .card, .promises div, .amen div, .menucard .day, .post, .mapbox, form.pform,
+  .plaque, .statrow>div, .faq details, .costrows>div, .voice {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  .feature, .cta-strip, .tourbox, header { backdrop-filter: blur(5px) !important; -webkit-backdrop-filter: blur(5px) !important; }
 }

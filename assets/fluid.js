@@ -58,7 +58,7 @@
       items = [];
       /* derive the motif layout from the page URL so every page looks different */
       alt = (location.pathname.split("/").pop() || "index").length;
-      var n = Math.max(9, Math.min(20, Math.round((w*h)/78000)));
+      var n = Math.max(14, Math.min(28, Math.round((w*h)/52000)));
       for(var i=0;i<n;i++){
         items.push({
           m: (i + alt) % MOTIFS.length,
