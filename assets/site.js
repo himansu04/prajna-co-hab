@@ -117,10 +117,10 @@ window.PRAJNA = window.PRAJNA || {
   if(board){
     var seed = [
       { name:"Owner", topic:"Welcome", msg:"Mechanics you trust, spare-part shops, used bikes, RTO doubts, carpooling \u2014 ask. Keep it on-topic." },
-      { name:"Sample post", topic:"Mechanic", msg:"Need a trusted mechanic on the Bhosari gaon side for a Pulsar 150 clutch-plate change. Who do you people go to? Asking for a friend on night shift." },
+      { name:"Sample post", topic:"Mechanic", msg:"Need a trusted mechanic on the Moshi gaon side for a Pulsar 150 clutch-plate change. Who do you people go to? Asking for a friend on night shift." },
       { name:"Sample post", topic:"Spare parts", msg:"Looking for an original headlamp assembly for an Activa 6G. The shop near Moshi chowk quoted \u20B92,200. Anyone know a better rate around the belt?" },
       { name:"Sample post", topic:"Used bike / sale", msg:"Selling my 2019 Splendor \u2014 28,000 km, single owner, papers clear, new tyres. Serious buyers can reach me through the owner." },
-      { name:"Sample post", topic:"Carpool", msg:"I ride to Gate 4, MIDC Bhosari for the 7:30 shift. Anyone from the Moshi / Borhadewadi side want to split fuel? Same timing, same gate." },
+      { name:"Sample post", topic:"Carpool", msg:"I ride to Gate 4, MIDC Moshi for the 7:30 shift. Anyone from the Moshi / Borhadewadi side want to split fuel? Same timing, same gate." },
       { name:"Sample post", topic:"RTO / insurance", msg:"Renewed my two-wheeler insurance online last week \u2014 took ten minutes, no agent. Happy to walk anyone through it. Ask here, not in DMs." }
     ];
     function render(list, demo){

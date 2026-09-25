@@ -1,7 +1,7 @@
 {
-  "name": "Prajna Co-hab — Co-living Co-hab, Bhosari Industrial Estate",
+  "name": "Prajna Co-hab — Co-living house, Moshi, Pune",
   "short_name": "Prajna Co-hab",
-  "description": "Ten beds, four twin-sharing rooms and two singles near Bhosari MIDC, Pune. Owner-managed, straight pricing.",
+  "description": "Ten beds, four twin-sharing rooms and two singles near Moshi MIDC, Pune. Owner-managed, straight pricing.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
