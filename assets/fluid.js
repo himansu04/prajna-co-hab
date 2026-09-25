@@ -22,7 +22,7 @@
 
   function uri(i){ return 'url("data:image/svg+xml,' + MOTIFS[i % MOTIFS.length].replace(/COL/g, COLS[i % COLS.length]) + '")'; }
 
-  /* 1 — the ground: canvas wash, drifting motifs, pointer light */
+  /* 1 — the ground: animated folk texture pinned BEHIND every page, all pages */
   function ambient(){
     var c = document.createElement("canvas");
     c.className = "bgfx";
@@ -30,8 +30,8 @@
     document.body.insertBefore(c, document.body.firstChild);
 
     var ctx = c.getContext("2d"), dpr = Math.min(window.devicePixelRatio||1, 2);
-    var w=0, h=0, items=[], t0=performance.now();
-    var px=0.5, py=0.5, tx=0.5, ty=0.5;
+    var w=0, h=0, items=[], t0=performance.now(), alt=0;
+    var px=0.5, py=0.4, tx=0.5, ty=0.4;
 
     function resize(){
       w = window.innerWidth; h = window.innerHeight;
@@ -39,19 +39,20 @@
       c.style.width = w+"px"; c.style.height = h+"px";
       ctx.setTransform(dpr,0,0,dpr,0,0);
       items = [];
-      var n = Math.max(7, Math.min(16, Math.round((w*h)/95000)));
-      var motifs = MOTIFS.map(function(_,i){ return i; });
+      /* derive the motif layout from the page URL so every page looks different */
+      alt = (location.pathname.split("/").pop() || "index").length;
+      var n = Math.max(9, Math.min(20, Math.round((w*h)/78000)));
       for(var i=0;i<n;i++){
         items.push({
-          m: motifs[i % motifs.length],
+          m: (i + alt) % MOTIFS.length,
           x: Math.random()*w,
           y: Math.random()*h,
-          s: 0.5 + Math.random()*0.55,
-          vx: (Math.random()-0.5)*0.10,
-          vy: -0.045 - Math.random()*0.075,
-          rot: (Math.random()-0.5)*0.35,
-          vr: (Math.random()-0.5)*0.00016,
-          a: 0.055 + Math.random()*0.055,
+          s: 0.55 + Math.random()*0.6,
+          vx: (Math.random()-0.5)*0.12,
+          vy: -0.05 - Math.random()*0.085,
+          rot: (Math.random()-0.5)*0.4,
+          vr: (Math.random()-0.5)*0.00018,
+          a: 0.075 + Math.random()*0.075,
           wob: Math.random()*Math.PI*2
         });
       }
@@ -68,25 +69,23 @@
       var e = now - t0;
       ctx.clearRect(0,0,w,h);
 
-      /* warm light that leans toward the pointer */
-      px += (tx-px)*0.035; py += (ty-py)*0.035;
-      var g = ctx.createRadialGradient(px*w, py*h, 20, px*w, py*h, Math.max(w,h)*0.66);
-      g.addColorStop(0, "rgba(217,164,65,0.16)");
-      g.addColorStop(0.45, "rgba(192,90,46,0.05)");
+      px += (tx-px)*0.03; py += (ty-py)*0.03;
+      var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
+      g.addColorStop(0, "rgba(217,164,65,0.17)");
+      g.addColorStop(0.42, "rgba(192,90,46,0.055)");
       g.addColorStop(1, "rgba(250,246,240,0)");
       ctx.fillStyle = g;
       ctx.fillRect(0,0,w,h);
 
-      /* hand-drawn motifs, drifting upward like lamp smoke */
       for(var i=0;i<items.length;i++){
         var it = items[i];
-        it.x += it.vx + Math.sin(e*0.00035 + it.wob)*0.16;
+        it.x += it.vx + Math.sin(e*0.00033 + it.wob)*0.18;
         it.y += it.vy;
         it.rot += it.vr;
-        if(it.y < -110){ it.y = h + 90; it.x = Math.random()*w; }
-        if(it.x < -110) it.x = w + 90; else if(it.x > w + 110) it.x = -90;
+        if(it.y < -120){ it.y = h + 100; it.x = Math.random()*w; }
+        if(it.x < -120) it.x = w + 100; else if(it.x > w + 120) it.x = -100;
         var im = imgs[it.m]; if(!im || !im.complete) continue;
-        var bw = 132*it.s, bh = 77*it.s;
+        var bw = 136*it.s, bh = 79*it.s;
         ctx.save();
         ctx.globalAlpha = it.a;
         ctx.translate(it.x, it.y);
@@ -95,13 +94,12 @@
         ctx.restore();
       }
 
-      /* hairline rangoli rings, one corner */
-      ctx.strokeStyle = "rgba(192,90,46,0.05)";
+      ctx.strokeStyle = "rgba(192,90,46,0.055)";
       ctx.lineWidth = 1;
-      var cx = w*0.82, cy = h*0.2;
+      var cx = w*0.84, cy = h*0.18;
       for(var r=0;r<5;r++){
         ctx.beginPath();
-        ctx.arc(cx, cy, 110 + r*86 + Math.sin(e*0.00011 + r)*9, 0, Math.PI*2);
+        ctx.arc(cx, cy, 120 + r*90 + Math.sin(e*0.0001 + r)*10, 0, Math.PI*2);
         ctx.stroke();
       }
       requestAnimationFrame(draw);
@@ -113,11 +111,9 @@
       tx = ev.clientX / window.innerWidth;
       ty = ev.clientY / window.innerHeight;
     }, { passive: true });
-
-    var dv = document.createElement("div");
-    dv.className = "vignette";
-    dv.setAttribute("aria-hidden","true");
-    document.body.insertBefore(dv, document.body.firstChild);
+    window.addEventListener("visibilitychange", function(){
+      if(!document.hidden) t0 = performance.now();
+    });
 
     requestAnimationFrame(draw);
   }
