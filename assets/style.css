@@ -284,6 +284,23 @@ form.pform{box-shadow:none}
 }
 /* v10: ground is the canvas layer's job (see .bgfx); body stays transparent */
 body{background:transparent}
+
+/* v10.1: panels are GLASS, not walls. The folk art must read through every card,
+   top of the page to the footer, on every page. */
+.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(253,248,241,.58)),var(--weave);
+  background-blend-mode:normal,multiply;
+}
+.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
+  backdrop-filter:blur(9px) saturate(1.08);
+  -webkit-backdrop-filter:blur(9px) saturate(1.08);
+}
+.faq details,.costrows>div,.voice{backdrop-filter:blur(8px) saturate(1.06);-webkit-backdrop-filter:blur(8px) saturate(1.06)}
+.feature,.cta-strip,.tourbox,.familyband{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.feature,.cta-strip,.tourbox,.plaque,.familyband{
+  background-color:rgba(43,38,32,.14);
+}
+header{background:rgba(250,246,240,.66)!important}
 body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:var(--weave),var(--grain);opacity:.55;mix-blend-mode:multiply}
 .vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(120% 90% at 50% 45%,transparent 52%,rgba(43,38,32,.07) 100%)}
@@ -297,10 +314,7 @@ body{position:relative;isolation:isolate}
 body::before{z-index:-2!important}
 .vignette{z-index:-1!important}
 /* cards, forms and the dark panels get a hand-made surface */
-.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
-  background-image:linear-gradient(180deg,rgba(255,255,255,.92),rgba(253,248,241,.92)),var(--weave);
-  background-blend-mode:normal,multiply;
-}
+/* superseded by v10.1 glass */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .feature{
   background-image:var(--weave),radial-gradient(120% 130% at 20% 0%, rgba(217,164,65,.16), transparent 58%),radial-gradient(rgba(250,246,240,.06) 1px, transparent 1.3px);
@@ -358,7 +372,7 @@ body{background:transparent}
   box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
 }
 /* dark panels keep their weight but take a hint of the moving ground */
-.feature,.cta-strip{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.feature,.cta-strip{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 /* every section is a window onto the same ground; nothing paints over it */
 section,.pagehead,.hero,footer,.familyband,.wrap{background:transparent}
 /* a whisper of folk ink on the paragraph text so it reads as one handmade surface */

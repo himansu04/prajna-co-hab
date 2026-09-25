@@ -40,6 +40,15 @@
     var ctx = c.getContext("2d"), dpr = Math.min(window.devicePixelRatio||1, 2);
     var w=0, h=0, items=[], t0=performance.now(), alt=0;
     var px=0.5, py=0.4, tx=0.5, ty=0.4;
+    /* v10.1 fluid layer: large soft colour fields that drift like slow water.
+       They sit under the motifs and give the page its liquid depth. */
+    var BLOB_COLS=[
+      [217,164,65],   /* ochre  */
+      [192,90,46],    /* terracotta */
+      [43,38,32],     /* ink    */
+      [224,190,120]   /* pale turmeric */
+    ];
+    var blobs=[];
 
     function resize(){
       w = window.innerWidth; h = window.innerHeight;
@@ -60,8 +69,22 @@
           vy: -0.05 - Math.random()*0.085,
           rot: (Math.random()-0.5)*0.4,
           vr: (Math.random()-0.5)*0.00018,
-          a: 0.075 + Math.random()*0.075,
+          a: 0.11 + Math.random()*0.09,
           wob: Math.random()*Math.PI*2
+        });
+      }
+      /* 4-5 blobs; layout seeded from the page path like the motifs */
+      blobs=[];
+      var bn = w < 700 ? 3 : 5;
+      for(var b=0;b<bn;b++){
+        blobs.push({
+          col: BLOB_COLS[(b + alt) % BLOB_COLS.length],
+          bx: (0.12 + 0.76*((b*0.37 + alt*0.11) % 1)),
+          by: (0.15 + 0.7*((b*0.53 + alt*0.19) % 1)),
+          r: (0.24 + 0.16*((b*0.29 + alt*0.07) % 1)),
+          sp: 0.00004 + 0.00005*((b+alt)%3),
+          ph: b*1.7 + alt*0.31,
+          a: b===2 ? 0.05 : 0.075
         });
       }
     }
@@ -95,6 +118,19 @@
       w2.addColorStop(0,"rgba(192,90,46,0.13)");
       w2.addColorStop(1,"rgba(192,90,46,0)");
       ctx.fillStyle = w2; ctx.fillRect(0,0,w,h);
+
+      /* the liquid: each blob breathes around its anchor on its own slow clock */
+      for(var b=0;b<blobs.length;b++){
+        var bl = blobs[b];
+        var ox = Math.sin(e*bl.sp + bl.ph) * w*0.06;
+        var oy = Math.cos(e*bl.sp*0.83 + bl.ph*1.3) * h*0.05;
+        var rr = bl.r * Math.max(w,h);
+        var bg = ctx.createRadialGradient(bl.bx*w + ox, bl.by*h + oy, rr*0.08, bl.bx*w + ox, bl.by*h + oy, rr);
+        bg.addColorStop(0, "rgba("+bl.col[0]+","+bl.col[1]+","+bl.col[2]+","+bl.a+")");
+        bg.addColorStop(1, "rgba("+bl.col[0]+","+bl.col[1]+","+bl.col[2]+",0)");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0,0,w,h);
+      }
 
       px += (tx-px)*0.03; py += (ty-py)*0.03;
       var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
