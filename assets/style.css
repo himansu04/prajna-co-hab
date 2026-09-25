@@ -577,3 +577,10 @@ form.pform, .plaque, .statrow>div, .faq details, .costrows>div, .tourbox, .ph {
 }
 /* dots and diamonds all take the ochre trim, at one opacity */
 .card li:before { background: var(--ochre) !important; }
+
+/* ============ v14 — real photos ============ */
+/* hero shot: same box the placeholder had, but a real photo fills it */
+a.ph.heroshot { border: 1px solid var(--line); padding: 0; background: none; overflow: hidden; display: block; border-radius: 12px; }
+a.ph.heroshot img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: 11px; }
+/* gallery figures: photos carry their own frame */
+.gal figure img { background: var(--paper-deep); }
