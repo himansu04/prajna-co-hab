@@ -20,11 +20,6 @@ img{max-width:100%}
 .tag{font-family:var(--font-ui);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--terra)}
 .tag.gold{color:#b58420}
 /* reveal system */
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease var(--d,0s),transform .65s var(--ease) var(--d,0s)}
-.reveal.in{opacity:1;transform:none}
-.grid > .reveal:nth-child(2){--d:.07s}.grid > .reveal:nth-child(3){--d:.14s}
-.grid > .reveal:nth-child(4){--d:.21s}.grid > .reveal:nth-child(5){--d:.28s}
-.grid > .reveal:nth-child(6){--d:.35s}
 /* folk trim: dashes + dots, opens like a doorway */
 .folkline{height:7px;transform-origin:left;background:
   radial-gradient(circle at 10px 3.5px, var(--paper) 1.6px, transparent 2px) 0 0/28px 7px,
@@ -82,7 +77,6 @@ header.scrolled{box-shadow:0 8px 24px rgba(43,38,32,.08);border-bottom:1px solid
 section{padding:3rem 0;border-top:1px solid var(--line);position:relative}
 section.flat{border-top:none;padding-top:1.6rem}
 /* mandana ornament on section borders */
-section:not(.flat)::before{content:"";position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:140px;height:10px;
   background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 10' fill='%23d9a441'%3E%3Ccircle cx='8' cy='5' r='2.2'/%3E%3Crect x='30' y='1.5' width='7' height='7' transform='rotate(45 33.5 5)'/%3E%3Ccircle cx='70' cy='5' r='2.8'/%3E%3Crect x='103' y='1.5' width='7' height='7' transform='rotate(45 106.5 5)'/%3E%3Ccircle cx='132' cy='5' r='2.2'/%3E%3C/svg%3E") center/140px 10px no-repeat;opacity:.55;padding:0 6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:1.4rem}
 .grid.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
@@ -181,7 +175,6 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 @media(max-width:720px){.loc{grid-template-columns:1fr}.pform .row{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .reveal{opacity:1;transform:none}
 }
 /* ---------- v5: conversion core ---------- */
 .familyband{text-align:center;padding:2.4rem 1rem .8rem;border-top:1px solid var(--line)}
@@ -264,24 +257,6 @@ form.pform{box-shadow:none}
 .btn.ghost{border-style:solid;border-color:var(--ochre)}
 .mobilebar a{border-radius:0}
 
-/* ---------- v6: ambient motion layer ---------- */
-.bgfx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.85}
-body>*:not(.bgfx){position:relative;z-index:1}
-.lotusdraw{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,84vw);height:auto;color:var(--terra);opacity:.075;pointer-events:none}
-.cta-strip .lotusdraw{color:#f5efe6;opacity:.09}
-@keyframes drawlotus{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}
-.flow{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-.flow.flow-in{opacity:1;transform:none}
-.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(12px) scale(.994)}
-.card.flow.flow-in,.promises div.flow.flow-in,.menucard .day.flow.flow-in,.amen div.flow.flow-in{transform:none}
-.reveal{opacity:1;transform:none;transition:none}
-.plaque{padding-bottom:6.4rem}
-.plaque .lotusdraw{top:auto;bottom:1.5rem;transform:translateX(-50%);width:180px;opacity:.12}
-@media(prefers-reduced-motion:reduce){
-  .bgfx{display:none}.lotusdraw{opacity:.06}
-  .flow{opacity:1;transform:none}
-}
-
 /* ---------- v6: a11y, print, tap targets ---------- */
 .skip{position:absolute;left:-9999px;top:0;background:var(--terra);color:#fff;padding:.7rem 1.1rem;border-radius:0 0 var(--r-sm) 0;font-family:var(--font-ui);font-size:.85rem;z-index:200}
 .skip:focus{left:0}
@@ -298,3 +273,67 @@ body>*:not(.bgfx){position:relative;z-index:1}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555}
   section{page-break-inside:avoid}
 }
+
+/* ---------- v7: ground, texture, motion ---------- */
+:root{
+  --paper-deep:#f4ecdf;
+  --paper-warm:#fdf8f1;
+  --weave:repeating-linear-gradient(45deg,rgba(192,90,46,.05) 0 1px,transparent 1px 7px),
+          repeating-linear-gradient(-45deg,rgba(43,38,32,.035) 0 1px,transparent 1px 7px);
+  --grain:repeating-conic-gradient(from 0deg,rgba(43,38,32,.028) 0% 25%,transparent 0% 50%) 0 0/3px 3px;
+}
+html{background:var(--paper-deep)}
+body{
+  background:
+    radial-gradient(1100px 700px at 88% -8%, rgba(217,164,65,.20), transparent 62%),
+    radial-gradient(900px 640px at -6% 18%, rgba(192,90,46,.13), transparent 58%),
+    radial-gradient(760px 560px at 50% 108%, rgba(43,38,32,.07), transparent 60%),
+    linear-gradient(180deg,var(--paper-warm) 0%, var(--paper) 46%, var(--paper-deep) 100%);
+  background-attachment:fixed,fixed,fixed,scroll;
+}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:var(--weave),var(--grain);opacity:.55;mix-blend-mode:multiply}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 45%,transparent 52%,rgba(43,38,32,.07) 100%)}
+body>*:not(.bgfx):not(.vignette){position:relative;z-index:1}
+/* cards, forms and the dark panels get a hand-made surface */
+.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
+  background-image:linear-gradient(180deg,rgba(255,255,255,.92),rgba(253,248,241,.92)),var(--weave);
+  background-blend-mode:normal,multiply;
+}
+.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.feature{
+  background-image:var(--weave),radial-gradient(120% 130% at 20% 0%, rgba(217,164,65,.16), transparent 58%),radial-gradient(rgba(250,246,240,.06) 1px, transparent 1.3px);
+  background-size:auto,auto,8px 8px;
+}
+.cta-strip{
+  background-image:var(--weave),radial-gradient(90% 130% at 82% 0%, rgba(217,164,65,.18), transparent 60%);
+}
+/* folk motif watermarks on the quiet sections */
+.ripplelotus{position:absolute;inset:auto -30px -26px auto;width:min(340px,52vw);aspect-ratio:120/70;
+  background-repeat:no-repeat;background-position:bottom right;background-size:contain;opacity:.09;pointer-events:none;z-index:0}
+section{position:relative}
+section>*:not(.ripplelotus){position:relative;z-index:1}
+@media(max-width:760px){.ripplelotus{width:180px;opacity:.075}}
+.cta-strip .lotusdraw{color:#f5efe6;opacity:.09}
+.plaque{padding-bottom:6.4rem}
+.plaque .lotusdraw{top:auto;bottom:1.5rem;transform:translateX(-50%);width:180px;opacity:.13}
+@keyframes drawlotus{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}
+.flow{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.flow.flow-in{opacity:1;transform:none}
+.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(12px) scale(.994)}
+.card.flow.flow-in,.promises div.flow.flow-in,.menucard .day.flow.flow-in,.amen div.flow.flow-in{transform:none}
+.reveal{opacity:1;transform:none;transition:none}
+/* reduced motion: keep the texture, drop the movement */
+html.reduce .bgfx{background-image:radial-gradient(900px 600px at 82% 6%, rgba(217,164,65,.18), transparent 60%);background-color:transparent}
+html.reduce .flow{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .bgfx{display:none}
+  .lotusdraw{opacity:.07}
+  .flow{opacity:1;transform:none}
+}
+
+/* v7: the pagehead lotus is redundant against the textured ground */
+.pagehead::after{content:none}
+
+/* v7: section separators are hairlines only — the ground carries the texture */
+section:not(.flat)::before{content:none}
