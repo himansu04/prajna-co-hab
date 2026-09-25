@@ -1,41 +1,64 @@
-/* Prajna Co-hab — service worker: instant repeat loads + offline shell.
-   Cache-first for the app shell, network-first for anything else, and the
-   rate card is never trusted from cache alone (it must stay truthful). */
-var V = "prajna-v6";
-var SHELL = [
-  "./", "./index.html", "./gallery.html", "./pune.html", "./discover.html",
-  "./autohub.html", "./about.html", "./contact.html", "./feedback.html",
-  "./assets/style.css", "./assets/site.js", "./assets/fluid.js",
-  "./assets/icon-192.png", "./assets/icon-512.png", "./manifest.webmanifest"
-];
+/* Prajna Co-hab — service worker (v7)
+   Goal: instant repeat loads, offline-friendly, and NEVER a stale copy of a new deploy.
+   Strategy: network-first for pages and config, cache-first only for static assets
+   once they have been seen. Old caches are dropped on every activation. */
+var V = "prajna-v7";
+var STATIC = /\/assets\/.*\.(css|js|png|jpg|svg|webp|woff2)$/;
 
 self.addEventListener("install", function(e){
-  e.waitUntil(caches.open(V).then(function(c){ return c.addAll(SHELL).catch(function(){}); }).then(function(){ return self.skipWaiting(); }));
+  self.skipWaiting();                          // take over as soon as it is downloaded
 });
 
 self.addEventListener("activate", function(e){
-  e.waitUntil(caches.keys().then(function(ks){
-    return Promise.all(ks.map(function(k){ return k !== V ? caches.delete(k) : null; }));
-  }).then(function(){ return self.clients.claim(); }));
+  e.waitUntil(
+    caches.keys().then(function(keys){
+      return Promise.all(keys.map(function(k){ return k === V ? null : caches.delete(k); }));
+    }).then(function(){ return self.clients.claim(); })
+  );
+});
+
+self.addEventListener("message", function(e){
+  if(e.data && e.data.type === "skip") self.skipWaiting();
 });
 
 self.addEventListener("fetch", function(e){
   var req = e.request;
   if (req.method !== "GET") return;
   var url = new URL(req.url);
-  if (url.origin !== location.origin) return;              // never touch WhatsApp, maps, Apps Script
-  if (url.pathname.endsWith("config.js")) return;           // live facts, always fresh
-  if (url.pathname.endsWith("tour.mp4")) {                  // big media: cache on demand only
-    e.respondWith(caches.match(req).then(function(hit){ return hit || fetch(req).then(function(res){ var cp = res.clone(); caches.open(V).then(function(c){ c.put(req, cp); }); return res; }); }));
+  if (url.origin !== location.origin) return;              // WhatsApp, maps, Apps Script untouched
+  if (url.pathname.endsWith("config.js")) return;          // live facts, never cached
+  if (url.pathname.endsWith("sw.js")) return;              // never cache the worker itself
+
+  /* pages and everything else: try the network first, fall back to cache */
+  if (req.mode === "navigate" || req.destination === "document" || !STATIC.test(url.pathname)) {
+    e.respondWith(
+      fetch(req).then(function(res){
+        if (res && res.ok) {
+          var cp = res.clone();
+          caches.open(V).then(function(c){ c.put(req, cp); });
+        }
+        return res;
+      }).catch(function(){
+        return caches.match(req).then(function(hit){ return hit || caches.match("./index.html"); });
+      })
+    );
     return;
   }
+
+  /* static assets: cache first, refreshed in the background once used */
   e.respondWith(
     caches.match(req).then(function(hit){
       var net = fetch(req).then(function(res){
         if (res && res.ok) { var cp = res.clone(); caches.open(V).then(function(c){ c.put(req, cp); }); }
         return res;
-      }).catch(function(){ return hit || caches.match("./index.html"); });
+      }).catch(function(){ return hit; });
       return hit || net;
     })
   );
+});
+
+self.addEventListener("message", function(e){
+  if (e.data && e.data.type === "purge") {
+    caches.keys().then(function(keys){ keys.forEach(function(k){ caches.delete(k); }); });
+  }
 });

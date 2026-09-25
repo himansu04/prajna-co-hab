@@ -337,3 +337,6 @@ html.reduce .flow{opacity:1;transform:none}
 
 /* v7: section separators are hairlines only — the ground carries the texture */
 section:not(.flat)::before{content:none}
+
+/* v7.1: never let a cached shell hide a new deploy */
+.bgfx,.lotusdraw,.ripplelotus{will-change:transform,opacity}

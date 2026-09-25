@@ -203,6 +203,19 @@ window.PRAJNA = window.PRAJNA || {
     }
   }
 
+
+  /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
+  if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
+    caches.keys().then(function(keys){
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v7"; });
+      if (!stale.length) return;
+      Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
+        sessionStorage.setItem("prajna-healed", "1");
+        location.reload();
+      });
+    }).catch(function(){});
+  }
+
   /* installable app + offline shell (v6) */
   var mf = document.createElement("link");
   mf.rel = "manifest"; mf.href = "manifest.webmanifest";
@@ -212,7 +225,10 @@ window.PRAJNA = window.PRAJNA || {
   document.head.appendChild(th);
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", function(){
-      navigator.serviceWorker.register("sw.js").catch(function(){});
+      navigator.serviceWorker.register("sw.js").then(function(reg){
+        reg.update();
+        if (reg.waiting) reg.waiting.postMessage({ type: "skip" });
+      }).catch(function(){});
     });
   }
 
