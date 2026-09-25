@@ -3,7 +3,7 @@
    Fill these once; every page reads from here.
    ===================================================== */
 window.PRAJNA = window.PRAJNA || {
-  phone: null,              // PG WhatsApp number, digits only e.g. "919812345678"
+  phone: null,              // co-hab WhatsApp number, digits only e.g. "919812345678"
   twinRent: null,           // e.g. 6500
   singleRent: null,         // e.g. 9500
   deposit: null,            // e.g. 6500
