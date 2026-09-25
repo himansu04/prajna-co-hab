@@ -282,19 +282,14 @@ form.pform{box-shadow:none}
           repeating-linear-gradient(-45deg,rgba(43,38,32,.035) 0 1px,transparent 1px 7px);
   --grain:repeating-conic-gradient(from 0deg,rgba(43,38,32,.028) 0% 25%,transparent 0% 50%) 0 0/3px 3px;
 }
-html{background:var(--paper-deep)}
-body{
-  background:
-    radial-gradient(1100px 700px at 88% -8%, rgba(217,164,65,.20), transparent 62%),
-    radial-gradient(900px 640px at -6% 18%, rgba(192,90,46,.13), transparent 58%),
-    radial-gradient(760px 560px at 50% 108%, rgba(43,38,32,.07), transparent 60%),
-    linear-gradient(180deg,var(--paper-warm) 0%, var(--paper) 46%, var(--paper-deep) 100%);
-  background-attachment:fixed,fixed,fixed,scroll;
-}
-body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:var(--weave),var(--grain);opacity:.55;mix-blend-mode:multiply}
-.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
+/* v10: ground is the canvas layer's job (see .bgfx); body stays transparent */
+body{background:transparent}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background-image:var(--weave),var(--grain);opacity:.55;mix-blend-mode:multiply}
+.vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:radial-gradient(120% 90% at 50% 45%,transparent 52%,rgba(43,38,32,.07) 100%)}
-body>*:not(.bgfx):not(.vignette){position:relative;z-index:1}
+/* v10: content sits on top via normal flow, NOT via a positive z-index that
+   would bury the ambient canvas. .bgfx/.vignette stay at negative depth. */
+body>*:not(.bgfx):not(.vignette):not(.vignette){position:relative;z-index:auto}
 /* v8: motion lives BEHIND everything, never beside it */
 html{background:var(--paper-deep)}
 body{position:relative;isolation:isolate}
@@ -349,14 +344,10 @@ section:not(.flat)::before{content:none}
 
 /* ---------- v8: motion integrated behind the content, on every page ---------- */
 /* the ground is a real layer of the page, not a panel beside it */
-html{background:transparent}
-body{
-  background:
-    radial-gradient(1200px 760px at 88% -10%, rgba(217,164,65,.18), transparent 62%),
-    radial-gradient(960px 680px at -8% 16%, rgba(192,90,46,.12), transparent 58%),
-    linear-gradient(180deg,#fdf8f1 0%, #faf6f0 44%, #f4ecdf 100%);
-  background-attachment:fixed,fixed,scroll;
-}
+/* v10: html carries only the flat paper fallback; the gradient wash lives on the
+   canvas layer so it can never paint over the motion. */
+html{background:#f6efe3}
+body{background:transparent}
 /* glass panels: content stays fully legible while the folk art keeps moving under it */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{
   backdrop-filter:blur(6px) saturate(1.05);

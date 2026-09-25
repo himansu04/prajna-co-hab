@@ -1,4 +1,4 @@
-/* Prajna Co-hab — ambient layer (v7)
+/* Prajna Co-hab — ambient layer (v10)
    Folk texture, warm light and slow motion. Hand-drawn madhubani-style motifs
    drift across a gradient wash while a soft light follows the pointer.
    No libraries, no network, no images. Respects reduced-motion. */
@@ -24,6 +24,14 @@
 
   /* 1 — the ground: animated folk texture pinned BEHIND every page, all pages */
   function ambient(){
+    /* v10: the vignette is a real layer, not just a CSS rule */
+    if(!document.querySelector(".vignette")){
+      var v = document.createElement("div");
+      v.className = "vignette";
+      v.setAttribute("aria-hidden","true");
+      document.body.appendChild(v);
+    }
+
     var c = document.createElement("canvas");
     c.className = "bgfx";
     c.setAttribute("aria-hidden","true");
@@ -68,6 +76,25 @@
     function draw(now){
       var e = now - t0;
       ctx.clearRect(0,0,w,h);
+
+      /* v10: the paper ground is painted here, on the ambient layer itself,
+         so the wash can never sit on top of the motion. */
+      var paper = ctx.createLinearGradient(0,0,0,h);
+      paper.addColorStop(0,"#fdf8f1");
+      paper.addColorStop(0.44,"#faf6f0");
+      paper.addColorStop(1,"#f4ecdf");
+      ctx.fillStyle = paper;
+      ctx.fillRect(0,0,w,h);
+
+      var w1 = ctx.createRadialGradient(w*0.88,-h*0.10,10, w*0.88,-h*0.10, Math.max(w,h)*0.85);
+      w1.addColorStop(0,"rgba(217,164,65,0.20)");
+      w1.addColorStop(1,"rgba(217,164,65,0)");
+      ctx.fillStyle = w1; ctx.fillRect(0,0,w,h);
+
+      var w2 = ctx.createRadialGradient(-w*0.08,h*0.16,10, -w*0.08,h*0.16, Math.max(w,h)*0.75);
+      w2.addColorStop(0,"rgba(192,90,46,0.13)");
+      w2.addColorStop(1,"rgba(192,90,46,0)");
+      ctx.fillStyle = w2; ctx.fillRect(0,0,w,h);
 
       px += (tx-px)*0.03; py += (ty-py)*0.03;
       var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
