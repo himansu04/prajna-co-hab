@@ -80,14 +80,34 @@ window.PRAJNA = window.PRAJNA || {
         var data = { type: f.getAttribute("data-formtype") };
         var els = f.querySelectorAll("input[name],select[name],textarea[name]");
         for(var m=0;m<els.length;m++){ data[els[m].name] = els[m].value; }
+        var sub = f.querySelector("button[type=submit]");
+        if(sub && !sub.dataset.label) sub.dataset.label = sub.textContent;
         if(!C.endpoint){
           showResult(f, "Saved in demo mode. Connect the free Google Sheets backend (5-minute setup in DEPLOY.md) and this lands in your sheet for real.");
           f.reset();
           return;
         }
-        fetch(C.endpoint, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
-          .then(function(){ f.reset(); showResult(f, data.type === "board" ? "Posted. It appears on the board once the owner clears it." : "Got it. The owner will get back to you on WhatsApp or by call."); })
-          .catch(function(){ showResult(f, "Network hiccup — please try once more, or just WhatsApp us."); });
+        data.source = (location.pathname.split("/").pop() || "index.html");
+        if (sub) { sub.disabled = true; sub.textContent = "Sending..."; }
+        send(data, 2);
+
+        function send(payload, tries){
+          fetch(C.endpoint, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
+            .then(function(r){ return r.json().catch(function(){ return { ok: true }; }); })
+            .then(function(res){
+              if (res && res.ok === false) throw new Error(res.error || "server");
+              f.reset();
+              if (sub) { sub.disabled = false; sub.textContent = sub.dataset.label || "Send"; }
+              showResult(f, data.type === "board"
+                ? "Posted. It appears on the board once the owner clears it."
+                : "Got it. The owner will get back to you on WhatsApp or by call.");
+            })
+            .catch(function(){
+              if (tries > 0) { setTimeout(function(){ send(payload, tries - 1); }, 1200); return; }
+              if (sub) { sub.disabled = false; sub.textContent = sub.dataset.label || "Send"; }
+              showResult(f, "Network hiccup \u2014 please try once more, or just WhatsApp us.");
+            });
+        }
       });
     })(forms[k]);
   }
@@ -181,6 +201,19 @@ window.PRAJNA = window.PRAJNA || {
         el.addEventListener("mouseleave", function(){ el.style.transform = ""; });
       })(tilts[t]);
     }
+  }
+
+  /* installable app + offline shell (v6) */
+  var mf = document.createElement("link");
+  mf.rel = "manifest"; mf.href = "manifest.webmanifest";
+  document.head.appendChild(mf);
+  var th = document.createElement("meta");
+  th.name = "theme-color"; th.content = "#c05a2e";
+  document.head.appendChild(th);
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").catch(function(){});
+    });
   }
 
   /* desktop floating WhatsApp button (v5) — mobile keeps its bottom bar */

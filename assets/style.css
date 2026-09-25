@@ -281,3 +281,20 @@ body>*:not(.bgfx){position:relative;z-index:1}
   .bgfx{display:none}.lotusdraw{opacity:.06}
   .flow{opacity:1;transform:none}
 }
+
+/* ---------- v6: a11y, print, tap targets ---------- */
+.skip{position:absolute;left:-9999px;top:0;background:var(--terra);color:#fff;padding:.7rem 1.1rem;border-radius:0 0 var(--r-sm) 0;font-family:var(--font-ui);font-size:.85rem;z-index:200}
+.skip:focus{left:0}
+:focus-visible{outline:2px solid var(--terra);outline-offset:2px;border-radius:var(--r-xs)}
+.navlinks a,.fcols a,.mobilebar a,.btn,.chip{min-height:44px;display:inline-flex;align-items:center}
+.fcols a{display:flex}
+.stars label{min-height:32px}
+@media(pointer:coarse){.footer,.fcols a{padding:.5rem 0}}
+@media(max-width:380px){h1{font-size:2.05rem}.wrap{padding:0 16px}}
+@media print{
+  .bgfx,.lotusdraw,.wa-float,.mobilebar,header,.folkline,.nav,.cta-strip,.tourbox{display:none!important}
+  body{background:#fff;font-size:11pt}
+  .wrap{max-width:none;padding:0}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555}
+  section{page-break-inside:avoid}
+}

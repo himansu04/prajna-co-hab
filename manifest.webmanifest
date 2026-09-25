@@ -1,0 +1,21 @@
+{
+  "name": "Prajna Co-hab — Co-living PG, Bhosari Industrial Estate",
+  "short_name": "Prajna Co-hab",
+  "description": "Ten beds, four twin-sharing rooms and two singles near Bhosari MIDC, Pune. Owner-managed, straight pricing.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf6f0",
+  "theme_color": "#c05a2e",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "WhatsApp the owner", "url": "./contact.html" },
+    { "name": "Rooms & rates", "url": "./index.html#rooms" },
+    { "name": "The Pit", "url": "./autohub.html" }
+  ]
+}

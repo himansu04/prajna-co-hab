@@ -1,64 +1,51 @@
-# Prajna Co-hab — free sample deploy + later paid upgrade
+# Prajna Co-hab — deploy & run book
 
-## A. Put the site online free (5 min, one time)
-Site folder = this folder (index.html + assets/). GitHub Pages hosts it free forever.
+## 1. Pull a change live (current URL)
+The repo checkout on this Mac is `~/Downloads/Prajna-Co-hab/site-mockup`.
 
-    cd ~/Downloads/Prajna-Co-hab/site
-    git init
-    git add -A
-    git commit -m "Prajna Co-hab site"
-    gh repo create prajna-co-hab --public --source=. --push
-    gh api repos/himansu04/prajna-co-hab/pages -X POST -f "source[branch]=main" -f "source[path]=/"
+```
+cd ~/Downloads/Prajna-Co-hab/site-mockup
+git add -A && git commit -m "update" && git push
+```
+GitHub Pages serves it ~60-90s later: https://himansu04.github.io/prajna-co-hab/
 
-Live at: https://himansu04.github.io/prajna-co-hab/ (wait ~2 min first time).
-If the pages API call errors, open the repo in browser → Settings → Pages → Source: main / root → Save. Same result.
+**Rule:** `config.js` lives ONLY in this repo (never in the workspace source), so a sync must keep
+it. Always sync with `--exclude '.git' --exclude 'config.js'`, or re-add the tag after.
 
-## B. Free data-capture backend (10 min, one time)
-1. Make a Google Sheet: sheets.new → name it "Prajna Data".
-2. Extensions → Apps Script → delete sample → paste apps-script/Code.gs contents.
-3. Deploy → New deployment → type: Web app → Execute as: Me → Access: Anyone → Deploy → approve.
-4. Copy the Web app URL (ends in /exec).
-5. Open assets/site.js → paste the URL into PRAJNA.endpoint (line ~13).
-6. git add -A && git commit -m "wire backend" && git push — live in a minute.
-Now: contact form → "Inquiries" tab, feedback → "Feedback" tab, auto board → "Board" tab.
-Board moderation: open the Board tab, set Approved = TRUE on good posts. They appear on the site.
+## 2. Turn on real data capture (10 min, ₹0)
+1. `sheets.new` → name the file **Prajna Data**
+2. Extensions → Apps Script → paste `apps-script/Code.gs`
+3. Run `setup()` once → allow the permissions
+4. Optional: put your email in `DIGEST_TO` at the top, then add a daily trigger on `digest()`
+5. Deploy → New deployment → Web app → Execute as **Me**, access **Anyone** → copy the `/exec` URL
+6. Paste that URL into `config.js` as `endpoint: "..."` and into `assets/site.js` → `PRAJNA.endpoint`
 
-## C. Maintaining everything online (your ops layer)
-- Daily ops (inquiries/feedback/board) = the "Prajna Data" Sheet — check it like WhatsApp.
-- Optional: a Notion "Prajna Ops HQ" database mirroring the same rows for nicer dashboards — say the word and it gets wired (the site never talks to Notion directly; the mirror runs server-side).
-- Photos: shoot → resize → drop into assets/photos/ → swap the placeholder blocks in gallery.html.
+Tabs it creates and what they are for:
 
-## D. Domain (the ONLY real cost)
-Buy AFTER the free sample works. Options (India, ballpark):
-| Option | Cost/yr | Note |
+| Tab | Rows land here | You do |
 |---|---|---|
-| .in domain | ~₹400–800 | local trust, cheapest — recommended |
-| .com domain | ~₹800–1,200 | global look |
-Buy wherever the RENEWAL price is honest (check year-2 price, not year-1 promo). Hosting stays GitHub Pages (₹0).
+| Inquiries | contact form | call/WhatsApp back, set `Status` |
+| Feedback | feedback form | read, then set `Published` if you want it public |
+| Board | The Pit posts | set `Approved` = TRUE to show it on the site |
+| Digest | daily roll-up | nothing |
+| Errors | anything that failed | nothing unless it grows |
 
-Connect it (15 min):
-1. Buy prajnacohab.in at the registrar.
-2. In the repo: Settings → Pages → Custom domain → prajnacohab.in → save (creates CNAME file).
-3. At the registrar's DNS panel add: A records @ → 185.199.108.153 / 185.199.109.153 / 185.199.110.153 / 185.199.111.153 ; CNAME www → himansu04.github.io.
-4. Wait for DNS (minutes to hours) → tick "Enforce HTTPS" in Pages settings.
-5. Update sitemap.xml/robots.txt lines if you pick a different name.
+Nothing on the website can read your sheet except the board feed, and that only returns rows
+you approved.
 
-## E. Total running cost
-| Item | Cost |
-|---|---|
-| Hosting (GitHub Pages, SSL, CDN) | ₹0 |
-| Forms + inquiries + feedback (Google Sheets/Apps Script) | ₹0 |
-| Community board (Sheets, owner-moderated) | ₹0 |
-| Gallery (photos live in the repo) | ₹0 |
-| Domain | ₹400–1,200 / yr |
-Total: domain money only. Everything else is free tier, permanently.
+## 3. If you want Notion instead of / alongside the sheet
+The site never talks to Notion directly (that would expose a key). Mirror it server-side:
+sheet → Apps Script → Notion API with your integration token stored in Script Properties.
+Ask and I'll write the mirror.
 
-## F. Performance notes
-- Static pages, no frameworks: each page ~15–40KB before photos; loads in under a second on 4G.
-- Photos are the only real weight — shoot, then export as WebP ~1200px wide (use squoosh.app, free) before adding to the gallery. Target <200KB per image.
-- Lighthouse will sit in the 90s once photos are WebP + lazy-loaded (gallery already lazy-loads).
+## 4. Domain (optional, later)
+Buy a `.in` domain, then in the repo: Settings → Pages → Custom domain, and add the four GitHub
+A records plus a `www` CNAME at your registrar. HTTPS turns on by itself. Update `sitemap.xml`
+and the canonicals in each page to the new domain when you do.
 
-## G. Phase 2 ideas (only if the community proves itself)
-- Real forum with accounts (Discourse ₹0 self-host needs a ₹400+/mo server — not worth it early; the moderated board + WhatsApp community covers 95% of need at ₹0).
-- Booking calendar + advance-payment link (UPI deep links cost nothing; payment gateway only if demand proves it).
-- Notion public status page ("2 beds available now") fed by the same sheet.
+## 5. What the site now ships with
+- Installable app (manifest + service worker): loads instantly on repeat visits, works offline
+- 404 page, skip link, focus rings, print stylesheet, reduced-motion support
+- Auto-generated icons, OG/Twitter cards, schema.org data, sitemap, robots
+- One config block drives prices, phone, WhatsApp links, availability and food wording
+- Retry-on-failure forms, duplicate-submit lock, IST timestamps everywhere
