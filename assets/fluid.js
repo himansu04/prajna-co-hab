@@ -149,7 +149,7 @@
 
   /* 3 — nested lotus watermark on the quiet sections */
   function ripples(){
-    var secs = document.querySelectorAll("section:not(.flat)");
+    var secs = document.querySelectorAll("section:not(.flat), .cta-strip, .feature");
     Array.prototype.forEach.call(secs, function(el, i){
       if(el.querySelector(".ripplelotus")) return;
       var box = document.createElement("div");
@@ -162,7 +162,9 @@
 
   /* 4 — arrival on scroll */
   function flow(){
-    var sel = "section, .card, .promises div, .menucard .day, .post, .faq details, .amen div, .step";
+    var sel = "section, .card, .promises div, .menucard .day, .post, .faq details, .amen div, .step, " +
+              ".hero .cta-row, .familyband, .tourbox, .costrows>div, .voice, .statrow>div, .plaque, " +
+              ".board .post, .loc, .day, .sheet, .pitstats, .onepager";
     var items = document.querySelectorAll(sel);
     if(!("IntersectionObserver" in window)){
       Array.prototype.forEach.call(items, function(el){ el.classList.add("flow-in"); });

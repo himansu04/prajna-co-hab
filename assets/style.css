@@ -21,7 +21,7 @@ img{max-width:100%}
 .tag.gold{color:#b58420}
 /* reveal system */
 /* folk trim: dashes + dots, opens like a doorway */
-.folkline{height:7px;transform-origin:left;background:
+.folkline{height:6px;transform-origin:left;opacity:.85;background:
   radial-gradient(circle at 10px 3.5px, var(--paper) 1.6px, transparent 2px) 0 0/28px 7px,
   repeating-linear-gradient(90deg,var(--terra) 0 12px,var(--ochre) 12px 20px,var(--terra-dark) 20px 30px);opacity:.9;animation:folkopen .9s var(--ease) both}
 @keyframes folkopen{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -96,7 +96,7 @@ section.flat{border-top:none;padding-top:1.6rem}
 .teasercard .go{display:inline-block;margin-top:.7rem;font-family:var(--font-ui);font-size:.74rem;color:var(--terra);font-weight:700;transition:transform .25s var(--ease)}
 .teasercard:hover .go{transform:translateX(4px)}
 /* central feature panel (Auto Hub) */
-.feature{background:var(--ink);border-radius:16px;padding:2.8rem 2.2rem;text-align:center;position:relative;overflow:hidden;
+.feature{background:linear-gradient(180deg,rgba(43,38,32,.94),rgba(43,38,32,.88));border-radius:16px;padding:2.8rem 2.2rem;text-align:center;position:relative;overflow:hidden;
   background-image:radial-gradient(rgba(250,246,240,.06) 1px, transparent 1.3px);background-size:8px 8px}
 .feature:before{content:"";position:absolute;inset:auto -40px -60px auto;width:260px;height:150px;pointer-events:none;animation:float 11s ease-in-out infinite alternate;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70' fill='none' stroke='%23d9a441' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M60 58C54 40 54 20 60 6c6 14 6 34 0 52Z'/%3E%3Cpath d='M60 58C50 46 38 34 28 16c14 8 26 26 32 42Z'/%3E%3Cpath d='M60 58c10-12 22-24 32-42-14 8-26 26-32 42Z'/%3E%3Cpath d='M60 58C48 52 34 50 12 50c16 10 34 12 48 8Z'/%3E%3Cpath d='M60 58c12-6 26-8 48-8-16 10-34 12-48 8Z'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.16}
@@ -110,7 +110,7 @@ section.flat{border-top:none;padding-top:1.6rem}
 .amen div{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:8px;padding:.7rem .9rem;font-family:var(--font-ui);font-size:.8rem}
 .loc{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;align-items:center}
 .mapbox{background:rgba(255,255,255,.62);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.9rem;box-shadow:var(--sh)}
-.mapbox iframe{width:100%;height:260px;border:0;display:block}
+.mapbox iframe{width:100%;height:260px;border:0;display:block;filter:saturate(.92) contrast(.98);opacity:.94}
 .mapbox .addr{padding:1rem 1.2rem;color:var(--ink)}
 .mapbox .addr small{color:var(--muted)}
 .note{font-size:.8rem;color:var(--muted);margin-top:1.1rem}
@@ -145,7 +145,7 @@ form.pform{background:rgba(255,255,255,.66);border:1px solid var(--line);border-
 .faq summary{font-family:var(--font-ui);font-size:.9rem;font-weight:700;cursor:pointer;color:var(--ink)}
 .faq p{font-size:.92rem;margin-top:.6rem}
 /* dark CTA strip with cream lotus */
-.cta-strip{background:var(--ink);color:#f5efe6;padding:3rem 0;text-align:center;position:relative;overflow:hidden;
+.cta-strip{background:linear-gradient(180deg,rgba(43,38,32,.93),rgba(43,38,32,.87));color:#f5efe6;padding:3rem 0;text-align:center;position:relative;overflow:hidden;
   background-image:radial-gradient(rgba(250,246,240,.05) 1px, transparent 1.3px);background-size:8px 8px}
 .cta-strip:before{content:"";position:absolute;left:-30px;top:50%;transform:translateY(-50%);width:200px;height:118px;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70' fill='none' stroke='%23f5efe6' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M60 58C54 40 54 20 60 6c6 14 6 34 0 52Z'/%3E%3Cpath d='M60 58C50 46 38 34 28 16c14 8 26 26 32 42Z'/%3E%3Cpath d='M60 58c10-12 22-24 32-42-14 8-26 26-32 42Z'/%3E%3Cpath d='M60 58C48 52 34 50 12 50c16 10 34 12 48 8Z'/%3E%3Cpath d='M60 58c12-6 26-8 48-8-16 10-34 12-48 8Z'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.1}
@@ -164,9 +164,9 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 @media(max-width:820px){.fcols{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.fcols{grid-template-columns:1fr}}
 /* mobile bar + lightbox */
-.mobilebar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;z-index:50;box-shadow:0 -8px 24px rgba(43,38,32,.08)}
+.mobilebar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:50;box-shadow:0 -8px 24px rgba(43,38,32,.08)}
 .mobilebar a{flex:1;text-align:center;padding:.85rem 0;font-family:var(--font-ui);font-size:.85rem;font-weight:700;text-decoration:none}
-.mobilebar .call{color:var(--ink);background:var(--paper)}
+.mobilebar .call{color:var(--ink);background:rgba(250,246,240,.6)}
 .mobilebar .wa{color:#fff;background:var(--terra);background-image:radial-gradient(rgba(250,246,240,.14) 1px, transparent 1.3px);background-size:7px 7px}
 .lb{display:none;position:fixed;inset:0;background:rgba(30,25,18,.92);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
 .lb.show{display:flex}
@@ -202,14 +202,14 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 .voice p{font-size:.95rem;color:var(--ink);font-style:italic}
 .voice .who{font-family:var(--font-ui);font-size:.75rem;color:var(--muted);margin-top:.8rem}
 .voice .strs{color:var(--ochre);letter-spacing:.12em;font-size:.85rem;margin-top:.15rem}
-.tourbox{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--ink);box-shadow:var(--sh);margin-top:1.4rem}
+.tourbox{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:rgba(43,38,32,.9);box-shadow:var(--sh);margin-top:1.4rem}
 .tourbox video{display:block;width:100%;aspect-ratio:16/9;background:#241f1a}
 .statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.6rem;text-align:center}
 .statrow>div{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:10px;padding:1.1rem .8rem}
 .statrow b{display:block;font-size:1.9rem;color:var(--terra);font-family:var(--font-head);line-height:1.1}
 .statrow span{font-family:var(--font-ui);font-size:.7rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 @media(max-width:560px){.statrow{grid-template-columns:1fr}}
-.plaque{max-width:34rem;margin:1.8rem auto 0;background:rgba(255,255,255,.66);border:2px solid var(--terra);border-radius:14px;padding:1.6rem 1.8rem;text-align:center;position:relative;box-shadow:inset 0 0 0 5px var(--card),inset 0 0 0 6.5px var(--ochre)}
+.plaque{max-width:34rem;margin:1.8rem auto 0;background:rgba(255,255,255,.66);border:2px solid var(--terra);border-radius:14px;padding:1.6rem 1.8rem;text-align:center;position:relative;box-shadow:inset 0 0 0 5px rgba(255,255,255,.7),inset 0 0 0 6.5px var(--ochre)}
 .plaque h3{font-size:1.2rem;margin-bottom:.8rem}
 .plaque ul{list-style:none;text-align:left}
 .plaque li{padding-left:1.3rem;position:relative;font-size:.9rem;color:var(--muted);margin-top:.45rem}
@@ -377,4 +377,46 @@ p,li{text-shadow:0 1px 0 rgba(255,255,255,.35)}
 /* keep it cheap on phones: fewer, larger motifs */
 @media(max-width:640px){
   .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+}
+
+/* ---------- v9: one continuous surface, top to bottom ---------- */
+/* every band takes the same woven ground so nothing cuts the page in half */
+.feature,.cta-strip,.tourbox,.plaque,.familyband,.mobilebar,footer,.mapbox,.statrow>div,.voice{
+  background-image:var(--weave);
+  background-blend-mode:soft-light;
+}
+.feature,.cta-strip{position:relative;overflow:hidden}
+.feature::after,.cta-strip::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(120% 100% at 12% 0%, rgba(217,164,65,.16), transparent 55%),
+             radial-gradient(90% 90% at 92% 100%, rgba(192,90,46,.14), transparent 60%);
+}
+.feature>*, .cta-strip>*{position:relative;z-index:1}
+/* the video keeps its frame but stops being a black hole */
+.tourbox video{background:linear-gradient(135deg,#2b2620,#3a322a)}
+/* the map dissolves into the page instead of sitting on it */
+.mapbox{border-color:rgba(232,224,212,.85)}
+.mapbox .addr{background:rgba(255,255,255,.35);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+/* the final band: the ground fades out rather than stopping dead */
+footer{border-top:1px solid rgba(232,224,212,.8);background-image:linear-gradient(180deg,rgba(255,255,255,0),rgba(244,236,223,.55)),var(--weave)}
+/* arrival rhythm: everything on the way down joins the same motion */
+.hero .cta-row,.familyband,.tourbox,.costrows>div,.voice,.statrow>div,.plaque,.board .post,.loc,.picker,.day{
+  opacity:0;transform:translateY(14px);transition:opacity .75s var(--ease),transform .75s var(--ease);
+}
+.hero .cta-row.in,.familyband.in,.tourbox.in,.costrows>div.in,.voice.in,.statrow>div.in,.plaque.in,.board .post.in,.loc.in,.day.in{
+  opacity:1;transform:none;
+}
+/* the folk line rides the very top and ties the page together */
+.folkline{background-image:radial-gradient(circle at 10px 3px, rgba(250,246,240,.9) 1.5px, transparent 2px),
+  repeating-linear-gradient(90deg,var(--terra) 0 14px,var(--ochre) 14px 24px,var(--terra-dark) 24px 36px)}
+
+/* v9: the two remaining breakers — the footer strip and the bottom bar blend into the ground */
+footer{margin-top:2.4rem}
+.fbottom{border-top:1px solid rgba(232,224,212,.7);background:transparent}
+.mobilebar{border-top:1px solid rgba(232,224,212,.9)}
+.mobilebar .wa{background:var(--terra)}
+/* no band may ever paint a flat rectangle over the ground again */
+.feature,.cta-strip,.tourbox,.plaque,.familyband,.mobilebar,footer,.statrow>div,.voice,.post,.card,
+.promises div,.amen div,.menucard .day,.faq details,.mapbox,form.pform,.costrows>div{
+  background-clip:padding-box;
 }
