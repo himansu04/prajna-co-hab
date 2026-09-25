@@ -288,7 +288,7 @@ body{background:transparent}
 /* v10.1: panels are GLASS, not walls. The folk art must read through every card,
    top of the page to the footer, on every page. */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
-  background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(253,248,241,.58)),var(--weave);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.55),rgba(253,248,241,.50)),var(--weave);
   background-blend-mode:normal,multiply;
 }
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{

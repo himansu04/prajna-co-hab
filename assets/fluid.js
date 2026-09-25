@@ -1,4 +1,4 @@
-/* Prajna Co-hab — ambient layer (v10)
+/* Prajna Co-hab — ambient layer (v11)
    Folk texture, warm light and slow motion. Hand-drawn madhubani-style motifs
    drift across a gradient wash while a soft light follows the pointer.
    No libraries, no network, no images. Respects reduced-motion. */
@@ -64,12 +64,12 @@
           m: (i + alt) % MOTIFS.length,
           x: Math.random()*w,
           y: Math.random()*h,
-          s: 0.55 + Math.random()*0.6,
-          vx: (Math.random()-0.5)*0.12,
-          vy: -0.05 - Math.random()*0.085,
+          s: 0.7 + Math.random()*1.3,
+          vx: (Math.random()-0.5)*0.3,
+          vy: -0.16 - Math.random()*0.22,
           rot: (Math.random()-0.5)*0.4,
           vr: (Math.random()-0.5)*0.00018,
-          a: 0.11 + Math.random()*0.09,
+          a: 0.30 + Math.random()*0.16,
           wob: Math.random()*Math.PI*2
         });
       }
@@ -82,9 +82,9 @@
           bx: (0.12 + 0.76*((b*0.37 + alt*0.11) % 1)),
           by: (0.15 + 0.7*((b*0.53 + alt*0.19) % 1)),
           r: (0.24 + 0.16*((b*0.29 + alt*0.07) % 1)),
-          sp: 0.00004 + 0.00005*((b+alt)%3),
+          sp: 0.00009 + 0.00009*((b+alt)%3),
           ph: b*1.7 + alt*0.31,
-          a: b===2 ? 0.05 : 0.075
+          a: b===2 ? 0.10 : 0.16
         });
       }
     }
@@ -110,20 +110,20 @@
       ctx.fillRect(0,0,w,h);
 
       var w1 = ctx.createRadialGradient(w*0.88,-h*0.10,10, w*0.88,-h*0.10, Math.max(w,h)*0.85);
-      w1.addColorStop(0,"rgba(217,164,65,0.20)");
+      w1.addColorStop(0,"rgba(217,164,65,0.26)");
       w1.addColorStop(1,"rgba(217,164,65,0)");
       ctx.fillStyle = w1; ctx.fillRect(0,0,w,h);
 
       var w2 = ctx.createRadialGradient(-w*0.08,h*0.16,10, -w*0.08,h*0.16, Math.max(w,h)*0.75);
-      w2.addColorStop(0,"rgba(192,90,46,0.13)");
+      w2.addColorStop(0,"rgba(192,90,46,0.18)");
       w2.addColorStop(1,"rgba(192,90,46,0)");
       ctx.fillStyle = w2; ctx.fillRect(0,0,w,h);
 
       /* the liquid: each blob breathes around its anchor on its own slow clock */
       for(var b=0;b<blobs.length;b++){
         var bl = blobs[b];
-        var ox = Math.sin(e*bl.sp + bl.ph) * w*0.06;
-        var oy = Math.cos(e*bl.sp*0.83 + bl.ph*1.3) * h*0.05;
+        var ox = Math.sin(e*bl.sp + bl.ph) * w*0.11;
+        var oy = Math.cos(e*bl.sp*0.83 + bl.ph*1.3) * h*0.09;
         var rr = bl.r * Math.max(w,h);
         var bg = ctx.createRadialGradient(bl.bx*w + ox, bl.by*h + oy, rr*0.08, bl.bx*w + ox, bl.by*h + oy, rr);
         bg.addColorStop(0, "rgba("+bl.col[0]+","+bl.col[1]+","+bl.col[2]+","+bl.a+")");
@@ -134,15 +134,15 @@
 
       px += (tx-px)*0.03; py += (ty-py)*0.03;
       var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
-      g.addColorStop(0, "rgba(217,164,65,0.17)");
-      g.addColorStop(0.42, "rgba(192,90,46,0.055)");
+      g.addColorStop(0, "rgba(217,164,65,0.26)");
+      g.addColorStop(0.42, "rgba(192,90,46,0.09)");
       g.addColorStop(1, "rgba(250,246,240,0)");
       ctx.fillStyle = g;
       ctx.fillRect(0,0,w,h);
 
       for(var i=0;i<items.length;i++){
         var it = items[i];
-        it.x += it.vx + Math.sin(e*0.00033 + it.wob)*0.18;
+        it.x += it.vx + Math.sin(e*0.00045 + it.wob)*0.5;
         it.y += it.vy;
         it.rot += it.vr;
         if(it.y < -120){ it.y = h + 100; it.x = Math.random()*w; }
