@@ -1,4 +1,4 @@
-/* Prajna Co-hab — ambient layer (v11)
+/* Prajna Co-hab — ambient layer (v13)
    Folk texture, warm light and slow motion. Hand-drawn madhubani-style motifs
    drift across a gradient wash while a soft light follows the pointer.
    No libraries, no network, no images. Respects reduced-motion. */
@@ -44,7 +44,7 @@
        They sit under the motifs and give the page its liquid depth. */
     var BLOB_COLS=[
       [217,164,65],   /* ochre  */
-      [192,90,46],    /* terracotta */
+      [192,86,33],    /* terracotta */
       [43,38,32],     /* ink    */
       [224,190,120]   /* pale turmeric */
     ];
@@ -103,19 +103,19 @@
       /* v10: the paper ground is painted here, on the ambient layer itself,
          so the wash can never sit on top of the motion. */
       var paper = ctx.createLinearGradient(0,0,0,h);
-      paper.addColorStop(0,"#fdf8f1");
-      paper.addColorStop(0.44,"#faf6f0");
-      paper.addColorStop(1,"#f4ecdf");
+      paper.addColorStop(0,"#faf5ec");
+      paper.addColorStop(0.44,"#faf5ec");
+      paper.addColorStop(1,"#f2ead9");
       ctx.fillStyle = paper;
       ctx.fillRect(0,0,w,h);
 
       var w1 = ctx.createRadialGradient(w*0.88,-h*0.10,10, w*0.88,-h*0.10, Math.max(w,h)*0.85);
-      w1.addColorStop(0,"rgba(217,164,65,0.26)");
+      w1.addColorStop(0,"rgba(217,164,65,0.30)");
       w1.addColorStop(1,"rgba(217,164,65,0)");
       ctx.fillStyle = w1; ctx.fillRect(0,0,w,h);
 
       var w2 = ctx.createRadialGradient(-w*0.08,h*0.16,10, -w*0.08,h*0.16, Math.max(w,h)*0.75);
-      w2.addColorStop(0,"rgba(192,90,46,0.18)");
+      w2.addColorStop(0,"rgba(192,86,33,0.20)");
       w2.addColorStop(1,"rgba(192,90,46,0)");
       ctx.fillStyle = w2; ctx.fillRect(0,0,w,h);
 
@@ -135,7 +135,7 @@
       px += (tx-px)*0.03; py += (ty-py)*0.03;
       var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
       g.addColorStop(0, "rgba(217,164,65,0.26)");
-      g.addColorStop(0.42, "rgba(192,90,46,0.09)");
+      g.addColorStop(0.42, "rgba(192,86,33,0.10)");
       g.addColorStop(1, "rgba(250,246,240,0)");
       ctx.fillStyle = g;
       ctx.fillRect(0,0,w,h);
