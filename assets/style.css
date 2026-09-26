@@ -651,3 +651,8 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 .lotusmark .r1{transform-box:fill-box;transform-origin:center;animation:lrip 5.5s ease-out infinite}
 @keyframes lrip{0%{transform:scale(.55);opacity:0}25%{opacity:.7}70%{transform:scale(1.18);opacity:0}100%{transform:scale(1.18);opacity:0}}
 @media(prefers-reduced-motion:reduce){.lotusmark .lp,.lotusmark .r1{animation:none}}
+
+/* ============ v21 BIG LOTUS — the emblem opens every page ============ */
+.lotusbig{width:132px;height:88px;display:block;margin:0 0 .9rem 0;filter:drop-shadow(0 10px 18px rgba(154,69,34,.14))}
+.lotusmid{width:62px;height:42px;display:block;margin:0 0 .5rem 0;filter:drop-shadow(0 6px 12px rgba(154,69,34,.12))}
+@media(max-width:520px){.lotusbig{width:96px;height:64px}.lotusmid{width:50px;height:34px}}
