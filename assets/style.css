@@ -614,3 +614,8 @@ section.flat figure.reveal img,figure.reveal>img{border-radius:150px 150px 10px 
 @media(max-width:520px){.daystrip{grid-template-columns:1fr}.day{padding:1rem .9rem}}
 /* arches soften on small screens so images don't lose their tops */
 @media(max-width:520px){.gal img,.gal .ph,.ph,a.ph.heroshot{border-radius:80px 80px 8px 8px}}
+
+/* ============ v17 SCHEME CONSISTENCY — the site is a paper house ============ */
+html{color-scheme:light}
+::selection{background:var(--ochre-soft);color:var(--ink)}
+:focus-visible{outline-color:var(--ochre)}
