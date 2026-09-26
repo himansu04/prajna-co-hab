@@ -1,8 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70" fill="none" stroke="#c05621" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M60 56 C53 40 53 20 60 6 C67 20 67 40 60 56 Z"/>
-  <path d="M60 56 C50 46 38 34 30 16 C45 25 57 40 60 56 Z"/>
-  <path d="M60 56 C70 46 82 34 90 16 C75 25 63 40 60 56 Z"/>
-  <path d="M60 56 C46 53 28 50 12 46 C26 57 46 60 60 56 Z"/>
-  <path d="M60 56 C74 53 92 50 108 46 C94 57 74 60 60 56 Z"/>
-  <path d="M30 63 Q60 70 90 63"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+  <defs>
+    <linearGradient id="ltc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9a441"/><stop offset="1" stop-color="#c05621"/>
+    </linearGradient>
+    <linearGradient id="ltd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c05621"/><stop offset="1" stop-color="#9a4522"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#3a322a" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M60 50 C46 48 28 44 14 38 C26 50 46 54 60 50 Z" fill="url(#ltd)"/>
+    <path d="M60 50 C74 48 92 44 106 38 C94 50 74 54 60 50 Z" fill="url(#ltd)"/>
+    <path d="M60 50 C50 42 38 30 32 14 C46 22 58 36 60 50 Z" fill="url(#ltc)"/>
+    <path d="M60 50 C70 42 82 30 88 14 C74 22 62 36 60 50 Z" fill="url(#ltc)"/>
+    <path d="M60 50 C52 36 53 18 60 6 C67 18 68 36 60 50 Z" fill="url(#ltd)"/>
+  </g>
+  <path d="M18 66 Q60 72 102 66" fill="none" stroke="#7a6f60" stroke-width="2" stroke-linecap="round"/>
+  <path d="M34 72 Q60 76 86 72" fill="none" stroke="#d9a441" stroke-width="1.6" stroke-linecap="round" opacity=".65"/>
 </svg>

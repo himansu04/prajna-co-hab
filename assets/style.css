@@ -643,3 +643,11 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 @keyframes vpulse{0%,100%{opacity:1}50%{opacity:.3}}
 @media(prefers-reduced-motion:reduce){.vdot{animation:none}}
 @media(max-width:900px){.vacancy{display:none}}
+
+/* ============ v20 BLOOMING LOTUS — the mark grows out of its pond ============ */
+.lotusmark{width:30px;height:20px;color:var(--terra)}
+.lotusmark .lp{transform-box:fill-box;transform-origin:50% 100%;animation:lbloom 7s var(--ease) infinite alternate}
+@keyframes lbloom{from{transform:scale(1) rotate(0deg)}to{transform:scale(1.05) rotate(-.6deg)}}
+.lotusmark .r1{transform-box:fill-box;transform-origin:center;animation:lrip 5.5s ease-out infinite}
+@keyframes lrip{0%{transform:scale(.55);opacity:0}25%{opacity:.7}70%{transform:scale(1.18);opacity:0}100%{transform:scale(1.18);opacity:0}}
+@media(prefers-reduced-motion:reduce){.lotusmark .lp,.lotusmark .r1{animation:none}}
