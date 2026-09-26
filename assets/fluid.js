@@ -18,13 +18,15 @@
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70" fill="none" stroke="COL" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M60 8 84 35 60 62 36 35Z"/><path d="M60 20 72 35 60 50 48 35Z"/><circle cx="60" cy="35" r="3"/><path d="M60 8v6M60 56v6M36 35h6M78 35h6"/></svg>',
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 70" fill="none" stroke="COL" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M60 62V20"/><path d="M60 34c-12-6-22-4-30 4 12 4 22 2 30-4Z"/><path d="M60 34c12-6 22-4 30 4-12 4-22 2-30-4Z"/><path d="M60 20c-10-4-18-2-24 6 10 2 18 0 24-6Z"/><path d="M60 20c10-4 18-2 24 6-10 2-18 0-24-6Z"/><circle cx="60" cy="14" r="3"/></svg>'
   ];
-  var COLS = ["%23c05a2e", "%23d9a441", "%232b2620"];
+  var COLS = ["%23c05621", "%23d9a441", "%237a5a1c"];
 
   function uri(i){ return 'url("data:image/svg+xml,' + MOTIFS[i % MOTIFS.length].replace(/COL/g, COLS[i % COLS.length]) + '")'; }
 
-  /* 1 — the ground: animated folk texture pinned BEHIND every page, all pages */
+  /* 1 — the pond: clear spring water behind every page (v22).
+     Light columns bend under the surface, folk motifs hang suspended and
+     flow free on Lissajous paths, rings spread from unseen drops, and the
+     water parallax-glides a touch slower than the glass above it. */
   function ambient(){
-    /* v10: the vignette is a real layer, not just a CSS rule */
     if(!document.querySelector(".vignette")){
       var v = document.createElement("div");
       v.className = "vignette";
@@ -38,53 +40,57 @@
     document.body.insertBefore(c, document.body.firstChild);
 
     var ctx = c.getContext("2d"), dpr = Math.min(window.devicePixelRatio||1, 2);
-    var w=0, h=0, items=[], t0=performance.now(), alt=0;
+    var w=0, h=0, items=[], t0=performance.now(), alt=0, TAU=Math.PI*2;
     var px=0.5, py=0.4, tx=0.5, ty=0.4;
-    /* v10.1 fluid layer: large soft colour fields that drift like slow water.
-       They sit under the motifs and give the page its liquid depth. */
     var BLOB_COLS=[
-      [217,164,65],   /* ochre  */
-      [192,86,33],    /* terracotta */
-      [43,38,32],     /* ink    */
-      [224,190,120]   /* pale turmeric */
+      [217,164,65],
+      [192,86,33],
+      [43,38,32],
+      [224,190,120]
     ];
-    var blobs=[];
+    var blobs=[], beams=[], drops=[];
 
     function resize(){
       w = window.innerWidth; h = window.innerHeight;
       c.width = Math.floor(w*dpr); c.height = Math.floor(h*dpr);
       c.style.width = w+"px"; c.style.height = h+"px";
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      items = [];
-      /* derive the motif layout from the page URL so every page looks different */
       alt = (location.pathname.split("/").pop() || "index").length;
-      var n = Math.max(14, Math.min(28, Math.round((w*h)/52000)));
+      items = [];
+      var n = Math.max(14, Math.min(26, Math.round((w*h)/56000)));
       for(var i=0;i<n;i++){
         items.push({
           m: (i + alt) % MOTIFS.length,
-          x: Math.random()*w,
-          y: Math.random()*h,
+          bx: Math.random()*w, by: Math.random()*h,
           s: 0.7 + Math.random()*1.3,
-          vx: (Math.random()-0.5)*0.3,
-          vy: -0.16 - Math.random()*0.22,
-          rot: (Math.random()-0.5)*0.4,
-          vr: (Math.random()-0.5)*0.00018,
-          a: 0.30 + Math.random()*0.16,
-          wob: Math.random()*Math.PI*2
+          ax: 30 + Math.random()*46, ax2: 12 + Math.random()*20,
+          fx: 0.00011 + Math.random()*0.00009, fx2: 0.00019 + Math.random()*0.00011,
+          ph: Math.random()*TAU, ph2: Math.random()*TAU,
+          rise: 0.007 + Math.random()*0.009,
+          rrot: (Math.random()-0.5)*0.5, fr: 0.00007 + Math.random()*0.00007,
+          a: 0.32 + Math.random()*0.15
         });
       }
-      /* 4-5 blobs; layout seeded from the page path like the motifs */
-      blobs=[];
+      beams = [];
+      var kn = w < 700 ? 5 : 8;
+      for(var k=0;k<kn;k++){
+        beams.push({
+          x0: Math.random()*w, y0: Math.random()*h,
+          bw: 60 + Math.random()*120, bh: 0.45 + Math.random()*0.6,
+          sp: 0.00007 + Math.random()*0.00006, ph: k*1.31 + alt*0.23, tone: k%3
+        });
+      }
+      blobs = [];
       var bn = w < 700 ? 3 : 5;
-      for(var b=0;b<bn;b++){
+      for(var b2=0;b2<bn;b2++){
         blobs.push({
-          col: BLOB_COLS[(b + alt) % BLOB_COLS.length],
-          bx: (0.12 + 0.76*((b*0.37 + alt*0.11) % 1)),
-          by: (0.15 + 0.7*((b*0.53 + alt*0.19) % 1)),
-          r: (0.24 + 0.16*((b*0.29 + alt*0.07) % 1)),
-          sp: 0.00009 + 0.00009*((b+alt)%3),
-          ph: b*1.7 + alt*0.31,
-          a: b===2 ? 0.10 : 0.16
+          col: BLOB_COLS[(b2 + alt) % BLOB_COLS.length],
+          bx: (0.12 + 0.76*((b2*0.37 + alt*0.11) % 1)),
+          by: (0.15 + 0.7*((b2*0.53 + alt*0.19) % 1)),
+          r: (0.24 + 0.16*((b2*0.29 + alt*0.07) % 1)),
+          sp: 0.00009 + 0.00009*((b2+alt)%3),
+          ph: b2*1.7 + alt*0.31,
+          a: b2===2 ? 0.10 : 0.16
         });
       }
     }
@@ -97,11 +103,9 @@
     });
 
     function draw(now){
-      var e = now - t0;
+      var e = now - t0, sy = window.pageYOffset || 0;
       ctx.clearRect(0,0,w,h);
 
-      /* v10: the paper ground is painted here, on the ambient layer itself,
-         so the wash can never sit on top of the motion. */
       var paper = ctx.createLinearGradient(0,0,0,h);
       paper.addColorStop(0,"#faf5ec");
       paper.addColorStop(0.44,"#faf5ec");
@@ -119,7 +123,6 @@
       w2.addColorStop(1,"rgba(192,90,46,0)");
       ctx.fillStyle = w2; ctx.fillRect(0,0,w,h);
 
-      /* the liquid: each blob breathes around its anchor on its own slow clock */
       for(var b=0;b<blobs.length;b++){
         var bl = blobs[b];
         var ox = Math.sin(e*bl.sp + bl.ph) * w*0.11;
@@ -132,6 +135,24 @@
         ctx.fillRect(0,0,w,h);
       }
 
+      /* caustic light columns: sun bending through clear water */
+      for(var k2=0;k2<beams.length;k2++){
+        var bm = beams[k2];
+        var yy = ((bm.y0 - sy*0.05) % (h+400) + (h+400)) % (h+400) - 200;
+        var xx = bm.x0 + Math.sin(e*bm.sp + bm.ph) * w*0.05;
+        ctx.save();
+        ctx.translate(xx, yy);
+        ctx.scale(1, bm.bh);
+        var cg = ctx.createRadialGradient(0,0,0, 0,0, bm.bw);
+        var tone = bm.tone===0 ? "255,253,244" : (bm.tone===1 ? "217,164,65" : "250,246,240");
+        var tal = bm.tone===1 ? 0.055 : 0.08;
+        cg.addColorStop(0, "rgba("+tone+","+tal+")");
+        cg.addColorStop(1, "rgba("+tone+",0)");
+        ctx.fillStyle = cg;
+        ctx.fillRect(-bm.bw, -bm.bw, bm.bw*2, bm.bw*2);
+        ctx.restore();
+      }
+
       px += (tx-px)*0.03; py += (ty-py)*0.03;
       var g = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.7);
       g.addColorStop(0, "rgba(217,164,65,0.26)");
@@ -140,29 +161,43 @@
       ctx.fillStyle = g;
       ctx.fillRect(0,0,w,h);
 
-      for(var i=0;i<items.length;i++){
-        var it = items[i];
-        it.x += it.vx + Math.sin(e*0.00045 + it.wob)*0.5;
-        it.y += it.vy;
-        it.rot += it.vr;
-        if(it.y < -120){ it.y = h + 100; it.x = Math.random()*w; }
-        if(it.x < -120) it.x = w + 100; else if(it.x > w + 120) it.x = -100;
+      /* folk motifs hang suspended: two-axis drift, slow rise, gentle rocking */
+      for(var i2=0;i2<items.length;i2++){
+        var it = items[i2];
+        var iy = ((it.by - e*it.rise - sy*0.02) % (h+260) + (h+260)) % (h+260) - 130;
+        var ix = it.bx + Math.sin(e*it.fx + it.ph)*it.ax + Math.sin(e*it.fx2 + it.ph2)*it.ax2;
+        var irot = it.rrot + Math.sin(e*it.fr + it.ph)*0.13;
         var im = imgs[it.m]; if(!im || !im.complete) continue;
         var bw = 136*it.s, bh = 79*it.s;
         ctx.save();
         ctx.globalAlpha = it.a;
-        ctx.translate(it.x, it.y);
-        ctx.rotate(it.rot);
+        ctx.translate(ix, iy);
+        ctx.rotate(irot);
         ctx.drawImage(im, -bw/2, -bh/2, bw, bh);
         ctx.restore();
+      }
+
+      /* rings spread from unseen drops */
+      if(!drops.length || e - drops[drops.length-1].t0 > 2800){
+        drops.push({x: Math.random()*w, y: h*0.22 + Math.random()*h*0.72 - sy*0.04, t0: e});
+      }
+      for(var d2=drops.length-1; d2>=0; d2--){
+        var dp = drops[d2], age = e - dp.t0;
+        if(age > 6000){ drops.splice(d2,1); continue; }
+        var fal = 1 - age/6000;
+        ctx.strokeStyle = "rgba(90,80,68," + (0.07*fal).toFixed(4) + ")";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(dp.x, dp.y, 26 + age*0.02, 0, TAU); ctx.stroke();
+        ctx.strokeStyle = "rgba(90,80,68," + (0.05*fal).toFixed(4) + ")";
+        ctx.beginPath(); ctx.arc(dp.x, dp.y, (26 + age*0.02)*0.6, 0, TAU); ctx.stroke();
       }
 
       ctx.strokeStyle = "rgba(192,90,46,0.055)";
       ctx.lineWidth = 1;
       var cx = w*0.84, cy = h*0.18;
-      for(var r=0;r<5;r++){
+      for(var r2=0;r2<5;r2++){
         ctx.beginPath();
-        ctx.arc(cx, cy, 120 + r*90 + Math.sin(e*0.0001 + r)*10, 0, Math.PI*2);
+        ctx.arc(cx, cy, 120 + r2*90 + Math.sin(e*0.0001 + r2)*10, 0, TAU);
         ctx.stroke();
       }
       requestAnimationFrame(draw);
