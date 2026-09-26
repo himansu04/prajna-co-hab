@@ -63,7 +63,13 @@ function doPost(e) {
     var kind = String(d.type || 'inquiry');
     var row;
 
-    if (kind === 'board') {
+    if (kind === 'visit') {
+      appendRow(ss, 'Visits', ['Time','Event','Page','Referrer','UTM Source','UTM Medium','UTM Campaign','Screen','Language','Detail'],
+        [stamp(), cut(d.event, 20), cut(d.page, 80), cut(d.ref, 120), cut(d.src, 40), cut(d.med, 40), cut(d.cmp, 40), cut(d.screen, 12), cut(d.lang, 12), cut(d.extra, 120)]);
+      rebuildStats_(ss);
+      trim_(ss);
+      return json({ ok: true });
+    } else if (kind === 'board') {
       row = [stamp(), cut(d.name, 60), cut(d.topic, 30) || 'General', cut(d.message, 500), false];
       appendRow(ss, 'Board', ['Time','Name','Topic','Message','Approved'], row);
       notify_('New Pit post from ' + (cut(d.name, 60) || 'someone'), cut(d.message, 500));
@@ -163,8 +169,62 @@ function digest() {
       'Total enquiries: ' + sheetCount_(ss, 'Inquiries') +
       '\nTotal feedback: ' + sheetCount_(ss, 'Feedback') +
       '\nBoard posts awaiting your approval: ' + pendingPosts_(ss) +
+      '\nVisits logged: ' + sheetCount_(ss, 'Visits') +
+      '\nWhatsApp clicks: ' + countEvent_(ss, 'wa_click') +
+      '\nTop pages: ' + (topPages_(ss, 3).join(', ') || 'none yet') +
       '\n\nOpen "Prajna Data" to review.');
   }
+}
+
+function rebuildStats_(ss) {
+  var sh = ss.getSheetByName('Visits');
+  var st = ss.getSheetByName('Stats') || ss.insertSheet('Stats');
+  if (st.getLastRow() > 0) st.clearContents();
+  st.appendRow(['Signal', 'Key', 'Count', 'Meaning']);
+  if (!sh) return;
+  var vals = sh.getDataRange().getValues(), pv = {}, ev = {}, src = {};
+  for (var i = 1; i < vals.length; i++) {
+    var e = String(vals[i][1]), p = String(vals[i][2]) || '/', s = String(vals[i][4]) || '';
+    if (e === 'page_view') { pv[p] = (pv[p] || 0) + 1; }
+    else { ev[e] = (ev[e] || 0) + 1; ev[e + ' · ' + p] = (ev[e + ' · ' + p] || 0) + 1; }
+    if (s) src[s] = (src[s] || 0) + 1;
+  }
+  var MEAN = { page_view: 'Page visits', wa_click: 'WhatsApp taps', cta_click: 'Button taps',
+    share_tap: 'Shares sent', gallery_open: 'Photos opened', call_tap: 'Call taps', dwell: 'Time on page' };
+  Object.keys(pv).sort(function(a,b){ return pv[b]-pv[a]; }).forEach(function(k){
+    st.appendRow(['page_view', k, pv[k], MEAN.page_view]); });
+  Object.keys(ev).sort(function(a,b){ return ev[b]-ev[a]; }).forEach(function(k){
+    st.appendRow([k.split(' · ')[0], k, ev[k], MEAN[k.split(' · ')[0]] || 'Intent']); });
+  Object.keys(src).sort(function(a,b){ return src[b]-src[a]; }).forEach(function(k){
+    st.appendRow(['source', k, src[k], 'Channel: ' + k]); });
+}
+
+function ensureTriggers_() {
+  ScriptApp.getProjectTriggers().forEach(function(t){
+    if (t.getHandlerFunction() === 'digest') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('digest').timeBased().everyDays(1).atHour(21).create();
+}
+
+function topPages_(ss, n) {
+  var sh = ss.getSheetByName('Visits');
+  if (!sh) return [];
+  var vals = sh.getDataRange().getValues(), m = {};
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][1]) !== 'page_view') continue;
+    var p = String(vals[i][2]) || '/';
+    m[p] = (m[p] || 0) + 1;
+  }
+  return Object.keys(m).sort(function(a,b){ return m[b]-m[a]; }).slice(0, n)
+    .map(function(p){ return p + ' (' + m[p] + ')'; });
+}
+
+function countEvent_(ss, ev) {
+  var sh = ss.getSheetByName('Visits');
+  if (!sh) return 0;
+  var vals = sh.getDataRange().getValues(), n = 0;
+  for (var i = 1; i < vals.length; i++) if (String(vals[i][1]) === ev) n++;
+  return n;
 }
 
 function stamp() {
