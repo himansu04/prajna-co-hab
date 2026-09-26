@@ -9,6 +9,7 @@ window.PRAJNA = {
   deposit: 6500,                  // SAMPLE deposit
   foodIncluded: "included",       // SAMPLE food mode
   availability: "2 twin beds open — book a visit", // SAMPLE status
+  bedsOpen: 2,                    // LIVE vacancy — header badge reads this + today's date
   endpoint: "",                   // demo mode
   community: "",
   ownerNote: "Family-run. Owner-managed. No broker."

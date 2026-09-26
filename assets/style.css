@@ -634,3 +634,12 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 .pform input:focus,.pform select:focus,.pform textarea:focus{border:none!important;box-shadow:0 0 0 2.5px rgba(217,164,65,.35)!important}
 /* one side-padding rhythm for every page */
 .wrap{padding-left:clamp(18px,4vw,28px)!important;padding-right:clamp(18px,4vw,28px)!important}
+
+/* ============ v19 LIVE VACANCY + VECTOR LOTUS ============ */
+.fmark{background:none!important}
+.lotusmark{width:27px;height:18px;flex:none;color:var(--terra)}
+.vacancy{margin-left:auto;font-family:var(--font-ui);font-size:.72rem;letter-spacing:.02em;color:var(--ink);background:rgba(246,234,208,.9);padding:.32rem .75rem;border-radius:99px;display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap}
+.vdot{width:7px;height:7px;border-radius:50%;background:var(--terra);flex:none;animation:vpulse 2.4s ease infinite}
+@keyframes vpulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(prefers-reduced-motion:reduce){.vdot{animation:none}}
+@media(max-width:900px){.vacancy{display:none}}
