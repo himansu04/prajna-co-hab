@@ -694,3 +694,19 @@ input,select,textarea{font-size:max(16px,.95rem)}
 .brand{font-size:clamp(.98rem,2.4vw,1.12rem)}
 .navlinks{gap:clamp(.9rem,2.4vw,1.6rem)}
 @media(max-width:480px){.navlinks a{padding-inline:.4rem;font-size:.82rem}.fblarge{font-size:clamp(1rem,4vw,1.2rem)}}
+
+/* ============ v29 MOBILE FOCUS — de-cluttered, thumb-first ============ */
+.miniopen{flex:1.1;text-align:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;color:var(--ochre-ink);background:rgba(246,234,208,.95);padding:.45rem .2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobilebar{padding-bottom:env(safe-area-inset-bottom,0)}
+.mobilebar a{padding:.7rem 0}
+body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
+@media(max-width:640px){
+  .gal{grid-template-columns:repeat(2,1fr)!important;gap:.55rem!important}
+  .card,.post,.voice,.menucard .day,.step,.faq details,.tourbox,.pitstats>div{padding:.85rem .8rem!important}
+  .grid,.amen,.gal{margin-top:.9rem!important}
+  .hero h1{font-size:clamp(1.5rem,6.4vw,1.95rem)}
+  .lede{line-height:1.55}
+  .shead{margin-bottom:.6rem}
+  section{padding-top:clamp(1.4rem,4vw,2.4rem)!important;padding-bottom:clamp(1.4rem,4vw,2.4rem)!important}
+}
+@media(max-width:860px){.wa-float{display:none!important}}
