@@ -207,7 +207,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v25"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v26"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -275,4 +275,23 @@ window.PRAJNA = window.PRAJNA || {
     if(a.classList.contains('wa-link')) log('wa_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
     else if(a.classList.contains('btn')) log('cta_click', (a.textContent||'').trim().slice(0,40));
   }, {passive:true});
+})();
+
+/* v26: send-to-a-friend - the word-of-mouth door, logged as share_tap */
+(function(){
+  function share(){
+    var url=location.origin+'/prajna-co-hab/';
+    log('share_tap','');
+    if(navigator.share){ navigator.share({title:'Prajna Co-hab, Moshi', text:'Family-run co-living house near Chakan MIDC - home food, 2 beds open', url:url}).catch(function(){}); }
+    else{ window.open('https://wa.me/?text='+encodeURIComponent('Prajna Co-hab, Moshi - family-run co-living near Chakan MIDC. Home food, fair rent. '+url),'_blank'); }
+  }
+  document.addEventListener('click', function(e){
+    var b=e.target.closest ? e.target.closest('.share-btn') : null;
+    if(b){ e.preventDefault(); share(); }
+  }, {passive:false});
+  function log(ev, extra){
+    var cfg=window.PRAJNA||{}, EP=cfg.endpoint; if(!EP) return;
+    try{ navigator.sendBeacon(EP, JSON.stringify({type:'visit',event:ev,page:location.pathname,extra:extra||'',src:qs('utm_source'),med:qs('utm_medium'),cmp:qs('utm_campaign'),ref:document.referrer||'',screen:(screen.width||0)+'x'+(screen.height||0),lang:navigator.language||''})); }catch(e){}
+    function qs(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]*)')); return m?decodeURIComponent(m[1]):''; }
+  }
 })();
