@@ -653,9 +653,9 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 @media(prefers-reduced-motion:reduce){.lotusmark .lp,.lotusmark .r1{animation:none}}
 
 /* ============ v21 BIG LOTUS — the emblem opens every page ============ */
-.lotusbig{width:132px;height:88px;display:block;margin:0 0 .9rem 0;filter:drop-shadow(0 10px 18px rgba(154,69,34,.14))}
-.lotusmid{width:62px;height:42px;display:block;margin:0 0 .5rem 0;filter:drop-shadow(0 6px 12px rgba(154,69,34,.12))}
-@media(max-width:520px){.lotusbig{width:96px;height:64px}.lotusmid{width:50px;height:34px}}
+.lotusbig{width:60px;height:40px;display:block;margin:0 0 .35rem 0;filter:drop-shadow(0 4px 8px rgba(154,69,34,.12))}
+.lotusmid{width:34px;height:23px;display:inline-block;vertical-align:-6px;margin:0 .45rem .15rem 0;filter:drop-shadow(0 2px 5px rgba(154,69,34,.10))}
+@media(max-width:520px){.lotusbig{width:48px;height:32px}.lotusmid{width:28px;height:19px;vertical-align:-5px}}
 
 /* ============ v22 GLASS SLAB — the foreground glides over the pond ============ */
 .card,.promises div,.amen div,.post,.voice,.statrow>div,.tourbox,.costrows>div,
