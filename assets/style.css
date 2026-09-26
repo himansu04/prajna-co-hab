@@ -584,3 +584,33 @@ a.ph.heroshot { border: 1px solid var(--line); padding: 0; background: none; ove
 a.ph.heroshot img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: 11px; }
 /* gallery figures: photos carry their own frame */
 .gal figure img { background: var(--paper-deep); }
+
+/* ================= v16 FOLK SHAPE PASS — doorways, not rectangles =================
+   The house is the product. Every photo becomes a doorway (arched top, grounded
+   base) — the oldest Indian home signal. Buttons become little doorways too.
+   No new colours: ochre stays ornament, terracotta stays action. */
+
+/* Doorway arches on all photos */
+.gal img,.gal .ph{border-radius:150px 150px 10px 10px}
+a.ph.heroshot{border-radius:190px 190px 12px 12px}
+.ph{border-radius:150px 150px 10px 10px}
+section.flat figure.reveal img,figure.reveal>img{border-radius:150px 150px 10px 10px}
+/* keep the folk illustration arched too */
+.about-folk img,section figure img[src*="folk-entrance"]{border-radius:170px 170px 12px 12px}
+
+/* Buttons as small doorways: arched crown, grounded base, ochre sill */
+.btn{border-radius:14px 14px 7px 7px;position:relative}
+.btn::after{content:"";position:absolute;left:14%;right:14%;bottom:6px;height:1.5px;background:rgba(250,246,240,.32);border-radius:2px;pointer-events:none}
+.btn.ghost::after{background:rgba(217,164,65,.4)}
+.btn.sm::after{bottom:4px}
+
+/* A day in the house — the rhythm strip */
+.daystrip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.day{background:rgba(255,255,255,.44);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.1rem;backdrop-filter:blur(4px)}
+.day .dtime{display:block;font-family:var(--font-ui);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem}
+.day .ddia{display:block;width:9px;height:9px;background:var(--ochre);transform:rotate(45deg);margin:0 0 .7rem 0}
+.day p{font-size:.92rem;margin:0;color:var(--ink)}
+@media(max-width:860px){.daystrip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.daystrip{grid-template-columns:1fr}.day{padding:1rem .9rem}}
+/* arches soften on small screens so images don't lose their tops */
+@media(max-width:520px){.gal img,.gal .ph,.ph,a.ph.heroshot{border-radius:80px 80px 8px 8px}}
