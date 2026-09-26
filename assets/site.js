@@ -207,7 +207,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v23"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v24"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -252,4 +252,27 @@ window.PRAJNA = window.PRAJNA || {
   var ds=new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',timeZone:'Asia/Kolkata'});
   b.querySelector('.vtxt').textContent=n+' bed'+(n===1?'':'s')+' open · '+ds;
   b.hidden=false;
+})();
+
+/* v24: visit + intent analytics - own backend, no cookies, no third party */
+(function(){
+  var cfg=window.PRAJNA||{}, EP=cfg.endpoint;
+  function qs(k){ var m=location.search.match(new RegExp('[?&]'+k+'=([^&]*)')); return m?decodeURIComponent(m[1]):''; }
+  function log(ev, extra){
+    if(!EP || EP.indexOf('script.google')!==0 && EP.indexOf('https://script.google')!==0) return;
+    var d={type:'visit',event:ev,page:location.pathname,ref:document.referrer||'',
+      src:qs('utm_source'),med:qs('utm_medium'),cmp:qs('utm_campaign'),
+      screen:(screen.width||0)+'x'+(screen.height||0),lang:navigator.language||'',extra:extra||''};
+    try{ navigator.sendBeacon(EP, JSON.stringify(d)); }catch(e){}
+  }
+  log('page_view');
+  var t0=Date.now(), sent=false;
+  function dwell(){ if(sent)return; sent=true; log('dwell', Math.round((Date.now()-t0)/1000)+'s'); }
+  window.addEventListener('pagehide', dwell);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') dwell(); });
+  document.addEventListener('click', function(e){
+    var a=e.target.closest ? e.target.closest('a') : null; if(!a) return;
+    if(a.classList.contains('wa-link')) log('wa_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
+    else if(a.classList.contains('btn')) log('cta_click', (a.textContent||'').trim().slice(0,40));
+  }, {passive:true});
 })();

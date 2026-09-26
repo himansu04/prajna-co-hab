@@ -674,3 +674,7 @@ header{
 .flow.flow-in{opacity:1;transform:none!important}
 .card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px) scale(.984)!important}
 html.reduce .flow{opacity:1!important;transform:none!important}
+
+/* v24: the vacancy badge is a tap now */
+a.vacancy{color:inherit;text-decoration:none}
+a.vacancy:hover .vdot{animation-duration:1.2s}
