@@ -619,3 +619,18 @@ section.flat figure.reveal img,figure.reveal>img{border-radius:150px 150px 10px 
 html{color-scheme:light}
 ::selection{background:var(--ochre-soft);color:var(--ink)}
 :focus-visible{outline-color:var(--ochre)}
+
+/* ============ v18 BORDERLESS PASS — no seams anywhere, glass + shadow only ============
+   Header, footer, sides, sections, cards, photos: zero lines. Separation comes from
+   the translucent glass, soft shadows and spacing rhythm. Focus rings stay (a11y). */
+header.scrolled{border-bottom:none!important}
+section{border-top:none!important;padding:3.2rem 0}
+footer,.fbottom,.mobilebar,.familyband{border:none!important}
+.card,.day,.mapbox,.badge,.fresult,.post .topic,.gal img,.gal .ph,.ph,a.ph.heroshot{border:none!important}
+.card.tilt:hover,.card.tilt:hover{border:none!important;box-shadow:var(--sh)}
+.btn.ghost{border:none!important;background-color:var(--ochre-soft)!important;color:var(--ochre-ink)!important}
+.btn.ghost:hover{box-shadow:0 8px 18px rgba(217,164,65,.22)!important}
+.pform input,.pform select,.pform textarea{border:none!important}
+.pform input:focus,.pform select:focus,.pform textarea:focus{border:none!important;box-shadow:0 0 0 2.5px rgba(217,164,65,.35)!important}
+/* one side-padding rhythm for every page */
+.wrap{padding-left:clamp(18px,4vw,28px)!important;padding-right:clamp(18px,4vw,28px)!important}
