@@ -207,7 +207,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v27"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v28"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -273,6 +273,9 @@ window.PRAJNA = window.PRAJNA || {
   document.addEventListener('click', function(e){
     var a=e.target.closest ? e.target.closest('a') : null; if(!a) return;
     if(a.classList.contains('wa-link')) log('wa_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
+    else if(a.classList.contains('share-btn')){ /* logged separately */ }
+    else if(a.getAttribute('href') && a.getAttribute('href').indexOf('tel:')===0) log('call_tap','');
+    else if(a.closest('.gal')) log('gallery_open', (a.getAttribute('href')||'').split('/').pop().slice(0,40));
     else if(a.classList.contains('btn')) log('cta_click', (a.textContent||'').trim().slice(0,40));
   }, {passive:true});
 })();
