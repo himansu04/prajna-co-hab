@@ -41,6 +41,7 @@ function setup() {
     d.appendRow(['Time', 'Inquiries', 'Feedback', 'Board awaiting approval']);
     d.setFrozenRows(1);
   }
+  ensureTriggers_();                           // daily 9pm digest, auto-rearmed
   return 'setup ok';
 }
 
