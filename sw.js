@@ -2,7 +2,7 @@
    Goal: instant repeat loads, offline-friendly, and NEVER a stale copy of a new deploy.
    Strategy: network-first for pages and config, cache-first only for static assets
    once they have been seen. Old caches are dropped on every activation. */
-var V = "prajna-v14";
+var V = "prajna-v15";
 var STATIC = /\/assets\/.*\.(css|js|png|jpg|svg|webp|woff2)$/;
 
 self.addEventListener("install", function(e){
