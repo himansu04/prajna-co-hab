@@ -145,18 +145,44 @@ window.PRAJNA = window.PRAJNA || {
   /* gallery lightbox */
   var gal = document.querySelector(".gal");
   if(gal){
+    var figs = Array.prototype.slice.call(gal.querySelectorAll("figure"));
+    var cur = 0;
     var lb = document.createElement("div"); lb.className = "lb";
-    lb.innerHTML = '<img alt=""><div class="cap"></div>';
+    lb.innerHTML = '<img alt=""><div class="cap"></div><button class="lbprev" aria-label="Previous photo">&#8249;</button><button class="lbnext" aria-label="Next photo">&#8250;</button>';
     document.body.appendChild(lb);
+    function show(n){
+      if(!figs.length) return;
+      cur = (n + figs.length) % figs.length;
+      var fig = figs[cur], img = fig.querySelector("img");
+      if(!img || !img.getAttribute("src")) return;
+      lb.querySelector("img").src = img.src;
+      lb.querySelector(".cap").textContent = ((fig.querySelector("figcaption") || {}).textContent || "") + "  ·  " + (cur+1) + "/" + figs.length;
+      lb.className = "lb show";
+    }
     gal.addEventListener("click", function(ev){
       var fig = ev.target.closest("figure"); if(!fig){ return; }
-      var img = fig.querySelector("img");
-      if(!img || !img.getAttribute("src")){ return; }
-      lb.querySelector("img").src = img.src;
-      lb.querySelector(".cap").textContent = (fig.querySelector("figcaption") || {}).textContent || "";
-      lb.className = "lb show";
+      show(figs.indexOf(fig));
+      log('gallery_open', String(cur+1)+'/'+figs.length);
     });
-    lb.addEventListener("click", function(){ lb.className = "lb"; });
+    lb.addEventListener("click", function(ev){
+      if(ev.target.className === "lbprev"){ show(cur-1); }
+      else if(ev.target.className === "lbnext"){ show(cur+1); }
+      else if(ev.target !== lb.querySelector("img")){ lb.className = "lb"; }
+    });
+    document.addEventListener("keydown", function(ev){
+      if(lb.className.indexOf("show") < 0) return;
+      if(ev.key === "Escape") lb.className = "lb";
+      else if(ev.key === "ArrowLeft") show(cur-1);
+      else if(ev.key === "ArrowRight") show(cur+1);
+    });
+    var tx = null;
+    lb.addEventListener("touchstart", function(e){ tx = e.touches[0].clientX; }, {passive:true});
+    lb.addEventListener("touchend", function(e){
+      if(tx === null) return;
+      var dx = e.changedTouches[0].clientX - tx;
+      if(dx < -40) show(cur+1); else if(dx > 40) show(cur-1);
+      tx = null;
+    }, {passive:true});
   }
 
   /* footer year */

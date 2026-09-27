@@ -710,3 +710,22 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
   section{padding-top:clamp(1.4rem,4vw,2.4rem)!important;padding-bottom:clamp(1.4rem,4vw,2.4rem)!important}
 }
 @media(max-width:860px){.wa-float{display:none!important}}
+
+/* ============ v31 CRAFT — the details you feel more than see ============ */
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#f2ead9}
+::-webkit-scrollbar-thumb{background:#cdc4b6;border-radius:6px;border:2px solid #f2ead9}
+::-webkit-scrollbar-thumb:hover{background:#d9a441}
+.btn:active{transform:translateY(1px) scale(.985)}
+.btn:hover::after{opacity:1}
+.shead h2{position:relative;padding-bottom:.45rem}
+.shead h2::after{content:"";position:absolute;left:0;bottom:0;width:52px;height:3px;border-radius:2px;background:var(--ochre);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .15s}
+.flow-in .shead h2::after,html.reduce .shead h2::after{transform:scaleX(1)}
+.voice{position:relative}
+.voice::before{content:"\201C";position:absolute;top:-.4rem;left:.7rem;font-family:Georgia,serif;font-size:3.2rem;line-height:1;color:var(--ochre);opacity:.4;pointer-events:none}
+.gal figure{transition:transform .45s var(--ease),box-shadow .45s var(--ease);border-radius:150px 150px 10px 10px;overflow:hidden}
+.gal figure:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(43,38,32,.14)}
+.lb .lbprev,.lb .lbnext{position:absolute;top:50%;transform:translateY(-50%);background:rgba(250,246,240,.14);color:#faf5ec;border:none;width:52px;height:52px;border-radius:50%;font-size:2rem;line-height:1;cursor:pointer;font-family:Georgia,serif}
+.lb .lbprev{left:14px}.lb .lbnext{right:14px}
+.lb .lbprev:hover,.lb .lbnext:hover{background:rgba(217,164,65,.45)}
+@media(pointer:coarse){.lb .lbprev,.lb .lbnext{width:44px;height:44px;opacity:.85}}
