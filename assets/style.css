@@ -729,3 +729,18 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
 .lb .lbprev{left:14px}.lb .lbnext{right:14px}
 .lb .lbprev:hover,.lb .lbnext:hover{background:rgba(217,164,65,.45)}
 @media(pointer:coarse){.lb .lbprev,.lb .lbnext{width:44px;height:44px;opacity:.85}}
+
+/* ============ v32 GALLERY SLIDESHOW — full photos, no shapes, auto 3s ============ */
+.ss{position:relative;border-radius:14px;overflow:hidden;background:var(--paper-deep);box-shadow:0 18px 40px rgba(43,38,32,.13);margin-top:1.4rem}
+.ss-track{display:flex;transition:transform .65s var(--ease);will-change:transform}
+.ss figure{flex:0 0 100%;margin:0;position:relative}
+.ss img{width:100%;height:auto;display:block}
+.ss figcaption{position:absolute;left:0;right:0;bottom:0;padding:.65rem 1.1rem;background:linear-gradient(transparent,rgba(43,38,32,.55));color:#faf5ec;font-family:var(--font-ui);font-size:.82rem;letter-spacing:.02em;opacity:0;transition:opacity .4s var(--ease)}
+.ss:hover figcaption{opacity:1}
+.ss-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(250,246,240,.2);color:#faf5ec;font-size:1.9rem;line-height:1;cursor:pointer;font-family:Georgia,serif;transition:background .3s var(--ease)}
+.ss-btn:hover{background:rgba(217,164,65,.5)}
+.ss-prev{left:12px}.ss-next{right:12px}
+.ss-dots{position:absolute;bottom:.9rem;left:0;right:0;display:flex;justify-content:center;gap:.45rem}
+.ss-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(250,246,240,.45);cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
+.ss-dot.on{background:var(--ochre);transform:scale(1.25)}
+@media(max-width:640px){.ss-btn{width:40px;height:40px;font-size:1.5rem}.ss figcaption{opacity:1;font-size:.75rem}}
