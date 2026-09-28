@@ -50,7 +50,7 @@
     var alt=0;
     var DEEP = [251,247,239];              /* the pale bed under the water */
     var SURF = [255,251,242];              /* light pooling on top */
-    var beds=[], caustics=[], skins=[], tinters=[], drops=[];
+    var beds=[], caustics=[], skins=[], tinters=[], drops=[], motifs=[];
     var phase = 0, sy=0, lastSy=0, flow=0, wakePh=0, wakeAmp=0;
 
     function resize(){
@@ -108,6 +108,35 @@
         });
       }
 
+      /* MOTIFS — the folk marks, floating in the water rather than drifting
+         over it. They sink slowly, rock on the swell, and are brightest near
+         the surface. Depth drives size, alpha and blur so they read as being
+         at different distances inside the same water. */
+      var lo = phone ? 7 : 14;
+      var n = Math.max(lo, Math.min(24, Math.round((w*h)/64000)));
+      motifs = [];
+      for(var mi=0;mi<n;mi++){
+        var depth = Math.random();                 /* 0 surface .. 1 bed */
+        motifs.push({
+          m: (mi + alt) % MOTIFS.length,
+          bx: Math.random()*w, by: Math.random()*h,
+          /* deeper marks are smaller and fainter */
+          s: (0.62 + 0.95*(1-depth)) * (0.75 + Math.random()*0.55),
+          ax: 22 + 40*(1-depth) + Math.random()*30,
+          ax2: 9 + 18*(1-depth) + Math.random()*14,
+          fx: 0.00009 + Math.random()*0.00009,
+          fx2: 0.00015 + Math.random()*0.00012,
+          ph: Math.random()*TAU, ph2: Math.random()*TAU,
+          /* the sink: slower than a fall, and it eases */
+          sink: (0.004 + Math.random()*0.010) * (0.5 + depth),
+          ph3: Math.random()*TAU,
+          rrot: (Math.random()-0.5)*0.42,
+          fr: 0.00006 + Math.random()*0.00007,
+          depth: depth,
+          a: (0.30 - 0.17*depth) + Math.random()*0.07
+        });
+      }
+
       /* COLOUR — ochre and terracotta, two slow pools. */
       tinters = [];
       for(var b2=0;b2<(phone?2:3);b2++){
@@ -122,6 +151,13 @@
         });
       }
     }
+
+    var imgs = MOTIFS.map(function(_,i){
+      var im = new Image();
+      im.decoding = "async";
+      im.src = 'data:image/svg+xml,' + MOTIFS[i].replace(/COL/g, COLS[i % COLS.length]);
+      return im;
+    });
 
     function draw(now){
       var e = now - t0;
@@ -148,6 +184,35 @@
         bg.addColorStop(1,"rgba("+DEEP[0]+","+DEEP[1]+","+DEEP[2]+",0)");
         ctx.fillStyle = bg;
         ctx.fillRect(0,0,w,h);
+      }
+
+      /* ---- LAYER 0.5 · the floating marks. Drawn UNDER the caustics so the
+         light travels across them, which is what makes them sit in the water
+         instead of hovering above it. ---- */
+      for(var m2=0;m2<motifs.length;m2++){
+        var mo = motifs[m2];
+        var mim = imgs[mo.m];
+        if(!mim || !mim.complete) continue;
+        /* sink slowly; the page scroll drags them a touch slower than the glass */
+        var span = h + 300;
+        var my = ((mo.by - e*mo.sink - sy*0.018) % span + span) % span - 150;
+        var mx = mo.bx + Math.sin(e*mo.fx + mo.ph)*mo.ax
+                       + Math.sin(e*mo.fx2 + mo.ph2)*mo.ax2;
+        /* the swell: they rock and bob a little, deeper ones lag */
+        var bob = Math.sin(e*0.0007 + mo.ph3 + my*0.006) * (5 + 7*(1-mo.depth));
+        var rot = mo.rrot + Math.sin(e*mo.fr + mo.ph)*0.11
+                  + Math.sin(e*0.0004 + mo.ph2)*0.05;
+        /* scroll makes them swing, then they settle */
+        rot += flow * 0.0016 * (1 - mo.depth);
+        var mw = 132*mo.s, mh = 77*mo.s;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, Math.min(0.5, mo.a * (1 + wakeAmp*0.004)));
+        ctx.translate(mx, my + bob);
+        ctx.rotate(rot);
+        /* deeper marks blur very slightly, like looking through more water */
+        ctx.filter = mo.depth > 0.55 ? "blur(0.7px)" : "none";
+        ctx.drawImage(mim, -mw/2, -mh/2, mw, mh);
+        ctx.restore();
       }
 
       /* ---- LAYER 1 · caustics. The bright folding veins. Composite to
