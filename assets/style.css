@@ -1,8 +1,8 @@
 :root{
   /* ---- ONE palette, one job per colour. Nothing decorative may use terracotta,
      nothing that acts or costs may use ochre. ---- */
-  --ink:var(--ink);          /* weight: headings, body, dark bands */
-  --ink-deep:var(--ink-deep);     /* the dark bands, warm not black */
+  --ink:#2b2620;          /* weight: headings, body, dark bands */
+  --ink-deep:#3a322a;     /* the dark bands, warm not black */
   --paper:#faf5ec;        /* one paper. was five competing creams */
   --card:#ffffff;
   --line:#e9e0d2;
@@ -90,7 +90,8 @@ header.scrolled{box-shadow:0 8px 24px rgba(43,38,32,.08);border-bottom:1px solid
 .shead h2{margin:.5rem 0 .55rem}
 section{padding:3rem 0;border-top:1px solid var(--line);position:relative}
 section.flat{border-top:none;padding-top:1.6rem}
-/* [removed 2026-09-28] orphan declarations: no selector, browsers dropped them */
+/* mandana ornament on section borders */
+  background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 10' fill='%23d9a441'%3E%3Ccircle cx='8' cy='5' r='2.2'/%3E%3Crect x='30' y='1.5' width='7' height='7' transform='rotate(45 33.5 5)'/%3E%3Ccircle cx='70' cy='5' r='2.8'/%3E%3Crect x='103' y='1.5' width='7' height='7' transform='rotate(45 106.5 5)'/%3E%3Ccircle cx='132' cy='5' r='2.2'/%3E%3C/svg%3E") center/140px 10px no-repeat;opacity:.55;padding:0 6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:1.4rem}
 .grid.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .card{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:12px;padding:1.5rem;position:relative;transition:box-shadow .3s ease,border-color .3s ease;will-change:transform}
@@ -289,7 +290,6 @@ form.pform{box-shadow:none}
 
 /* ---------- v7: ground, texture, motion ---------- */
 :root{
-  --paper-deep:var(--paper-deep);
   --paper-warm:var(--paper);
   --weave:repeating-linear-gradient(45deg,rgba(192,90,46,.05) 0 1px,transparent 1px 7px),
           repeating-linear-gradient(-45deg,rgba(43,38,32,.035) 0 1px,transparent 1px 7px);
@@ -670,7 +670,7 @@ header{
   box-shadow:inset 0 -1px 0 rgba(255,255,255,.25), 0 10px 30px rgba(58,50,42,.06)!important;
 }
 .flow{opacity:0;transform:translateY(26px) scale(.988)!important;transition:opacity .9s var(--ease),transform .9s var(--ease)!important;will-change:opacity,transform}
-.flow.flow-in{opacity:1;transform:none!important}
+.flow.flow-in{opacity:1;transform:none}
 .card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px) scale(.984)!important}
 html.reduce .flow{opacity:1!important;transform:none!important}
 
@@ -743,3 +743,130 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
 .ss-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(250,246,240,.45);cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
 .ss-dot.on{background:var(--ochre);transform:scale(1.25)}
 @media(max-width:640px){.ss-btn{width:40px;height:40px;font-size:1.5rem}.ss figcaption{opacity:1;font-size:.75rem}}
+
+/* ==========================================================================
+   v34 — SEAMLESS PASS
+   Fixes the mobile blur no-op, gives glass panels real compositor layers so
+   the ambient canvas can't force them to repaint, folds the vignette and
+   grain into the canvas stack, and finishes the accessibility gaps.
+   ========================================================================== */
+
+/* --- 1. The mobile blur reduction was DEAD: it sat before the v22 slab which
+   re-set 9-10px with !important. This is the same intent, last in the file. --- */
+@media (max-width:640px){
+  .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,
+  .plaque,.statrow>div,.faq details,.costrows>div,.voice,.step,.pitstats,
+  .board .post{
+    backdrop-filter:blur(6px) saturate(1.04)!important;
+    -webkit-backdrop-filter:blur(6px) saturate(1.04)!important;
+  }
+  .feature,.cta-strip,.tourbox,header{
+    backdrop-filter:blur(5px)!important;
+    -webkit-backdrop-filter:blur(5px)!important;
+  }
+  .mobilebar{
+    backdrop-filter:blur(5px)!important;
+    -webkit-backdrop-filter:blur(5px)!important;
+  }
+}
+
+/* --- 2. LAYER PROMOTION. backdrop-filter is doing two jobs: blurring AND
+   promoting each panel to its own GPU layer. The blur we keep; the promotion
+   we now ask for explicitly, so the canvas repaint can't drag every panel
+   back through the main paint pass. translate3d is the cheap promotion. --- */
+.card,.promises div,.amen div,.post,.voice,.statrow>div,.costrows>div,
+.plaque,.menucard .day,.step,.mapbox,.pitstats,.board .post,
+.teasercard,.fbrand,.fcols>div{
+  transform:translate3d(0,0,0);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+/* hover lifts must stay 3D translates or the layer decomposes mid-interaction */
+.post:hover{transform:translate3d(4px,0,0)}
+.promises div:hover,.menucard .day:hover{transform:translate3d(0,-2px,0)}
+.gal figure:hover{transform:translate3d(0,-4px,0)}
+.btn:hover{transform:translate3d(0,-1px,0)}
+.fcols a:hover{transform:translate3d(2px,0,0)}
+
+/* --- 3. The canvas pauses while you scroll (see fluid.js v34). While paused,
+   the grain/vignette overlays stop being recomputed, so they stay in CSS but
+   lose their blend cost: multiply over a static frame is cheap. --- */
+html.is-scrolling body::before{opacity:.42}
+body::before{transition:opacity .22s linear}
+
+/* --- 4. ONE easing. The file had five curves doing the same job; these are
+   the two roles only: arrivals and interactions. --- */
+:root{
+  --ease-in:cubic-bezier(.22,.61,.36,1);   /* things arriving */
+  --ease-io:cubic-bezier(.4,0,.2,1);       /* things responding */
+}
+.flow,.reveal,.card,.btn,.fcols a,.navlinks a::after,.ss-track,.ss-dot,
+.pform input,.pform select,.pform textarea{
+  transition-timing-function:var(--ease-in);
+}
+.btn:active{transition-timing-function:var(--ease-io)}
+
+/* --- 5. The slideshow caption sat UNDER the dot rail. Lift the caption,
+   give the rail its own floor, and reserve the frame so an odd-sized photo
+   can never bounce the track. --- */
+.ss figure img{aspect-ratio:3/2;object-fit:cover;width:100%;height:auto;display:block}
+.ss figcaption{bottom:2.35rem!important;padding-bottom:.45rem}
+.ss-dots{bottom:.85rem}
+.ss{contain:layout paint}
+/* the caption faded on every auto-advance frame; promote it */
+.ss figcaption{will-change:opacity;transform:translate3d(0,0,0)}
+
+/* --- 6. Voice cards rendered TWO opening quotes: the HTML glyph and a CSS
+   ::before. The ::before is the decorative one; suppress it when the quote
+   already carries a real mark. --- */
+.voice .q{text-indent:0}
+.voice.quoted::before{display:none}
+
+/* --- 7. Optical detail: a proportional section rule instead of a fixed bar,
+   and a hairline that survives zoom. --- */
+.shead h2::after{
+  height:1px;
+  width:clamp(28px,6vw,52px);
+  transform-origin:left;
+  transform:scaleX(.28);
+  transition:transform .7s var(--ease-in);
+}
+.flow-in .shead h2::after,html.reduce .shead h2::after{transform:scaleX(1)}
+
+/* --- 8. Seams: the two-tone call/WhatsApp bar was flattened to one colour by
+   an !important override; restore the call button to paper so the bar reads
+   as two decisions, not one slab. --- */
+.mobilebar .call{
+  background:rgba(250,246,240,.94)!important;
+  color:var(--ochre-ink)!important;
+  border-right:1px solid var(--line);
+}
+/* the footer's inner hairline cut across the fade */
+.fbottom{border-top:none!important}
+
+/* --- 9. Accessibility: keep focus visible on the glass, and give the star
+   rail a reachable, visible focus ring instead of display:none inputs. --- */
+:focus-visible{outline:2px solid var(--ochre-ink);outline-offset:2px}
+.stars input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+.stars input:focus-visible + label{outline:2px solid var(--ochre-ink);outline-offset:3px;border-radius:3px}
+.stars label{cursor:pointer}
+
+/* --- 10. Print: the arrival system left everything below the fold blank. --- */
+@media print{
+  .flow,.reveal{opacity:1!important;transform:none!important}
+  body::before,.vignette{display:none!important}
+}
+
+/* --- 11. Firefox never got the styled scrollbar. --- */
+html{scrollbar-color:var(--ochre) transparent;scrollbar-width:thin}
+
+/* --- 12. Reduced motion: the slideshow kept auto-advancing and anchor
+   scrolling still animated. Both now honour the preference. --- */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .ss-track{transition:none!important}
+}
+
+/* v34: visible-to-screen-readers-only text (star rating names) */
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+   clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}

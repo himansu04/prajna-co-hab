@@ -39,7 +39,9 @@
     c.setAttribute("aria-hidden","true");
     document.body.insertBefore(c, document.body.firstChild);
 
-    var ctx = c.getContext("2d"), dpr = Math.min(window.devicePixelRatio||1, 2);
+    var ctx = c.getContext("2d");
+    /* v34: a 2x backing store on a phone is ~1.3M px re-filled ~15x per frame. */
+    var dpr = Math.min(window.devicePixelRatio||1, (window.innerWidth<700 ? 1.5 : 2));
     var w=0, h=0, items=[], t0=performance.now(), alt=0, TAU=Math.PI*2;
     var px=0.5, py=0.4, tx=0.5, ty=0.4;
     var BLOB_COLS=[
@@ -57,7 +59,8 @@
       ctx.setTransform(dpr,0,0,dpr,0,0);
       alt = (location.pathname.split("/").pop() || "index").length;
       items = [];
-      var n = Math.max(14, Math.min(26, Math.round((w*h)/56000)));
+      var lo = w < 700 ? 8 : 14;
+      var n = Math.max(lo, Math.min(26, Math.round((w*h)/56000)));
       for(var i=0;i<n;i++){
         items.push({
           m: (i + alt) % MOTIFS.length,
@@ -72,7 +75,7 @@
         });
       }
       beams = [];
-      var kn = w < 700 ? 5 : 8;
+      var kn = w < 700 ? 3 : 8;
       for(var k=0;k<kn;k++){
         beams.push({
           x0: Math.random()*w, y0: Math.random()*h,
@@ -81,7 +84,7 @@
         });
       }
       blobs = [];
-      var bn = w < 700 ? 3 : 5;
+      var bn = w < 700 ? 2 : 5;
       for(var b2=0;b2<bn;b2++){
         blobs.push({
           col: BLOB_COLS[(b2 + alt) % BLOB_COLS.length],
@@ -200,19 +203,43 @@
         ctx.arc(cx, cy, 120 + r2*90 + Math.sin(e*0.0001 + r2)*10, 0, TAU);
         ctx.stroke();
       }
-      requestAnimationFrame(draw);
+      if(!paused){ requestAnimationFrame(draw); }
     }
+
+    /* v34 — SCROLL PAUSE. The canvas repaints ~15 fullscreen gradients every
+       frame, and every glass panel above it re-blurs its region each time it
+       does. Nobody studies a drifting motif mid-scroll, so we stop the loop
+       while the page moves and resume 220ms after it settles. Tab-hidden and
+       scroll-paused are the same decision, routed through one flag. */
+    var paused = false, resumeTimer = null;
+    function setPaused(v, reason){
+      if(v === paused) return;
+      paused = v;
+      if(reason === "scroll"){ document.documentElement.classList.toggle("is-scrolling", v); }
+      if(!paused){
+        t0 = performance.now();          /* reset the clock or it lurches to catch up */
+        requestAnimationFrame(draw);
+      }
+    }
+    window.addEventListener("scroll", function(){
+      setPaused(true, "scroll");
+      if(resumeTimer){ clearTimeout(resumeTimer); }
+      resumeTimer = setTimeout(function(){ setPaused(false, "scroll"); }, 220);
+    }, { passive: true });
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden){ setPaused(true, "tab"); }
+      else { if(resumeTimer){ clearTimeout(resumeTimer); } setPaused(false, "tab"); }
+    });
 
     resize();
     window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", function(ev){
-      tx = ev.clientX / window.innerWidth;
-      ty = ev.clientY / window.innerHeight;
-    }, { passive: true });
-    window.addEventListener("visibilitychange", function(){
-      if(!document.hidden) t0 = performance.now();
-    });
-
+    /* v34: a touch screen has no hover light worth the per-move work */
+    if(window.matchMedia && window.matchMedia("(pointer:fine)").matches){
+      window.addEventListener("pointermove", function(ev){
+        tx = ev.clientX / window.innerWidth;
+        ty = ev.clientY / window.innerHeight;
+      }, { passive: true });
+    }
     requestAnimationFrame(draw);
   }
 

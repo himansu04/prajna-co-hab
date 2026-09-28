@@ -16,7 +16,10 @@ window.PRAJNA = window.PRAJNA || {
 
 (function(){
   var C = window.PRAJNA;
-  function wa(msg){ return "https://wa.me/" + C.phone + "?text=" + encodeURIComponent(msg || "Hi, I want to book a visit to Prajna Co-hab. Please share availability."); }
+  function wa(msg){
+    if(!C.phone){ return null; }   /* v34: no number configured = no dead link */
+    return "https://wa.me/" + C.phone + "?text=" + encodeURIComponent(msg || "Hi, I want to book a visit to Prajna Co-hab. Please share availability.");
+  }
   function inr(n){ return "\u20B9" + Number(n).toLocaleString("en-IN"); }
   function set(key, val){ var els = document.querySelectorAll('[data-cfg="'+key+'"]'); for(var i=0;i<els.length;i++){ els[i].textContent = val; } }
 
@@ -54,7 +57,16 @@ window.PRAJNA = window.PRAJNA || {
   var wlinks = document.querySelectorAll(".wa-link");
   for(var j=0;j<wlinks.length;j++){
     var msg = wlinks[j].getAttribute("data-wamsg") || "Hi, I want to book a visit to Prajna Co-hab. Please share availability.";
-    wlinks[j].setAttribute("href", wa(msg));
+    var url = wa(msg);
+    if(!url){
+      /* v34: no number yet — take the dead CTA out of the tab order and the
+         layout rather than parking a link that goes nowhere. */
+      wlinks[j].setAttribute("aria-hidden","true");
+      wlinks[j].setAttribute("tabindex","-1");
+      wlinks[j].style.display = "none";
+      continue;
+    }
+    wlinks[j].setAttribute("href", url);
     wlinks[j].setAttribute("target", "_blank");
     wlinks[j].setAttribute("rel", "noopener");
   }
@@ -70,7 +82,13 @@ window.PRAJNA = window.PRAJNA || {
   /* forms → free backend (Google Sheets via Apps Script) */
   function showResult(f, text){
     var r = f.querySelector(".fresult");
-    if(r){ r.textContent = text; r.className = "fresult show"; }
+    if(r){
+      /* v34: role=status so a screen reader hears the outcome */
+      r.setAttribute("role","status");
+      r.setAttribute("aria-live","polite");
+      r.textContent = text;
+      r.className = "fresult show";
+    }
   }
   var forms = document.querySelectorAll("form[data-formtype]");
   for(var k=0;k<forms.length;k++){
@@ -233,19 +251,23 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v32"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v34"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
-        location.reload();
+        /* v34: purge silently. The old code reloaded mid-visit and discarded
+           scroll position, focus and any half-typed form. */
       });
     }).catch(function(){});
   }
 
-  /* installable app + offline shell (v6)
-     [2026-09-28] removed the runtime manifest/theme-color injector: every page
-     already carries these in <head>, and the injected theme-color (#c05a2e, a
-     retired hex) was overriding the static #faf5ec value. */
+  /* installable app + offline shell (v6) */
+  var mf = document.createElement("link");
+  mf.rel = "manifest"; mf.href = "manifest.webmanifest";
+  document.head.appendChild(mf);
+  var th = document.createElement("meta");
+  th.name = "theme-color"; th.content = "#c05a2e";
+  document.head.appendChild(th);
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", function(){
       navigator.serviceWorker.register("sw.js").then(function(reg){
@@ -256,7 +278,7 @@ window.PRAJNA = window.PRAJNA || {
   }
 
   /* desktop floating WhatsApp button (v5) — mobile keeps its bottom bar */
-  if(!document.querySelector(".wa-float")){
+  if(C.phone && !document.querySelector(".wa-float")){
     var wf = document.createElement("a");
     wf.className = "wa-float";
     wf.setAttribute("aria-label", "WhatsApp us");
@@ -322,6 +344,9 @@ window.PRAJNA = window.PRAJNA || {
   }
 })();
 
+/* v34: one reduced-motion flag for the whole file */
+var REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
 /* v32: gallery slideshow - full-size photos, auto 3s, smooth slide, swipe, tap-to-zoom */
 (function(){
   var ss=document.getElementById("gal-ss"); if(!ss) return;
@@ -336,7 +361,7 @@ window.PRAJNA = window.PRAJNA || {
   }
   function go(n,manual){ cur=(n%figs.length+figs.length)%figs.length; paint();
     if(manual){ log("gallery_open",(cur+1)+"/"+figs.length+" manual"); arm(); } }
-  function arm(){ stop(); timer=setInterval(function(){ go(cur+1); },3000); }
+  function arm(){ stop(); if(REDUCED){ return; } timer=setInterval(function(){ go(cur+1); },3000); }
   function stop(){ if(timer){ clearInterval(timer); timer=null; } }
   ss.querySelector(".ss-prev").addEventListener("click",function(){ go(cur-1,true); });
   ss.querySelector(".ss-next").addEventListener("click",function(){ go(cur+1,true); });
