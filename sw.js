@@ -3,7 +3,7 @@
    Strategy: network-first for pages and config, cache-first only for static assets
    once they have been seen. Old caches are dropped on every activation. */
 var V = "prajna-v32";
-var STATIC = /\/assets\/.*\.(css|js|png|jpg|svg|webp|woff2)$/;
+var STATIC = /\/assets\/.*\.(css|js|png|jpg|jpeg|svg|webp|woff2|mp4|webmanifest)$/;
 
 self.addEventListener("install", function(e){
   self.skipWaiting();                          // take over as soon as it is downloaded

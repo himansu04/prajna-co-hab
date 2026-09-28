@@ -242,13 +242,10 @@ window.PRAJNA = window.PRAJNA || {
     }).catch(function(){});
   }
 
-  /* installable app + offline shell (v6) */
-  var mf = document.createElement("link");
-  mf.rel = "manifest"; mf.href = "manifest.webmanifest";
-  document.head.appendChild(mf);
-  var th = document.createElement("meta");
-  th.name = "theme-color"; th.content = "#c05a2e";
-  document.head.appendChild(th);
+  /* installable app + offline shell (v6)
+     [2026-09-28] removed the runtime manifest/theme-color injector: every page
+     already carries these in <head>, and the injected theme-color (#c05a2e, a
+     retired hex) was overriding the static #faf5ec value. */
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     window.addEventListener("load", function(){
       navigator.serviceWorker.register("sw.js").then(function(reg){

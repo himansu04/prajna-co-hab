@@ -90,8 +90,7 @@ header.scrolled{box-shadow:0 8px 24px rgba(43,38,32,.08);border-bottom:1px solid
 .shead h2{margin:.5rem 0 .55rem}
 section{padding:3rem 0;border-top:1px solid var(--line);position:relative}
 section.flat{border-top:none;padding-top:1.6rem}
-/* mandana ornament on section borders */
-  background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 10' fill='%23d9a441'%3E%3Ccircle cx='8' cy='5' r='2.2'/%3E%3Crect x='30' y='1.5' width='7' height='7' transform='rotate(45 33.5 5)'/%3E%3Ccircle cx='70' cy='5' r='2.8'/%3E%3Crect x='103' y='1.5' width='7' height='7' transform='rotate(45 106.5 5)'/%3E%3Ccircle cx='132' cy='5' r='2.2'/%3E%3C/svg%3E") center/140px 10px no-repeat;opacity:.55;padding:0 6px}
+/* [removed 2026-09-28] orphan declarations: no selector, browsers dropped them */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:1.4rem}
 .grid.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .card{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:12px;padding:1.5rem;position:relative;transition:box-shadow .3s ease,border-color .3s ease;will-change:transform}
