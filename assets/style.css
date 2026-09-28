@@ -380,7 +380,12 @@ section:not(.flat)::before{content:none}
 /* the ground is a real layer of the page, not a panel beside it */
 /* v10: html carries only the flat paper fallback; the gradient wash lives on the
    canvas layer so it can never paint over the motion. */
-html{background:var(--paper)}
+html{
+  /* v35: deeper wash as the base so the water has depth to sit in. The flat
+     --paper value here was flattening the whole site to its lightest cream. */
+  background:linear-gradient(180deg,var(--paper) 0%,var(--paper) 34%,var(--paper-deep) 100%);
+  background-attachment:fixed;
+}
 body{background:transparent}
 /* glass panels: content stays fully legible while the folk art keeps moving under it */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{
@@ -870,3 +875,114 @@ html{scrollbar-color:var(--ochre) transparent;scrollbar-width:thin}
 /* v34: visible-to-screen-readers-only text (star rating names) */
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
    clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* ==========================================================================
+   v35 — ONE BODY OF WATER
+   The canvas paints the water. These layers are the AIR ABOVE IT: the grain is
+   suspended silt, the vignette is the depth falloff at the pond's edge, and the
+   frame wash is the light pooling on the surface. They all share one light
+   travel time (--tide, 9.5s) so nothing reads as a separate effect stacked on
+   top. Everything that moves here moves on transform/opacity only.
+   ========================================================================== */
+:root{
+  --tide: 9.5s;                  /* one full pass of surface light */
+  --tide-ease: cubic-bezier(.45,.05,.55,.95);
+}
+
+/* --- the grain is silt hanging in the water: it drifts, very slowly, and
+   rises a little. Animating background-position is paint work, so it rides a
+   pre-tiled layer instead and only moves when the page is not scrolling. --- */
+body::before{
+  inset:-24px!important;                       /* oversized so drift has room */
+  opacity:.5;
+  background-image:var(--weave),var(--grain);
+  background-repeat:repeat,repeat;
+  background-size:auto,3px 3px;
+  animation:siltdrift 61s linear infinite;
+  transition:opacity .5s linear;
+}
+@keyframes siltdrift{
+  0%   {transform:translate3d(0,0,0)}
+  25%  {transform:translate3d(-7px,-11px,0)}
+  50%  {transform:translate3d(4px,-19px,0)}
+  75%  {transform:translate3d(7px,-8px,0)}
+  100% {transform:translate3d(0,0,0)}
+}
+/* when the page moves, the water moves with it — and the silt settles */
+html.is-scrolling body::before{animation-play-state:paused;opacity:.34}
+html.was-scrolling body::before{opacity:.4}
+
+/* --- vignette: the pond edge. Deepens while you scroll (you are moving
+   through the water), settles back when you stop. --- */
+.vignette{
+  background:
+    radial-gradient(125% 95% at 50% 44%,transparent 50%,rgba(43,38,32,.085) 100%),
+    radial-gradient(150% 110% at 50% 120%,rgba(43,38,32,.055),transparent 58%);
+  transition:opacity .55s var(--tide-ease);
+}
+html.is-scrolling .vignette{opacity:.72}
+html.was-scrolling .vignette{opacity:.86}
+
+/* --- the light pooling on the surface, on the content frame itself.
+   One ::after on body, never touching layout. --- */
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(80% 55% at 50% -8%,rgba(255,252,244,.20),transparent 62%),
+             radial-gradient(60% 40% at 12% 104%,rgba(217,164,65,.10),transparent 60%);
+  mix-blend-mode:screen;
+  opacity:.6;
+  animation:surfacebr {var(--tide)} var(--tide-ease) infinite alternate;
+  transition:opacity .5s linear;
+}
+@keyframes surfacebr{
+  from{transform:translate3d(0,0,0) scale(1)}
+  to  {transform:translate3d(0,-1.6%,0) scale(1.035)}
+}
+html.is-scrolling body::after{opacity:.9}
+
+/* --- arrival: content does not "drop in", it RESURFACES — rising with a
+   little water drag, the way something floats up off a pond bed. --- */
+.flow{
+  opacity:0;
+  transform:translate3d(0,20px,0) scale(.992);
+  filter:blur(3px);
+  transition:opacity .78s var(--ease-in),
+             transform .9s cubic-bezier(.16,.84,.36,1),
+             filter .78s var(--ease-in);
+}
+.flow.flow-in{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+/* cards get a longer float so they read as heavier, deeper objects */
+.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow,
+.post.flow,.voice.flow,.costrows>div.flow{
+  transform:translate3d(0,26px,0) scale(.988);
+  transition-duration:.95s,.95s,.8s;
+}
+
+/* --- the ground itself drifts a hair as you scroll (parallax breathing),
+   handled on the canvas; this only guarantees no hard edge ever shows. --- */
+.bgfx{transition:none}
+
+/* --- section rules fill like water finding its level --- */
+.shead h2::after{transform-origin:left;will-change:transform}
+
+/* --- links and buttons get a ripple-scale nudge, not a jump --- */
+.btn,.fcols a{transition:transform .32s cubic-bezier(.2,.8,.3,1),
+                          background-color .32s var(--ease-io),
+                          color .32s var(--ease-io)}
+
+/* --- reduced motion: keep the water as a still photograph --- */
+html.reduce body::before,
+html.reduce body::after{animation:none}
+html.reduce .vignette{opacity:1}
+html.reduce .flow{filter:none;transform:none;opacity:1}
+@media (prefers-reduced-motion: reduce){
+  body::before,body::after{animation:none!important}
+  .flow{opacity:1!important;transform:none!important;filter:none!important}
+}
+
+/* v35: the flat ground is gone on purpose. Guard against any later rule
+   collapsing the water back into a single pale value. */
+html{
+  background:linear-gradient(180deg,var(--paper) 0%,var(--paper) 32%,var(--paper-deep) 100%)!important;
+  background-attachment:fixed!important;
+}
