@@ -120,8 +120,9 @@
         motifs.push({
           m: (mi + alt) % MOTIFS.length,
           bx: Math.random()*w, by: Math.random()*h,
-          /* deeper marks are smaller and fainter */
-          s: (0.62 + 0.95*(1-depth)) * (0.75 + Math.random()*0.55),
+          /* SIZE: 10% of the screen's short edge. Deeper marks sit a little
+             smaller (min 78% of that) so they still read as further away. */
+          s: 1.0,
           ax: 22 + 40*(1-depth) + Math.random()*30,
           ax2: 9 + 18*(1-depth) + Math.random()*14,
           fx: 0.00009 + Math.random()*0.00009,
@@ -133,7 +134,9 @@
           rrot: (Math.random()-0.5)*0.42,
           fr: 0.00006 + Math.random()*0.00007,
           depth: depth,
-          a: (0.30 - 0.17*depth) + Math.random()*0.07
+          /* 10% of the short edge; deeper = slightly smaller */
+          px: (Math.min(w,h) * 0.10) * (1.0 - 0.22*depth),
+          a: (0.62 - 0.20*depth) + Math.random()*0.06
         });
       }
 
@@ -203,14 +206,14 @@
         var rot = mo.rrot + Math.sin(e*mo.fr + mo.ph)*0.11
                   + Math.sin(e*0.0004 + mo.ph2)*0.05;
         /* scroll makes them swing, then they settle */
-        rot += flow * 0.0016 * (1 - mo.depth);
-        var mw = 132*mo.s, mh = 77*mo.s;
+        rot += flow * 0.0011 * (1 - mo.depth);
+        var mw = mo.px, mh = mo.px * (70/120);
         ctx.save();
         ctx.globalAlpha = Math.max(0, Math.min(0.5, mo.a * (1 + wakeAmp*0.004)));
         ctx.translate(mx, my + bob);
         ctx.rotate(rot);
         /* deeper marks blur very slightly, like looking through more water */
-        ctx.filter = mo.depth > 0.55 ? "blur(0.7px)" : "none";
+        ctx.filter = mo.depth > 0.7 ? "blur(0.6px)" : "none";
         ctx.drawImage(mim, -mw/2, -mh/2, mw, mh);
         ctx.restore();
       }
