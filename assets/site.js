@@ -161,7 +161,8 @@ window.PRAJNA = window.PRAJNA || {
   }
 
   /* gallery lightbox */
-  var gal = document.querySelector(".gal");
+/* v38: the .gal lightbox was dead code on every page (gallery uses the
+   #gal-ss slideshow with its own zoom). Removed. */
   if(gal){
     var figs = Array.prototype.slice.call(gal.querySelectorAll("figure"));
     var cur = 0;
@@ -218,18 +219,9 @@ window.PRAJNA = window.PRAJNA || {
   window.addEventListener("scroll", onScroll, { passive:true });
   onScroll();
 
-  /* reveal on scroll */
-  var rEls = document.querySelectorAll(".reveal");
-  if(!reduced && "IntersectionObserver" in window){
-    var io = new IntersectionObserver(function(entries){
-      for(var q=0;q<entries.length;q++){
-        if(entries[q].isIntersecting){ entries[q].target.classList.add("in"); io.unobserve(entries[q].target); }
-      }
-    }, { threshold:.1, rootMargin:"0px 0px -5% 0px" });
-    for(var r=0;r<rEls.length;r++){ io.observe(rEls[r]); }
-  } else {
-    for(var s=0;s<rEls.length;s++){ rEls[s].classList.add("in"); }
-  }
+  /* v38: the .reveal IntersectionObserver fought fluid.js's .flow system
+     (one set transform:none!important while the other animated it). .flow
+     owns arrival now, so this is gone. */
 
   /* gentle 3D tilt on cards (desktop pointers only) */
   if(!reduced && window.matchMedia && window.matchMedia("(pointer:fine)").matches){
@@ -251,7 +243,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v37"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v38"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -328,9 +320,9 @@ window.PRAJNA = window.PRAJNA || {
 /* v26: send-to-a-friend - the word-of-mouth door, logged as share_tap */
 (function(){
   function share(){
-    var url=location.origin+'/prajna-co-hab/';
+    var url=location.href;
     log('share_tap','');
-    if(navigator.share){ navigator.share({title:'Prajna Co-hab, Moshi', text:'Family-run co-living house near Chakan MIDC - home food, 2 beds open', url:url}).catch(function(){}); }
+    if(navigator.share){ navigator.share({title:'Prajna Co-hab, Moshi', text:'Family-run co-living house near Chakan MIDC - home food, no broker', url:url}).catch(function(){}); }
     else{ window.open('https://wa.me/?text='+encodeURIComponent('Prajna Co-hab, Moshi - family-run co-living near Chakan MIDC. Home food, fair rent. '+url),'_blank'); }
   }
   document.addEventListener('click', function(e){

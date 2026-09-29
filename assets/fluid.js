@@ -95,7 +95,7 @@
       /* SKIN — the shallow wave at the top, what you actually see looking at
          a pond. Only the upper third, sitting above the caustics. */
       skins = [];
-      var sn = phone ? 9 : 20;
+      var sn = phone ? 8 : 12;
       for(var q=0;q<sn;q++){
         skins.push({
           y: (q+0.5)/sn,                      /* 0 at surface .. 1 at depth */
@@ -112,8 +112,8 @@
          over it. They sink slowly, rock on the swell, and are brightest near
          the surface. Depth drives size, alpha and blur so they read as being
          at different distances inside the same water. */
-      var lo = phone ? 7 : 14;
-      var n = Math.max(lo, Math.min(24, Math.round((w*h)/64000)));
+      var lo = phone ? 5 : 10;
+      var n = Math.max(lo, Math.min(12, Math.round((w*h)/110000)));
       motifs = [];
       for(var mi=0;mi<n;mi++){
         var depth = Math.random();                 /* 0 surface .. 1 bed */
@@ -213,7 +213,6 @@
         ctx.translate(mx, my + bob);
         ctx.rotate(rot);
         /* deeper marks blur very slightly, like looking through more water */
-        ctx.filter = mo.depth > 0.7 ? "blur(0.6px)" : "none";
         ctx.drawImage(mim, -mw/2, -mh/2, mw, mh);
         ctx.restore();
       }
@@ -447,7 +446,7 @@
   function flow(){
     var sel = "section, .card, .promises div, .menucard .day, .post, .faq details, .amen div, .step, " +
               ".hero .cta-row, .familyband, .tourbox, .costrows>div, .voice, .statrow>div, .plaque, " +
-              ".board .post, .loc, .day, .sheet, .pitstats, .onepager";
+              ".board .post, .loc, .day";
     var items = document.querySelectorAll(sel);
     if(!("IntersectionObserver" in window)){
       Array.prototype.forEach.call(items, function(el){ el.classList.add("flow-in"); });
@@ -466,21 +465,8 @@
     });
   }
 
-  /* 5 — scroll chrome */
-  function chrome(){
-    var head = document.querySelector("header");
-    if(!head) return;
-    var last = window.pageYOffset, ticking = false;
-    function onScroll(){
-      var y = window.pageYOffset;
-      if(Math.abs(y-last) > 6){ head.classList.toggle("scrolled", y > 24); last = y; }
-      ticking = false;
-    }
-    window.addEventListener("scroll", function(){
-      if(!ticking){ ticking = true; requestAnimationFrame(onScroll); }
-    }, { passive: true });
-    onScroll();
-  }
+  /* 5 — scroll chrome moved into site.js so only one listener
+     toggles header.scrolled (two were racing). */
 
   function boot(){ ambient(); lotuses(); ripples(); flow(); chrome(); }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

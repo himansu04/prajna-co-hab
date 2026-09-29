@@ -32,6 +32,7 @@ a{color:var(--terra)}
 .lede{font-size:1.05rem;max-width:40rem}
 img{max-width:100%}
 .tag{font-family:var(--font-ui);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--terra)}
+/* v38: ochre as text was 2.07:1. Ornament colour, never text. */
 .tag.gold{color:var(--ochre)}
 /* reveal system */
 /* folk trim: dashes + dots, opens like a doorway */
@@ -72,10 +73,10 @@ header.scrolled{box-shadow:0 8px 24px rgba(43,38,32,.08);border-bottom:1px solid
 .hero h1{margin:.6rem 0 .9rem}
 .hero .cta-row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.4rem}
 .badge{display:inline-block;background:var(--ochre-soft);border:1px solid var(--ochre);color:var(--ochre-ink);font-family:var(--font-ui);font-size:.72rem;padding:.3rem .8rem;border-radius:99px;margin-bottom:.7rem}
-.hero-lotus{position:absolute;right:4%;bottom:-30px;width:230px;height:135px;pointer-events:none;opacity:.09;animation:float 9s ease-in-out infinite alternate;
+.hero-lotus{position:absolute;right:2%;bottom:6px;width:150px;height:88px;pointer-events:none;opacity:.08;animation:float 9s ease-in-out infinite alternate;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70' fill='none' stroke='%23c05a2e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M60 58C54 40 54 20 60 6c6 14 6 34 0 52Z'/%3E%3Cpath d='M60 58C50 46 38 34 28 16c14 8 26 26 32 42Z'/%3E%3Cpath d='M60 58c10-12 22-24 32-42-14 8-26 26-32 42Z'/%3E%3Cpath d='M60 58C48 52 34 50 12 50c16 10 34 12 48 8Z'/%3E%3Cpath d='M60 58c12-6 26-8 48-8-16 10-34 12-48 8Z'/%3E%3C/svg%3E") center/contain no-repeat}
 @keyframes float{from{transform:translateY(0) rotate(0deg)}to{transform:translateY(-14px) rotate(2deg)}}
-@media(max-width:720px){.hero{grid-template-columns:1fr;gap:1.6rem}.hero-lotus{display:none}}
+@media(max-width:720px){.hero{grid-template-columns:1fr;gap:1.6rem}}
 /* load-in for hero children */
 .fadeup{animation:fadeUp .7s var(--ease) both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
@@ -91,6 +92,7 @@ header.scrolled{box-shadow:0 8px 24px rgba(43,38,32,.08);border-bottom:1px solid
 section{padding:3rem 0;border-top:1px solid var(--line);position:relative}
 section.flat{border-top:none;padding-top:1.6rem}
 /* mandana ornament on section borders */
+section::before{content:"";position:absolute;left:0;right:0;top:-6px;height:10px;
   background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 10' fill='%23d9a441'%3E%3Ccircle cx='8' cy='5' r='2.2'/%3E%3Crect x='30' y='1.5' width='7' height='7' transform='rotate(45 33.5 5)'/%3E%3Ccircle cx='70' cy='5' r='2.8'/%3E%3Crect x='103' y='1.5' width='7' height='7' transform='rotate(45 106.5 5)'/%3E%3Ccircle cx='132' cy='5' r='2.2'/%3E%3C/svg%3E") center/140px 10px no-repeat;opacity:.55;padding:0 6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:1.4rem}
 .grid.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
@@ -344,13 +346,14 @@ body::before{z-index:-2!important}
   background-image:var(--weave),radial-gradient(90% 130% at 82% 0%, rgba(217,164,65,.18), transparent 60%);
 }
 /* folk motif watermarks on the quiet sections */
-.ripplelotus{position:absolute;inset:auto -30px -26px auto;width:min(340px,52vw);aspect-ratio:120/70;
+.ripplelotus{position:absolute;inset:auto -16px -22px auto;width:min(220px,34vw);aspect-ratio:120/70;
   background-repeat:no-repeat;background-position:bottom right;background-size:contain;opacity:.09;pointer-events:none;z-index:0}
 section{position:relative}
 section>*:not(.ripplelotus){position:relative;z-index:1}
-@media(max-width:760px){.ripplelotus{width:180px;opacity:.075}}
+@media(max-width:760px){.ripplelotus{width:120px;opacity:.07}}
+.lotusdraw{display:block;width:64px;height:auto;margin:0 auto .6rem;color:var(--ochre)}
 .cta-strip .lotusdraw{color:var(--paper);opacity:.09}
-.plaque{padding-bottom:6.4rem}
+.plaque{padding-bottom:1.6rem}
 .plaque .lotusdraw{top:auto;bottom:1.5rem;transform:translateX(-50%);width:180px;opacity:.13}
 @keyframes drawlotus{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}
 .flow{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -931,7 +934,7 @@ body::after{
              radial-gradient(60% 40% at 12% 104%,rgba(217,164,65,.10),transparent 60%);
   mix-blend-mode:screen;
   opacity:.6;
-  animation:surfacebr {var(--tide)} var(--tide-ease) infinite alternate;
+  animation:surfacebr var(--tide) var(--tide-ease) infinite alternate;
   transition:opacity .5s linear;
 }
 @keyframes surfacebr{
@@ -986,3 +989,46 @@ html{
   background:linear-gradient(180deg,var(--paper) 0%,var(--paper) 32%,var(--paper-deep) 100%)!important;
   background-attachment:fixed!important;
 }
+
+
+/* ==========================================================================
+   v38 — AUDIT PASS
+   Contrast repairs, the hidden-attribute fix, and killing dead selectors.
+   ========================================================================== */
+
+/* ochre is ORNAMENT. The moment it is text it fails contrast, so anything
+   that was ochre-as-text moves onto the readable terracotta. */
+.tag.gold{color:var(--terra-dark)!important;background:rgba(246,234,208,.9)}
+.voice .q{color:var(--ochre-ink)}
+.voice .strs{color:var(--terra-dark)}
+/* small terracotta text: 4.21:1 fails AA for body size, push to terra-dark */
+.tag,.go{color:var(--terra-dark)}
+/* sub-.8rem muted text over moving glass needs more than #7a6f60 */
+.dtime,.who,figcaption,.fbottom{color:#655a4d}
+
+/* the vacancy pill is display:inline-flex with no [hidden] reset, so an empty
+   badge rendered in the header on every page. */
+.vacancy[hidden]{display:none!important}
+
+/* star labels were 32px tall; WCAG target is 44 */
+.stars label{padding:.4rem .12rem;min-width:26px;min-height:44px;display:inline-flex;
+             align-items:center;justify-content:center}
+
+/* lightboxes had no dialog semantics */
+.lb{outline:none}
+
+
+/* ==========================================================================
+   v38 — DEEP SWEEP
+   ========================================================================== */
+
+/* .ss-dots were 8px with no accessible name or current-state. The glyph stays
+   small, the hit area and semantics become real. */
+.ss-dots{display:flex;gap:.5rem;justify-content:center;padding:.5rem 0}
+.ss-dot{position:relative;width:12px;height:12px}
+.ss-dot::after{content:"";position:absolute;inset:-16px;border-radius:50%}
+.ss-dot[aria-current="true"]{outline:2px solid var(--terra-dark);outline-offset:3px}
+/* captions were invisible to keyboard users (opacity:0 until hover) */
+.ss figure:focus-within figcaption{opacity:1}
+
+/* dead selectors: .chip and .pitstats match nothing in any page */
