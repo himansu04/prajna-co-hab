@@ -50,8 +50,8 @@
     var alt=0;
     var DEEP = [251,247,239];              /* the pale bed under the water */
     var SURF = [255,251,242];              /* light pooling on top */
-    var beds=[], caustics=[], skins=[], tinters=[], drops=[], motifs=[];
-    var phase = 0, sy=0, lastSy=0, flow=0, wakePh=0, wakeAmp=0;
+    var beds=[], caustics=[], skins=[], tinters=[], drops=[], motifs=[], swells=[];
+    var phase = 0, sy=0, lastSy=0, flow=0, wakePh=0, wakeAmp=0, moving=0;
 
     function resize(){
       w = window.innerWidth; h = window.innerHeight;
@@ -80,7 +80,7 @@
          caustic: the squared sum of two crossing wavefronts, which naturally
          leaves bright filaments rather than blobs. */
       caustics = [];
-      var cn = phone ? 2 : 3;
+      var cn = 2;   /* v39: was 3 - the third pass cost a full wavefront sweep for almost no visible gain */
       for(var k=0;k<cn;k++){
         caustics.push({
           sc: 0.0022 + 0.0016*k + 0.0004*((alt+k)%4),
@@ -88,7 +88,11 @@
           ph: k*1.7 + alt*0.23,
           sp: 0.00011 + 0.00007*k,
           dy: 0.00006 + 0.00004*k,
-          a:  (k===0 ? 0.11 : 0.07) - 0.015*k
+          /* v39: these alphas were written when this layer threw before it
+             could ever draw, so nobody ever saw them. Live, the old values
+             put 18% of the viewport under lum 200 and pushed warmth to +31:
+             a warm haze rather than moving water. Halved and narrowed. */
+          a:  (k===0 ? 0.034 : 0.021) - 0.004*k
         });
       }
 
@@ -108,6 +112,21 @@
         });
       }
 
+      /* SWELL — three long travelling waves that pass under everything.
+         This is the layer's shared motion: one body of water moving, rather
+         than N independent objects deciding to move. Periods 1 : 0.71 : 0.53
+         of each other so the pattern takes minutes to repeat. */
+      swells = [];
+      var swn = phone ? 2 : 3;
+      for(var swi=0; swi<swn; swi++){
+        swells.push({
+          f: (0.000052 - swi*0.000011) * (1 + ((alt+swi)%3)*0.06),
+          a: (13 - swi*3.4) * (phone ? 0.7 : 1),
+          k: 0.0032 + swi*0.0021,
+          ph: swi*2.3 + alt*0.41
+        });
+      }
+
       /* MOTIFS — the folk marks, floating in the water rather than drifting
          over it. They sink slowly, rock on the swell, and are brightest near
          the surface. Depth drives size, alpha and blur so they read as being
@@ -116,27 +135,38 @@
       var n = Math.max(lo, Math.min(12, Math.round((w*h)/110000)));
       motifs = [];
       for(var mi=0;mi<n;mi++){
-        var depth = Math.random();                 /* 0 surface .. 1 bed */
+        /* SUBMERGED, not sinking. A mark hanging in still water doesn't
+           travel anywhere: it holds station and answers the surface above
+           it. Random depth across the whole column so the marks occupy
+           different distances inside the same water. */
+        var depth = 0.08 + Math.random()*0.72;     /* 0.08 near surf .. 0.80 deep */
         motifs.push({
           m: (mi + alt) % MOTIFS.length,
           bx: Math.random()*w, by: Math.random()*h,
-          /* SIZE: 10% of the screen's short edge. Deeper marks sit a little
-             smaller (min 78% of that) so they still read as further away. */
+          /* SIZE: 10% of the screen's short edge, scaled by depth so the
+             deep ones sit a little smaller and read as further away. */
           s: 1.0,
-          ax: 22 + 40*(1-depth) + Math.random()*30,
-          ax2: 9 + 18*(1-depth) + Math.random()*14,
-          fx: 0.00009 + Math.random()*0.00009,
-          fx2: 0.00015 + Math.random()*0.00012,
+          /* the long, slow sway. Periods are deliberately incommensurate
+             (0.9 : 1.7 : 0.31) so a mark never retraces its own path -
+             that is what stops it looking like a loop. */
+          ax: 12 + 16*(1-depth) + Math.random()*14,
+          ax2: 5 + 9*(1-depth) + Math.random()*7,
+          fx: 0.00004 + Math.random()*0.000035,
+          fx2: 0.000075 + Math.random()*0.00005,
           ph: Math.random()*TAU, ph2: Math.random()*TAU,
-          /* the sink: slower than a fall, and it eases */
-          sink: (0.004 + Math.random()*0.010) * (0.5 + depth),
+          /* the vertical draft of still water: a very slow settle, far
+             slower than the horizontal sway */
           ph3: Math.random()*TAU,
-          rrot: (Math.random()-0.5)*0.42,
-          fr: 0.00006 + Math.random()*0.00007,
+          vy: 0.00033 + Math.random()*0.00030,
+          rrot: (Math.random()-0.5)*0.30,
+          /* roll: the slowest of all the rotations, plus a faster flutter */
+          fr: 0.000022 + Math.random()*0.00003,
+          fr2: 0.00009 + Math.random()*0.00005,
+          ph4: Math.random()*TAU,
           depth: depth,
-          /* 10% of the short edge; deeper = slightly smaller */
-          px: (Math.min(w,h) * 0.10) * (1.0 - 0.22*depth),
-          a: (0.62 - 0.20*depth) + Math.random()*0.06
+          /* 10% of the short edge; deeper = smaller */
+          px: (Math.min(w,h) * 0.10) * (1.0 - 0.26*depth),
+          a: (0.58 - 0.26*depth) + Math.random()*0.05
         });
       }
 
@@ -170,7 +200,25 @@
       wakeAmp += (Math.min(Math.abs(dv), 60) - wakeAmp) * 0.12;
       wakePh += Math.abs(dv) * 0.0000009;
       phase += 0.00042 + (water - 0.34) * 0.0006;
-      flow += (wakeAmp * 0.06 - flow) * 0.06;
+      /* the flow force RISES fast and FALLS slowly. Water is heavy: it takes
+         the push immediately and then takes its time giving it back, which is
+         why a fast up-slew reads as weight and a symmetric one reads as jelly. */
+      flow += (wakeAmp * 0.06 - flow) * (wakeAmp > flow/0.06 ? 0.10 : 0.035);
+      /* how long, in px, the water has been moving for: the delay that makes
+         the surface light lag the scroll rather than stick to it */
+      moving += ((wakeAmp > 0.6 ? 1 : 0) - moving) * 0.045;
+
+      /* the travelling swell. Three long waves crossing at slightly different
+         speeds and angles: where they stack the whole layer lifts, which is
+         what makes the marks move as ONE body of water instead of each one
+         doing its own little dance. */
+      var sy0 = 0, sy1 = 0;
+      for(var swi=0; swi<swells.length; swi++){
+        var sw = swells[swi];
+        var ph = e*sw.f + sw.ph + (sy*sw.k*0.10);
+        sy0 += Math.sin(ph) * sw.a;
+        sy1 += Math.sin(ph*0.83 + sw.ph) * sw.a * 0.7;
+      }
 
       ctx.clearRect(0,0,w,h);
 
@@ -189,30 +237,56 @@
         ctx.fillRect(0,0,w,h);
       }
 
-      /* ---- LAYER 0.5 · the floating marks. Drawn UNDER the caustics so the
-         light travels across them, which is what makes them sit in the water
-         instead of hovering above it. ---- */
+      /* ---- LAYER 0.5 · the floating marks, suspended in the water.
+         Drawn UNDER the caustics, so the light of the surface travels across
+         them: that ordering is what makes them sit IN the water rather than
+         hover above it. Nothing here travels fast - the whole layer is
+         deliberately one order of magnitude slower than the water around it,
+         because that is the difference between floating and drifting. ---- */
       for(var m2=0;m2<motifs.length;m2++){
         var mo = motifs[m2];
         var mim = imgs[mo.m];
         if(!mim || !mim.complete) continue;
-        /* sink slowly; the page scroll drags them a touch slower than the glass */
-        var span = h + 300;
-        var my = ((mo.by - e*mo.sink - sy*0.018) % span + span) % span - 150;
-        var mx = mo.bx + Math.sin(e*mo.fx + mo.ph)*mo.ax
-                       + Math.sin(e*mo.fx2 + mo.ph2)*mo.ax2;
-        /* the swell: they rock and bob a little, deeper ones lag */
-        var bob = Math.sin(e*0.0007 + mo.ph3 + my*0.006) * (5 + 7*(1-mo.depth));
-        var rot = mo.rrot + Math.sin(e*mo.fr + mo.ph)*0.11
-                  + Math.sin(e*0.0004 + mo.ph2)*0.05;
-        /* scroll makes them swing, then they settle */
-        rot += flow * 0.0011 * (1 - mo.depth);
+        /* three incommensurate sines per axis: the path never closes, so the
+           mark keeps finding new positions without ever leaving its pool */
+        var swayX = Math.sin(e*mo.fx + mo.ph)*mo.ax
+                  + Math.sin(e*mo.fx2 + mo.ph2)*mo.ax2
+                  + Math.sin(e*mo.fx*2.7 + mo.ph4)*mo.ax2*0.35;
+        var sx = swells.reduce(function(acc, sw){
+          return acc + Math.sin(e*sw.f + sw.ph + mo.by*sw.k)*sw.a;
+        }, 0);
+        var mx = mo.bx + swayX + sx * (1 - mo.depth);
+
+        /* vertical: a slow draft, plus the long travelling wave that lifts
+           the entire layer. Scroll drags the whole column a touch slower than
+           the glass in front, which is the parallax. */
+        var swellY = sy0 * (1 - mo.depth*0.55);
+        var my = mo.by
+               + Math.sin(e*mo.vy + mo.ph3)*(7 + 10*(1-mo.depth))
+               + sy1 * (1 - mo.depth*0.6)
+               - sy*0.018;
+        /* wrap with generous margin so a mark is never clipped mid-frame */
+        var span = h + 420;
+        my = ((my - e*mo.vy*0.0) % span + span) % span - 210;
+
+        var bob = Math.sin(e*0.00042 + mo.ph3 + my*0.005) * (4 + 6*(1-mo.depth));
+        /* squash and stretch: moving water does not move a solid object, it
+           deforms what sits in it. Amplitude rises with scroll so the marks
+           lean into the flow instead of being shoved by it. */
+        var charge = Math.min(1, wakeAmp/34);
+        var sq = 1 + (0.010 + 0.032*charge) * Math.sin(e*0.00062 + mo.ph + mx*0.004);
+        var sqx = 1 - (sq-1)*0.68;
+
+        var rot = mo.rrot
+                + Math.sin(e*mo.fr + mo.ph)*0.075
+                + Math.sin(e*mo.fr2 + mo.ph4)*0.028
+                + flow * 0.00072 * (1 - mo.depth);
         var mw = mo.px, mh = mo.px * (70/120);
         ctx.save();
-        ctx.globalAlpha = Math.max(0, Math.min(0.5, mo.a * (1 + wakeAmp*0.004)));
+        ctx.globalAlpha = Math.max(0, Math.min(0.5, mo.a * (1 + wakeAmp*0.0035)));
         ctx.translate(mx, my + bob);
         ctx.rotate(rot);
-        /* deeper marks blur very slightly, like looking through more water */
+        ctx.scale(sqx, sq);
         ctx.drawImage(mim, -mw/2, -mh/2, mw, mh);
         ctx.restore();
       }
@@ -228,6 +302,11 @@
         var stepY = h/ny, stepX = w/nx;
         var ah = 0.5;
         var w1a = 1.6, w2a = 1.1;
+        var sc = ca.sc;          /* v39 FIX: the caustic math below read a bare
+                                    `sc` that was never bound, so this whole layer
+                                    threw a ReferenceError on every frame and the
+                                    light-folding veins never drew at all. The
+                                    wavelength lived on ca.sc the entire time. */
         var b1 = -h*0.34 + flow + Math.sin(e*ca.dy + ca.ph)*h*0.06;
         var b2 = -h*0.52 + flow*1.4 + Math.cos(e*ca.dy*0.8 + ca.ph)*h*0.05;
         var vx = Math.sin(t)*w*0.035;
@@ -242,12 +321,12 @@
             var v = (f1 + f2) * 0.5;
             v = v*v*v*v*v;                     /* ^5 = thin veins, not blobs */
             v *= (0.40 + 0.60*Math.sin(y/stepY*0.11 + t*0.6));
-            if(v < 0.020) { continue; }
+            if(v < 0.055) { continue; }
             ctx.rect(x - stepX*0.5, y - stepY*0.5, stepX*1.02, stepY*1.02);
           }
         }
         ctx.globalAlpha = ca.a;
-        ctx.fillStyle = "rgb(206,186,150)";
+        ctx.fillStyle = "rgb(228,214,186)";
         ctx.fill();
       }
       ctx.restore();
@@ -260,12 +339,16 @@
         var sk = skins[q2];
         /* the whole skin lifts and bunches as you scroll */
         var yBase = -h*0.12 + sk.y*h*1.18 + flow*(1+sk.y) - (sy*0.03)%h;
-        var drift = Math.sin(e*sk.ax + sk.ph)*w*0.06 + Math.sin(e*sk.ax2 + sk.ph2)*w*0.028;
-        var xoff = drift + Math.sin(e*0.00009 + q2)*w*0.02;
-        var thick = 16 + 26*(1 - sk.y) + (wakeAmp*0.5)*(1 - sk.y);
+        /* the surface band travels WITH the swell, so the skin and the marks
+           are visibly the same body of water */
+        var drift = Math.sin(e*sk.ax + sk.ph)*w*0.05 + Math.sin(e*sk.ax2 + sk.ph2)*w*0.022;
+        var xoff = drift + Math.sin(e*0.00007 + q2)*w*0.02 + sy0*2.4;
+        /* thinner and softer than before: a still pond's surface reads as a
+           broad sheen, not as stripes */
+        var thick = 26 + 34*(1 - sk.y) + (wakeAmp*0.45)*(1 - sk.y);
         var g2 = ctx.createLinearGradient(0, yBase-thick, 0, yBase+thick);
         var col = sk.light ? "238,226,200" : "206,162,84";
-        var aa = sk.a * (0.55 + 0.45*Math.sin(e*0.0004 + q2*1.1)) * (1 + wakeAmp*0.012);
+        var aa = sk.a * (0.55 + 0.45*Math.sin(e*0.00026 + q2*1.1 + sy1*0.004)) * (1 + wakeAmp*0.010);
         g2.addColorStop(0,   "rgba("+col+",0)");
         g2.addColorStop(0.42,"rgba("+col+","+Math.max(0,Math.min(0.22,aa))+")");
         g2.addColorStop(0.5, "rgba("+col+","+Math.max(0,Math.min(0.3,aa*1.45))+")");
@@ -277,6 +360,21 @@
         ctx.ellipse(w/2 + xoff, yBase, w*0.78, thick, 0, 0, TAU);
         ctx.fill();
       }
+      ctx.restore();
+
+      /* ---- LAYER 2.5 · the raking sheen. A wet surface catches light at an
+         angle across its whole face. One broad, faint diagonal is enough to
+         stop the water reading matte. ---- */
+      var sheen = ctx.createLinearGradient(w*0.18, 0, w*0.92, h);
+      sheen.addColorStop(0,    "rgba(255,253,246,0)");
+      sheen.addColorStop(0.42, "rgba(255,253,246,"+ (0.020 + 0.018*(1-moving)).toFixed(4) +")");
+      sheen.addColorStop(0.56, "rgba(246,240,226,"+ (0.026 + 0.022*(1-moving)).toFixed(4) +")");
+      sheen.addColorStop(1,    "rgba(255,253,246,0)");
+      ctx.save();
+      ctx.globalCompositeOperation = "lighten";
+      ctx.fillStyle = sheen;
+      ctx.translate(0, Math.sin(e*0.00006)*h*0.012);
+      ctx.fillRect(0, 0, w, h);
       ctx.restore();
 
       /* ---- LAYER 3 · body colour. Ochre and terracotta suspended in the
@@ -295,10 +393,10 @@
       }
 
       if(water > 0.4){
-        px += (tx-px)*0.028; py += (ty-py)*0.028;
-        var lg = ctx.createRadialGradient(px*w, py*h, 10, px*w, py*h, Math.max(w,h)*0.6);
-        lg.addColorStop(0,   "rgba(255,251,238,0.13)");
-        lg.addColorStop(0.30,"rgba(217,164,65,0.07)");
+        px += (tx-px)*0.019; py += (ty-py)*0.019;
+        var lg = ctx.createRadialGradient(px*w, py*h, 6, px*w, py*h, Math.max(w,h)*0.72);
+        lg.addColorStop(0,   "rgba(255,252,242,0.085)");
+        lg.addColorStop(0.34,"rgba(217,164,65,0.055)");
         lg.addColorStop(1,   "rgba(250,246,240,0)");
         ctx.fillStyle = lg;
         ctx.fillRect(0,0,w,h);
@@ -306,19 +404,19 @@
 
       /* ---- drops. A ring spreads, and a second one follows it, so it reads
          as a surface being touched rather than a circle being drawn. ---- */
-      if(!drops.length || e - drops[drops.length-1].t0 > 3200){
+      if(!drops.length || e - drops[drops.length-1].t0 > 6400){
         drops.push({x: w*0.12 + Math.random()*w*0.76,
                     y: h*0.16 + Math.random()*h*0.7,
                     t0: e, sc: 0.7 + Math.random()*0.9});
       }
       for(var d2=drops.length-1; d2>=0; d2--){
         var dp = drops[d2], age = e - dp.t0;
-        if(age > 7200){ drops.splice(d2,1); continue; }
-        var fal = 1 - age/7200;
+        if(age > 15000){ drops.splice(d2,1); continue; }
+        var fal = 1 - age/15000;
         fal = fal*fal;
         for(var rg=0; rg<2; rg++){
-          var rr2 = (18 + age*0.021*dp.sc) * (rg ? 1.6 : 1);
-          ctx.strokeStyle = "rgba(120,106,88," + (fal*(rg?0.05:0.085)).toFixed(4) + ")";
+          var rr2 = (14 + age*0.0135*dp.sc) * (rg ? 1.9 : 1);
+          ctx.strokeStyle = "rgba(126,112,92," + (fal*(rg?0.038:0.062)).toFixed(4) + ")";
           ctx.lineWidth = rg ? 1 : 1.3;
           ctx.beginPath(); ctx.arc(dp.x, dp.y - sy*0.02 + flow*0.2, rr2, 0, TAU); ctx.stroke();
         }
@@ -327,14 +425,15 @@
       /* ---- wake. Faint streaked lines behind a scrolling page. ---- */
       if(wakeAmp > 1.2){
         ctx.save();
-        ctx.globalAlpha = Math.min(0.5, wakeAmp/60);
-        for(var k3=0;k3<5;k3++){
-          var wy = (k3/5)*h + (flow*2 % h);
-          ctx.strokeStyle = k3%2 ? "rgba(192,86,33,0.10)" : "rgba(217,164,65,0.13)";
-          ctx.lineWidth = 1;
+        ctx.globalAlpha = Math.min(0.42, wakeAmp/72);
+        for(var k3=0;k3<4;k3++){
+          var wy = (k3/4)*h + (flow*2 % h);
+          ctx.strokeStyle = k3%2 ? "rgba(192,86,33,0.085)" : "rgba(217,164,65,0.11)";
+          ctx.lineWidth = k3%2 ? 0.9 : 1.1;
           ctx.beginPath();
           for(var sx2=0; sx2<=w; sx2+=22){
-            var off = Math.sin(sx2*0.004 + e*0.0002 + k3 + wakePh)*10*(1+wakeAmp/40);
+            var off = Math.sin(sx2*0.0034 + e*0.00014 + k3 + wakePh)*8*(1+wakeAmp/42)
+                    + sy0*0.6;
             if(sx2===0) ctx.moveTo(sx2, wy+off); else ctx.lineTo(sx2, wy+off);
           }
           ctx.stroke();
@@ -359,7 +458,7 @@
         if(v){ document.documentElement.classList.add("was-scrolling"); }
         else {
           /* the water needs a moment to settle after the page stops */
-          setTimeout(function(){ document.documentElement.classList.remove("was-scrolling"); }, 520);
+          setTimeout(function(){ document.documentElement.classList.remove("was-scrolling"); }, 900);
         }
       }
       if(!paused){
@@ -371,7 +470,7 @@
     window.addEventListener("scroll", function(){
       setPaused(true, "scroll");
       if(resumeTimer){ clearTimeout(resumeTimer); }
-      resumeTimer = setTimeout(function(){ setPaused(false, "scroll"); }, 220);
+      resumeTimer = setTimeout(function(){ setPaused(false, "scroll"); }, 260);
       /* keep a coarse wake signal alive while paused, so resuming is a
          continuation of the same motion rather than a jump */
       if(!scrollTick){

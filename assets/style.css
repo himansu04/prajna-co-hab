@@ -923,8 +923,8 @@ html.was-scrolling body::before{opacity:.4}
     radial-gradient(150% 110% at 50% 120%,rgba(43,38,32,.055),transparent 58%);
   transition:opacity .55s var(--tide-ease);
 }
-html.is-scrolling .vignette{opacity:.72}
-html.was-scrolling .vignette{opacity:.86}
+html.is-scrolling .vignette{opacity:.70}
+html.was-scrolling .vignette{opacity:.84}
 
 /* --- the light pooling on the surface, on the content frame itself.
    One ::after on body, never touching layout. --- */
@@ -941,7 +941,11 @@ body::after{
   from{transform:translate3d(0,0,0) scale(1)}
   to  {transform:translate3d(0,-1.6%,0) scale(1.035)}
 }
-html.is-scrolling body::after{opacity:.9}
+html.is-scrolling body::after{opacity:.92;transition:opacity .22s linear}
+/* v39: the light LINGERS. It comes up with the water and takes nearly a
+   second to sink back, so the surface reads as still settling rather than
+   being switched off the instant the page stops. */
+html.was-scrolling body::after{opacity:.78;transition:opacity .85s var(--tide-ease)}
 
 /* --- arrival: content does not "drop in", it RESURFACES — rising with a
    little water drag, the way something floats up off a pond bed. --- */
