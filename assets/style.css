@@ -14,6 +14,12 @@
   --ease:cubic-bezier(.22,.61,.36,1);
   --r-sm:8px;
   --paper-deep:#f2ead9;   /* only for the base of the vertical wash */
+  /* v40 water column: three steps DOWN from paper so the additive caustics
+     have contrast to read against. Still warm cream, not grey - the water is
+     a tint of the same earth, and every tone derives from --paper. */
+  --water-top:#efe5d2;    /* at the surface */
+  --water-mid:#eae0c9;    /* mid column */
+  --water-deep:#e4d8bd;   /* toward the bed */
   --ochre-soft:#f6ead0;   /* ochre at whisper strength, for tag fills */
   --ochre-ink:#7a5a1c;    /* readable text on --ochre-soft */
   --ink-soft:#cdc4b6;     /* text inside the dark bands */
@@ -323,7 +329,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;ba
    would bury the ambient canvas. .bgfx/.vignette stay at negative depth. */
 body>*:not(.bgfx):not(.vignette):not(.vignette){position:relative;z-index:auto}
 /* v8: motion lives BEHIND everything, never beside it */
-html{background:var(--paper-deep)}
+/* v40: this bare duplicate used to re-flatten the ground. Removed - the
+   single water wash further down is the only thing allowed to set it. */
 body{position:relative;isolation:isolate}
 .bgfx{
   position:fixed!important;
@@ -384,10 +391,15 @@ section:not(.flat)::before{content:none}
 /* v10: html carries only the flat paper fallback; the gradient wash lives on the
    canvas layer so it can never paint over the motion. */
 html{
-  /* v35: deeper wash as the base so the water has depth to sit in. The flat
-     --paper value here was flattening the whole site to its lightest cream. */
-  background:linear-gradient(180deg,var(--paper) 0%,var(--paper) 34%,var(--paper-deep) 100%);
-  background-attachment:fixed;
+  /* v40: the base needs to be MEANINGFULLY below white for water to read
+     against. v35's wash bottomed out at --paper-deep, which is still ~242 lum,
+     leaving the additive caustics only ~13 lum of headroom - which is why the
+     whole water stack rendered invisible no matter how its alphas were tuned.
+     Deepened to the tinted water tone so light has room to pool and fold.
+     !important because FOUR separate html{background} rules had accumulated
+     over v35/v37/v38 and the last one silently won every time. */
+  background:linear-gradient(180deg,var(--water-top) 0%,var(--water-mid) 38%,var(--water-deep) 100%) !important;
+  background-attachment:fixed !important;
 }
 body{background:transparent}
 /* glass panels: content stays fully legible while the folk art keeps moving under it */
@@ -571,8 +583,9 @@ p, .lede, .fbottom, .who, .muted, .familyband p, .fblarge { color: var(--muted);
 .feature h2, .feature h3, .cta-strip h2, .cta-strip h3, .plaque h3 { color: var(--paper) !important; }
 .feature .lotusdraw, .cta-strip .lotusdraw { color: var(--ochre) !important; opacity:.18; }
 
-/* ONE paper: the wash runs paper -> paper-deep and nothing else. */
-html { background: var(--paper-deep); }
+/* ONE paper: the wash runs water-top -> water-deep and nothing else. */
+/* v40: the html{background} that lived here was a duplicate of the same
+   property and silently overrode the water wash. Deleted - one rule now. */
 header { background: rgba(250,245,236,.58) !important; }
 .mobilebar { background: rgba(250,245,236,.68) !important; }
 footer { background-image: linear-gradient(180deg, rgba(250,245,236,0), rgba(242,234,217,.45)) !important; }
@@ -987,10 +1000,12 @@ html.reduce .flow{filter:none;transform:none;opacity:1}
   .flow{opacity:1!important;transform:none!important;filter:none!important}
 }
 
-/* v35: the flat ground is gone on purpose. Guard against any later rule
-   collapsing the water back into a single pale value. */
+/* v35 guard, rewritten in v40. It used to pin --paper -> --paper-deep, an
+   almost-white wash, which was itself flattening the water after the v40 base
+   was set. Now it simply re-asserts the v40 water column so ANY later rule
+   cannot collapse the ground back to a single pale value. */
 html{
-  background:linear-gradient(180deg,var(--paper) 0%,var(--paper) 32%,var(--paper-deep) 100%)!important;
+  background:linear-gradient(180deg,var(--water-top) 0%,var(--water-mid) 38%,var(--water-deep) 100%)!important;
   background-attachment:fixed!important;
 }
 

@@ -52,13 +52,19 @@
     var SURF = [255,251,242];              /* light pooling on top */
     var beds=[], caustics=[], skins=[], tinters=[], drops=[], motifs=[], swells=[];
     var phase = 0, sy=0, lastSy=0, flow=0, wakePh=0, wakeAmp=0, moving=0;
+    /* v40: `phone` used to be declared INSIDE resize(), so it was out of scope
+       in draw() - any layer that referenced it threw a ReferenceError on every
+       frame and the whole canvas died silently. Hoisted here so every layer can
+       read it. This is the same bug class that killed the caustics from v35 to
+       v39 (`sc` bound only as a property, never as a local). */
+    var phone = window.innerWidth < 700;
 
     function resize(){
       w = window.innerWidth; h = window.innerHeight;
       c.width = Math.floor(w*dpr); c.height = Math.floor(h*dpr);
       c.style.width = w+"px"; c.style.height = h+"px";
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      var phone = w < 700;
+      phone = w < 700;   /* v40: assigns the hoisted outer flag, no shadow */
       /* seeded from the path so no two pages get the same water */
       alt = (location.pathname.split("/").pop() || "index").length;
 
@@ -69,10 +75,10 @@
         beds.push({
           bx: (0.15 + 0.7*((i*0.37 + alt*0.13) % 1)),
           by: (0.12 + 0.76*((i*0.53 + alt*0.21) % 1)),
-          r:  (0.3 + 0.22*((i*0.29 + alt*0.09) % 1)),
+          r:  (0.38 + 0.26*((i*0.29 + alt*0.09) % 1)),
           sp: 0.00004 + 0.00003*((i+alt)%3),
           ph: i*1.9 + alt*0.37,
-          a:  0.085 + 0.03*(i%3)
+          a:  0.50 + 0.14*(i%3)
         });
       }
 
@@ -92,7 +98,7 @@
              could ever draw, so nobody ever saw them. Live, the old values
              put 18% of the viewport under lum 200 and pushed warmth to +31:
              a warm haze rather than moving water. Halved and narrowed. */
-          a:  (k===0 ? 0.034 : 0.021) - 0.004*k
+          a:  (k===0 ? 0.30 : 0.20) - 0.04*k
         });
       }
 
@@ -107,7 +113,7 @@
           ax2:0.00031 + 0.00019*((q*0.29+alt*0.11)%1),
           ph: Math.random()*TAU,
           ph2:Math.random()*TAU,
-          a: (0.5 - 0.34*((q+0.5)/sn)) * 0.34,
+          a: (0.5 - 0.22*((q+0.5)/sn)) * 1.60,
           light: q % 3 !== 0
         });
       }
@@ -166,7 +172,7 @@
           depth: depth,
           /* 10% of the short edge; deeper = smaller */
           px: (Math.min(w,h) * 0.10) * (1.0 - 0.26*depth),
-          a: (0.58 - 0.26*depth) + Math.random()*0.05
+          a: (0.78 - 0.30*depth) + Math.random()*0.06
         });
       }
 
@@ -180,7 +186,7 @@
           r:  0.36 + 0.18*((b2*0.31 + alt*0.07) % 1),
           sp: 0.00006 + 0.00005*((b2+alt)%3),
           ph: b2*2.1 + alt*0.31,
-          a:  b2===2 ? 0.05 : 0.09
+          a:  b2===2 ? 0.24 : 0.40
         });
       }
     }
@@ -283,7 +289,7 @@
                 + flow * 0.00072 * (1 - mo.depth);
         var mw = mo.px, mh = mo.px * (70/120);
         ctx.save();
-        ctx.globalAlpha = Math.max(0, Math.min(0.5, mo.a * (1 + wakeAmp*0.0035)));
+        ctx.globalAlpha = Math.max(0, Math.min(0.82, mo.a * (1 + wakeAmp*0.0035)));
         ctx.translate(mx, my + bob);
         ctx.rotate(rot);
         ctx.scale(sqx, sq);
@@ -294,7 +300,13 @@
       /* ---- LAYER 1 · caustics. The bright folding veins. Composite to
          screen so they ADD light: that is what makes it read as water. ---- */
       ctx.save();
-      ctx.globalCompositeOperation = "lighten";
+      /* v40: was 'lighten' (max per channel). A warm-grey fill can NEVER lift
+         a bright paper under max(), so this layer was mathematically unable to
+         show itself on the pale water areas - stdev in empty regions was 4.4
+         lum out of 255, i.e. invisible. 'lighter' adds instead of maxing, so
+         light can actually accumulate. Kept below clipping by using a light,
+         low-alpha fill. */
+      ctx.globalCompositeOperation = "lighter";
       for(var k2=0;k2<caustics.length;k2++){
         var ca = caustics[k2];
         var t = e*ca.sp + ca.ph;
@@ -310,31 +322,57 @@
         var b1 = -h*0.34 + flow + Math.sin(e*ca.dy + ca.ph)*h*0.06;
         var b2 = -h*0.52 + flow*1.4 + Math.cos(e*ca.dy*0.8 + ca.ph)*h*0.05;
         var vx = Math.sin(t)*w*0.035;
+        /* v40: was a filled 16x22px rect grid at 16% coverage. Measured result:
+           that reads as a soft blotchy wash, not water - a vision model called
+           it flat cream even with the numbers moving. Real caustics are THIN
+           BRIGHT FILAMENTS where two wavefronts cross, so this traces each
+           crest as a polyline instead of lighting up whole cells. */
         ctx.beginPath();
-        for(var gy=-2; gy<=ny+2; gy++){
-          var y = gy*stepY;
-          for(var gx=-2; gx<=nx+2; gx++){
-            var x = gx*stepX + vx*(1 - y/h);
-            /* two crossing wavefronts; squaring the sum leaves filaments */
-            var f1 = Math.sin(x/sc*2.4*ca.rf + Math.sin(y/(sc*3.1) + t*0.9)*w1a + t*1.3 + vx*0.02);
-            var f2 = Math.sin(y/sc*1.9 - Math.sin(x/(sc*2.7) - t*0.7)*w2a - t*0.9 + b1*0.004);
+        /* v40b: 15 banded lines read as STRIPES, not a caustic field - measured
+           stdev actually fell 8.12 -> 4.01 vs the old grid fill. The fix is
+           DENSITY + CROSSING: many more filaments, and a vertical wander larger
+           than the line spacing so they weave through each other instead of
+           sitting in their own horizontal lane. That is what a real caustic
+           field looks like from above - a net, not a comb. */
+        var LINES = phone ? 26 : 46;
+        for(var li=0; li<LINES; li++){
+          /* scatter the lanes so adjacent filaments are not evenly spaced */
+          var band = (li + 0.5 + 0.34*Math.sin(li*2.399 + ca.ph))/LINES;
+          var yBase = band*h;
+          var started = false;
+          for(var sx2=-2; sx2<=nx+2; sx2++){
+            var x = sx2*stepX + vx*(1 - yBase/h);
+            /* the crossing wavefronts, same math as before: where they agree
+               the crest is bright, where they cancel there is nothing */
+            var f1 = Math.sin(x/sc*2.4*ca.rf + Math.sin(yBase/(sc*3.1) + t*0.9)*w1a + t*1.3 + vx*0.02);
+            var f2 = Math.sin(yBase/sc*1.9 - Math.sin(x/(sc*2.7) - t*0.7)*w2a - t*0.9 + b1*0.004);
             var v = (f1 + f2) * 0.5;
-            v = v*v*v*v*v;                     /* ^5 = thin veins, not blobs */
-            v *= (0.40 + 0.60*Math.sin(y/stepY*0.11 + t*0.6));
-            if(v < 0.055) { continue; }
-            ctx.rect(x - stepX*0.5, y - stepY*0.5, stepX*1.02, stepY*1.02);
+            v = v*v*v*v;
+            /* the filament wanders vertically along its own crest. The wander
+               is now LARGER than the lane spacing so filaments cross and
+               braid; two incommensurate terms so no two lines march together */
+            var y = yBase
+                  + Math.sin(x*0.0034*ca.rf + t*0.7 + li*1.9) * stepY * 6.5
+                  + Math.sin(x*0.0011 - t*0.45 + ca.ph + li*2.7) * stepY * 4.2;
+            if(v < 0.10){ started = false; continue; }
+            if(!started){ ctx.moveTo(x,y); started = true; }
+            else { ctx.lineTo(x,y); }
           }
         }
         ctx.globalAlpha = ca.a;
-        ctx.fillStyle = "rgb(228,214,186)";
-        ctx.fill();
+        ctx.strokeStyle = "rgb(255,246,222)";   /* a warm filament, not a wash */
+        ctx.lineWidth = phone ? 1.1 : 1.3;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
       }
       ctx.restore();
 
       /* ---- LAYER 2 · the skin. Soft horizontal light bands drifting on the
          surface. Drawn as thin gradient slivers, cheap and very convincing. */
       ctx.save();
-      ctx.globalCompositeOperation = "lighten";
+      /* v40: same fix as the caustics - additive light, not max(). */
+      ctx.globalCompositeOperation = "lighter";
       for(var q2=0;q2<skins.length;q2++){
         var sk = skins[q2];
         /* the whole skin lifts and bunches as you scroll */
@@ -347,12 +385,12 @@
            broad sheen, not as stripes */
         var thick = 26 + 34*(1 - sk.y) + (wakeAmp*0.45)*(1 - sk.y);
         var g2 = ctx.createLinearGradient(0, yBase-thick, 0, yBase+thick);
-        var col = sk.light ? "238,226,200" : "206,162,84";
+        var col = sk.light ? "255,247,228" : "240,196,110";
         var aa = sk.a * (0.55 + 0.45*Math.sin(e*0.00026 + q2*1.1 + sy1*0.004)) * (1 + wakeAmp*0.010);
         g2.addColorStop(0,   "rgba("+col+",0)");
-        g2.addColorStop(0.42,"rgba("+col+","+Math.max(0,Math.min(0.22,aa))+")");
-        g2.addColorStop(0.5, "rgba("+col+","+Math.max(0,Math.min(0.3,aa*1.45))+")");
-        g2.addColorStop(0.58,"rgba("+col+","+Math.max(0,Math.min(0.22,aa))+")");
+        g2.addColorStop(0.42,"rgba("+col+","+Math.max(0,Math.min(0.30,aa))+")");
+        g2.addColorStop(0.5, "rgba("+col+","+Math.max(0,Math.min(0.4,aa*1.45))+")");
+        g2.addColorStop(0.58,"rgba("+col+","+Math.max(0,Math.min(0.40,aa))+")");
         g2.addColorStop(1,   "rgba("+col+",0)");
         ctx.fillStyle = g2;
         /* the sliver tapers at both ends so the band has no cut edge */
@@ -371,7 +409,7 @@
       sheen.addColorStop(0.56, "rgba(246,240,226,"+ (0.026 + 0.022*(1-moving)).toFixed(4) +")");
       sheen.addColorStop(1,    "rgba(255,253,246,0)");
       ctx.save();
-      ctx.globalCompositeOperation = "lighten";
+      ctx.globalCompositeOperation = "lighter";
       ctx.fillStyle = sheen;
       ctx.translate(0, Math.sin(e*0.00006)*h*0.012);
       ctx.fillRect(0, 0, w, h);
