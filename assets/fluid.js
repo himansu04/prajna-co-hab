@@ -334,26 +334,43 @@
            than the line spacing so they weave through each other instead of
            sitting in their own horizontal lane. That is what a real caustic
            field looks like from above - a net, not a comb. */
-        var LINES = phone ? 26 : 46;
+        var LINES = phone ? 18 : 30;
+        /* v41 PERF: the sample step is 2 columns instead of 1 - a filament is a
+           smooth slow curve, so half the samples read identically while costing
+           a full sin() each. Halving the density plus halving the line count
+           keeps the same woven look (the lines still cross, because the wander
+           still exceeds the lane spacing) at ~1/3 the cost. */
+        var xStep = stepX * 2;
+        var nx2 = Math.round(nx/2);
         for(var li=0; li<LINES; li++){
           /* scatter the lanes so adjacent filaments are not evenly spaced */
           var band = (li + 0.5 + 0.34*Math.sin(li*2.399 + ca.ph))/LINES;
           var yBase = band*h;
           var started = false;
-          for(var sx2=-2; sx2<=nx+2; sx2++){
-            var x = sx2*stepX + vx*(1 - yBase/h);
+          /* v41 PERF: everything below depends only on `li`, never on sx2, so it
+             is hoisted out of the inner loop instead of being recomputed for
+             all ~40 samples. Same numbers, a fraction of the trig. */
+          var yN = yBase/(sc*3.1) + t*0.9;
+          var ph1 = Math.sin(yN)*w1a + t*1.3 + vx*0.02;
+          var ph2 = yBase/sc*1.9 - t*0.9 + b1*0.004;
+          var wPh1 = t*0.7 + li*1.9;
+          var wPh2 = -t*0.45 + ca.ph + li*2.7;
+          var wAmp1 = stepY * 6.5, wAmp2 = stepY * 4.2;
+          var yShift = vx*(1 - yBase/h);
+          for(var si=0; si<=nx2; si++){
+            var x = si*xStep + yShift;
             /* the crossing wavefronts, same math as before: where they agree
                the crest is bright, where they cancel there is nothing */
-            var f1 = Math.sin(x/sc*2.4*ca.rf + Math.sin(yBase/(sc*3.1) + t*0.9)*w1a + t*1.3 + vx*0.02);
-            var f2 = Math.sin(yBase/sc*1.9 - Math.sin(x/(sc*2.7) - t*0.7)*w2a - t*0.9 + b1*0.004);
+            var f1 = Math.sin(x/sc*2.4*ca.rf + ph1);
+            var f2 = Math.sin(ph2 - Math.sin(x/(sc*2.7) - t*0.7)*w2a);
             var v = (f1 + f2) * 0.5;
             v = v*v*v*v;
             /* the filament wanders vertically along its own crest. The wander
-               is now LARGER than the lane spacing so filaments cross and
-               braid; two incommensurate terms so no two lines march together */
+               is LARGER than the lane spacing so filaments cross and braid;
+               two incommensurate terms so no two lines march together */
             var y = yBase
-                  + Math.sin(x*0.0034*ca.rf + t*0.7 + li*1.9) * stepY * 6.5
-                  + Math.sin(x*0.0011 - t*0.45 + ca.ph + li*2.7) * stepY * 4.2;
+                  + Math.sin(x*0.0034*ca.rf + wPh1) * wAmp1
+                  + Math.sin(x*0.0011 + wPh2) * wAmp2;
             if(v < 0.10){ started = false; continue; }
             if(!started){ ctx.moveTo(x,y); started = true; }
             else { ctx.lineTo(x,y); }

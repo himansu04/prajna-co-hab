@@ -309,15 +309,11 @@ body{background:transparent}
 /* v10.1: panels are GLASS, not walls. The folk art must read through every card,
    top of the page to the footer, on every page. */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
-  background-image:linear-gradient(180deg,rgba(255,255,255,.55),rgba(253,248,241,.50)),var(--weave);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.76),rgba(253,248,241,.72)),var(--weave);
   background-blend-mode:normal,multiply;
 }
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
-  backdrop-filter:blur(9px) saturate(1.08);
-  -webkit-backdrop-filter:blur(9px) saturate(1.08);
 }
-.faq details,.costrows>div,.voice{backdrop-filter:blur(8px) saturate(1.06);-webkit-backdrop-filter:blur(8px) saturate(1.06)}
-.feature,.cta-strip,.tourbox,.familyband{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .feature,.cta-strip,.tourbox,.plaque,.familyband{
   background-color:rgba(43,38,32,.14);
 }
@@ -344,7 +340,6 @@ body::before{z-index:-2!important}
 .vignette{z-index:-1!important}
 /* cards, forms and the dark panels get a hand-made surface */
 /* superseded by v10.1 glass */
-.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .feature{
   background-image:var(--weave),radial-gradient(120% 130% at 20% 0%, rgba(217,164,65,.16), transparent 58%),radial-gradient(rgba(250,246,240,.06) 1px, transparent 1.3px);
   background-size:auto,auto,8px 8px;
@@ -404,15 +399,12 @@ html{
 body{background:transparent}
 /* glass panels: content stays fully legible while the folk art keeps moving under it */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{
-  backdrop-filter:blur(6px) saturate(1.05);
-  -webkit-backdrop-filter:blur(6px) saturate(1.05);
 }
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details{
   border-color:rgba(232,224,212,.9);
   box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
 }
 /* dark panels keep their weight but take a hint of the moving ground */
-.feature,.cta-strip{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 /* every section is a window onto the same ground; nothing paints over it */
 section,.pagehead,.hero,footer,.familyband,.wrap{background:transparent}
 /* a whisper of folk ink on the paragraph text so it reads as one handmade surface */
@@ -421,7 +413,6 @@ p,li{text-shadow:0 1px 0 rgba(255,255,255,.35)}
 @media(max-width:760px){.ripplelotus{opacity:.09}}
 /* keep it cheap on phones: fewer, larger motifs */
 @media(max-width:640px){
-  .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
 }
 
 /* ---------- v9: one continuous surface, top to bottom ---------- */
@@ -441,7 +432,6 @@ p,li{text-shadow:0 1px 0 rgba(255,255,255,.35)}
 .tourbox video{background:linear-gradient(135deg,var(--ink),var(--ink-deep))}
 /* the map dissolves into the page instead of sitting on it */
 .mapbox{border-color:rgba(232,224,212,.85)}
-.mapbox .addr{background:rgba(255,255,255,.35);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 /* the final band: the ground fades out rather than stopping dead */
 footer{border-top:1px solid rgba(232,224,212,.8);background-image:linear-gradient(180deg,rgba(255,255,255,0),rgba(244,236,223,.55)),var(--weave)}
 /* arrival rhythm: everything on the way down joins the same motion */
@@ -485,31 +475,23 @@ body, html, main, .wrap, section, header, footer, .pagehead, .hero,
 /* glass, not walls: 45-52% so the folk art is plainly visible through every panel */
 .card, .promises div, .amen div, .menucard .day, .post, .mapbox,
 form.pform, .plaque, .statrow>div, .faq details, .costrows>div, .voice {
-  background-image: linear-gradient(180deg, rgba(255,255,255,.50), rgba(253,248,241,.44)) !important;
+  background-image: linear-gradient(180deg, rgba(255,255,255,.78), rgba(253,248,241,.74)) !important;
   background-color: transparent !important;
-  backdrop-filter: blur(10px) saturate(1.1) !important;
-  -webkit-backdrop-filter: blur(10px) saturate(1.1) !important;
 }
 
 /* the dark bands stay dark but only as a veil: the ground shows through them too */
 .feature {
-  background-image: linear-gradient(180deg, rgba(43,38,32,.72), rgba(43,38,32,.64)) !important;
+  background-image: linear-gradient(180deg, rgba(43,38,32,.86), rgba(43,38,32,.80)) !important;
   background-color: transparent !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
 }
 .cta-strip {
-  background-image: linear-gradient(180deg, rgba(43,38,32,.68), rgba(43,38,32,.60)),
+  background-image: linear-gradient(180deg, rgba(43,38,32,.84), rgba(43,38,32,.78)),
                     radial-gradient(90% 130% at 82% 0%, rgba(217,164,65,.20), transparent 60%) !important;
   background-color: transparent !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
 }
 .tourbox {
-  background-image: linear-gradient(180deg, rgba(43,38,32,.62), rgba(43,38,32,.55)) !important;
+  background-image: linear-gradient(180deg, rgba(43,38,32,.82), rgba(43,38,32,.76)) !important;
   background-color: transparent !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
 }
 .tourbox video { background: linear-gradient(135deg, rgba(43,38,32,.55), rgba(58,50,42,.5)) !important; }
 
@@ -536,8 +518,6 @@ footer { background-image: linear-gradient(180deg, rgba(255,255,255,0), rgba(244
 @media(max-width:640px){
   .card, .promises div, .amen div, .menucard .day, .post, .mapbox, form.pform,
   .plaque, .statrow>div, .faq details, .costrows>div, .voice {
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
   }
   .feature, .cta-strip, .tourbox, header { backdrop-filter: blur(5px) !important; -webkit-backdrop-filter: blur(5px) !important; }
 }
@@ -574,10 +554,8 @@ p, .lede, .fbottom, .who, .muted, .familyband p, .fblarge { color: var(--muted);
 
 /* THE DARK BANDS: warm brown veils, not black slabs. Minimal, on-surface. */
 .feature, .cta-strip, .tourbox {
-  background-image: linear-gradient(180deg, rgba(58,50,42,.74), rgba(58,50,42,.66)) !important;
+  background-image: linear-gradient(180deg, rgba(58,50,42,.88), rgba(58,50,42,.82)) !important;
   background-color: transparent !important;
-  backdrop-filter: blur(9px) saturate(1.05) !important;
-  -webkit-backdrop-filter: blur(9px) saturate(1.05) !important;
 }
 .tourbox video { background: linear-gradient(135deg, rgba(58,50,42,.68), rgba(58,50,42,.58)) !important; }
 .feature h2, .feature h3, .cta-strip h2, .cta-strip h3, .plaque h3 { color: var(--paper) !important; }
@@ -626,7 +604,6 @@ section.flat figure.reveal img,figure.reveal>img{border-radius:150px 150px 10px 
 
 /* A day in the house — the rhythm strip */
 .daystrip{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.day{background:rgba(255,255,255,.44);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.1rem;backdrop-filter:blur(4px)}
 .day .dtime{display:block;font-family:var(--font-ui);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem}
 .day .ddia{display:block;width:9px;height:9px;background:var(--ochre);transform:rotate(45deg);margin:0 0 .7rem 0}
 .day p{font-size:.92rem;margin:0;color:var(--ink)}
@@ -680,9 +657,7 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 /* ============ v22 GLASS SLAB — the foreground glides over the pond ============ */
 .card,.promises div,.amen div,.post,.voice,.statrow>div,.tourbox,.costrows>div,
 .plaque,.menucard .day,.step,.mapbox,.pitstats,.board .post{
-  background:rgba(250,246,240,.52)!important;
-  backdrop-filter:blur(9px) saturate(1.06)!important;
-  -webkit-backdrop-filter:blur(9px) saturate(1.06)!important;
+  background:rgba(250,246,240,.82)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.10), 0 14px 34px rgba(58,50,42,.09)!important;
 }
 header{
@@ -778,10 +753,8 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
   .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,
   .plaque,.statrow>div,.faq details,.costrows>div,.voice,.step,.pitstats,
   .board .post{
-    backdrop-filter:blur(6px) saturate(1.04)!important;
-    -webkit-backdrop-filter:blur(6px) saturate(1.04)!important;
   }
-  .feature,.cta-strip,.tourbox,header{
+  header{
     backdrop-filter:blur(5px)!important;
     -webkit-backdrop-filter:blur(5px)!important;
   }
