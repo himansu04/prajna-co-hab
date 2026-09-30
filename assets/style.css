@@ -1144,3 +1144,24 @@ html.reduce .scrollbar-progress{display:none}
   footer{padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom,0) + 14px)}
   body{padding-bottom:0}
 }
+
+/* v47: the ochre surface glow was bleeding into the page gutters.
+   body::after paints two radial gradients with mix-blend-mode:screen, one of them
+   rgba(217,164,65,.10) anchored bottom-left. The content column is narrower than
+   the viewport, so on a wide window that glow filled the gutters either side and
+   read as a tan band sitting BEHIND the rate panels (visible beside and between
+   them, since those panels are opaque but the gutter is not).
+   Constrain the glow to the content column and clamp it so it cannot pool in the
+   margins. The water canvas keeps full bleed; only this decorative glow is scoped. */
+body::after{
+  background:
+    radial-gradient(80% 55% at 50% -8%,rgba(255,252,244,.20),transparent 62%),
+    radial-gradient(55% 38% at 18% 102%,rgba(217,164,65,.07),transparent 58%);
+}
+@media (min-width:1100px){
+  /* on wide screens the gutters must read as plain paper, not ochre */
+  body::after{
+    background:
+      radial-gradient(70% 50% at 50% -8%,rgba(255,252,244,.18),transparent 60%);
+  }
+}
