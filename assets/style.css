@@ -1,4 +1,11 @@
 :root{
+  /* v42: one side-padding rhythm for every container. */
+  --pad-x:clamp(18px,4vw,28px);
+
+  /* v42: solid paper panels. No translucency, no glass. */
+  --panel:#fdfaf4;
+  --panel-2:#fbf7ef;
+
   /* ---- ONE palette, one job per colour. Nothing decorative may use terracotta,
      nothing that acts or costs may use ochre. ---- */
   --ink:#2b2620;          /* weight: headings, body, dark bands */
@@ -28,7 +35,7 @@
 html{scroll-behavior:smooth}
 body{font-family:var(--font-head);background:transparent;color:var(--ink);line-height:1.68;font-size:1.02rem;padding-bottom:64px;animation:bodyin .5s ease both}
 @keyframes bodyin{from{opacity:0}to{opacity:1}}
-.wrap{max-width:1020px;margin:0 auto;padding:0 22px}
+.wrap{max-width:1020px;margin:0 auto;padding:0 var(--pad-x)}
 h1,h2,h3,h4{font-weight:700;letter-spacing:-.012em;line-height:1.18}
 h1{font-size:clamp(1.95rem,4.2vw,2.75rem)}
 h2{font-size:clamp(1.35rem,2.6vw,1.8rem)}
@@ -102,7 +109,7 @@ section::before{content:"";position:absolute;left:0;right:0;top:-6px;height:10px
   background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 140 10' fill='%23d9a441'%3E%3Ccircle cx='8' cy='5' r='2.2'/%3E%3Crect x='30' y='1.5' width='7' height='7' transform='rotate(45 33.5 5)'/%3E%3Ccircle cx='70' cy='5' r='2.8'/%3E%3Crect x='103' y='1.5' width='7' height='7' transform='rotate(45 106.5 5)'/%3E%3Ccircle cx='132' cy='5' r='2.2'/%3E%3C/svg%3E") center/140px 10px no-repeat;opacity:.55;padding:0 6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:1.4rem}
 .grid.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.card{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:12px;padding:1.5rem;position:relative;transition:box-shadow .3s ease,border-color .3s ease;will-change:transform}
+.card{background:var(--panel);border:1px solid rgba(58,50,42,.14);border-radius:12px;padding:1.5rem;position:relative;transition:box-shadow .3s ease,border-color .3s ease;box-shadow:0 1px 2px rgba(58,50,42,.05),0 8px 22px -14px rgba(58,50,42,.18)}
 .card.tilt{transform-style:preserve-3d}
 .card.tilt:hover{box-shadow:var(--sh);border-color:var(--line);z-index:2}
 .card:before{content:"";position:absolute;top:0;left:14px;right:14px;height:3px;border-radius:0 0 3px 3px;
@@ -129,9 +136,9 @@ section::before{content:"";position:absolute;left:0;right:0;top:-6px;height:10px
 .ph{background:linear-gradient(135deg,var(--paper-deep),var(--paper-deep));border:1px dashed var(--line);border-radius:12px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--font-ui);font-size:.75rem;text-align:center;padding:1rem;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70' fill='none' stroke='%23a08a68' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M60 58C54 40 54 20 60 6c6 14 6 34 0 52Z'/%3E%3Cpath d='M60 58C50 46 38 34 28 16c14 8 26 26 32 42Z'/%3E%3Cpath d='M60 58c10-12 22-24 32-42-14 8-26 26-32 42Z'/%3E%3Cpath d='M60 58C48 52 34 50 12 50c16 10 34 12 48 8Z'/%3E%3Cpath d='M60 58c12-6 26-8 48-8-16 10-34 12-48 8Z'/%3E%3C/svg%3E"),linear-gradient(135deg,var(--paper-deep),var(--paper-deep));background-size:90px 52px,auto;background-repeat:no-repeat;background-position:center 62%,center}
 .amen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-top:1.4rem}
-.amen div{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:8px;padding:.7rem .9rem;font-family:var(--font-ui);font-size:.8rem}
+.amen div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.7rem .9rem;font-family:var(--font-ui);font-size:.8rem}
 .loc{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;align-items:center}
-.mapbox{background:rgba(255,255,255,.62);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.9rem;box-shadow:var(--sh)}
+.mapbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.9rem;box-shadow:var(--sh)}
 .mapbox iframe{width:100%;height:260px;border:0;display:block;filter:saturate(.92) contrast(.98);opacity:.94}
 .mapbox .addr{padding:1rem 1.2rem;color:var(--ink)}
 .mapbox .addr small{color:var(--muted)}
@@ -143,7 +150,7 @@ section::before{content:"";position:absolute;left:0;right:0;top:-6px;height:10px
 .gal figure:hover img,.gal figure:hover .ph{transform:scale(1.045)}
 .gal figcaption{font-family:var(--font-ui);font-size:.72rem;color:var(--muted);padding:.5rem .2rem}
 /* forms */
-form.pform{background:rgba(255,255,255,.66);border:1px solid var(--line);border-radius:12px;padding:1.7rem;margin-top:1.4rem;max-width:34rem;position:relative;box-shadow:var(--sh)}
+form.pform{background:var(--panel);border:1px solid rgba(58,50,42,.14);border-radius:12px;padding:1.7rem;margin-top:1.4rem;position:relative;box-shadow:0 1px 2px rgba(58,50,42,.05),0 10px 26px -16px rgba(58,50,42,.20)}
 .pform label{display:block;font-family:var(--font-ui);font-size:.75rem;font-weight:700;margin:1rem 0 .3rem;color:var(--ink)}
 .pform label:first-of-type{margin-top:0}
 .pform input,.pform select,.pform textarea{width:100%;padding:.68rem .85rem;border:1px solid var(--line);border-radius:6px;font-family:var(--font-ui);font-size:.85rem;background:var(--paper);color:var(--ink);transition:border-color .2s ease,box-shadow .2s ease}
@@ -157,13 +164,13 @@ form.pform{background:rgba(255,255,255,.66);border:1px solid var(--line);border-
 .fresult.show{display:block}
 /* board */
 .board{margin-top:1.4rem}
-.post{background:rgba(255,255,255,.58);border:1px solid var(--line);border-left:4px solid var(--ochre);border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;transition:transform .25s var(--ease),box-shadow .25s ease}
+.post{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--ochre);border-radius:8px;padding:1rem 1.2rem;margin-bottom:.8rem;transition:transform .25s var(--ease),box-shadow .25s ease}
 .post:hover{transform:translateX(4px);box-shadow:var(--sh)}
 .post .meta{font-family:var(--font-ui);font-size:.72rem;color:var(--muted);margin-bottom:.3rem}
 .post .topic{display:inline-block;background:var(--ochre-soft);color:var(--ochre-ink);font-family:var(--font-ui);font-size:.68rem;padding:.15rem .55rem;border-radius:99px;margin-left:.5rem}
 .post p{font-size:.93rem;margin-top:.3rem}
 .demo-tag{display:inline-block;background:var(--paper-deep);color:var(--muted);font-family:var(--font-ui);font-size:.65rem;padding:.15rem .5rem;border-radius:99px;vertical-align:middle}
-.faq details{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-top:.8rem}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-top:.8rem}
 .faq summary{font-family:var(--font-ui);font-size:.9rem;font-weight:700;cursor:pointer;color:var(--ink)}
 .faq p{font-size:.92rem;margin-top:.6rem}
 /* dark CTA strip with cream lotus */
@@ -188,7 +195,7 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 /* mobile bar + lightbox */
 .mobilebar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;z-index:50;box-shadow:0 -8px 24px rgba(43,38,32,.08)}
 .mobilebar a{flex:1;text-align:center;padding:.85rem 0;font-family:var(--font-ui);font-size:.85rem;font-weight:700;text-decoration:none}
-.mobilebar .call{color:var(--ink);background:rgba(250,246,240,.6)}
+.mobilebar .call{color:var(--ink);background:var(--panel-2)}
 .mobilebar .wa{color:#fff;background:var(--terra);background-image:radial-gradient(rgba(250,246,240,.14) 1px, transparent 1.3px);background-size:7px 7px}
 .lb{display:none;position:fixed;inset:0;background:rgba(30,25,18,.92);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
 .lb.show{display:flex}
@@ -202,21 +209,21 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 .familyband{text-align:center;padding:2.4rem 1rem .8rem;border-top:1px solid var(--line)}
 .familyband .dia{display:inline-block;width:.55rem;height:.55rem;transform:rotate(45deg);background:var(--ochre);opacity:.75;margin:0 .9rem;vertical-align:.35rem}
 .fblarge{font-size:clamp(1.05rem,2vw,1.3rem);font-weight:400;letter-spacing:.02em;color:var(--muted,var(--muted));margin:.5rem 0 .2rem}
-.fbsub{max-width:34rem;margin:0 auto}
+.fbsub{max-width:40rem;margin:0}
 .persona{font-family:var(--font-ui);font-size:.78rem;color:var(--terra-dark);margin:-.3rem 0 .35rem}
 .promises{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.7rem;margin-top:1.4rem}
-.promises div{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:8px;padding:.85rem .9rem .85rem 2.1rem;font-family:var(--font-ui);font-size:.83rem;position:relative;color:var(--ink);transition:transform .2s var(--ease),box-shadow .2s ease}
+.promises div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.85rem .9rem .85rem 2.1rem;font-family:var(--font-ui);font-size:.83rem;position:relative;color:var(--ink);transition:transform .2s var(--ease),box-shadow .2s ease}
 .promises div:hover{transform:translateY(-2px);box-shadow:var(--sh)}
 .promises div::before{content:"";position:absolute;left:.85rem;top:50%;transform:translateY(-50%) rotate(45deg);width:.5rem;height:.5rem;background:var(--terra)}
 .step .num{display:inline-flex;align-items:center;justify-content:center;width:2.3rem;height:2.3rem;border-radius:50%;background:var(--terra);color:#fff;font-family:var(--font-head);font-size:1.15rem;margin-bottom:.7rem;box-shadow:inset 0 0 0 1.5px rgba(250,246,240,.3),inset 0 0 0 4px var(--terra)}
 .costcard{margin-top:1.5rem}
 .costrows{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-.costrows>div{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;background:rgba(250,246,240,.5);border:1px dashed var(--ochre);border-radius:8px;padding:.7rem .9rem;font-family:var(--font-ui);font-size:.83rem}
+.costrows>div{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;background:var(--panel-2);border:1px dashed var(--ochre);border-radius:8px;padding:.7rem .9rem;font-family:var(--font-ui);font-size:.83rem}
 .costrows b{color:var(--terra);white-space:nowrap}
 .costcard .demo-tag{margin-top:.8rem}
 @media(max-width:640px){.costrows{grid-template-columns:1fr}}
 .menucard{margin-top:1.4rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:.6rem}
-.menucard .day{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:8px;padding:.75rem .8rem;transition:transform .2s var(--ease),box-shadow .2s ease}
+.menucard .day{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.75rem .8rem;transition:transform .2s var(--ease),box-shadow .2s ease}
 .menucard .day:hover{transform:translateY(-2px);box-shadow:var(--sh)}
 .menucard .day b{display:block;font-family:var(--font-ui);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);margin-bottom:.3rem}
 .menucard .day span{font-size:.8rem;color:var(--muted);line-height:1.5;display:block}
@@ -227,11 +234,11 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 .tourbox{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:rgba(43,38,32,.9);box-shadow:var(--sh);margin-top:1.4rem}
 .tourbox video{display:block;width:100%;aspect-ratio:16/9;background:var(--ink)}
 .statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.6rem;text-align:center}
-.statrow>div{background:rgba(255,255,255,.58);border:1px solid var(--line);border-radius:10px;padding:1.1rem .8rem}
+.statrow>div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.1rem .8rem}
 .statrow b{display:block;font-size:1.9rem;color:var(--terra);font-family:var(--font-head);line-height:1.1}
 .statrow span{font-family:var(--font-ui);font-size:.7rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
 @media(max-width:560px){.statrow{grid-template-columns:1fr}}
-.plaque{max-width:34rem;margin:1.8rem auto 0;background:rgba(255,255,255,.66);border:2px solid var(--terra);border-radius:14px;padding:1.6rem 1.8rem;text-align:center;position:relative;box-shadow:inset 0 0 0 5px rgba(255,255,255,.7),inset 0 0 0 6.5px var(--ochre)}
+.plaque{margin:1.8rem 0 0;background:var(--panel);border:2px solid var(--terra);border-radius:14px;padding:1.6rem 1.8rem;text-align:center;position:relative;box-shadow:0 1px 2px rgba(58,50,42,.05),0 10px 26px -16px rgba(58,50,42,.20)}
 .plaque h3{font-size:1.2rem;margin-bottom:.8rem}
 .plaque ul{list-style:none;text-align:left}
 .plaque li{padding-left:1.3rem;position:relative;font-size:.9rem;color:var(--muted);margin-top:.45rem}
@@ -272,7 +279,7 @@ section:not(.flat)::before{display:none}
 .promises div,.amen div,.menucard .day,.mapbox,form.pform{border-radius:var(--r-sm);box-shadow:none}
 .mapbox{box-shadow:none}
 form.pform{box-shadow:none}
-.plaque{border-radius:var(--r-md);box-shadow:inset 0 0 0 5px var(--card),inset 0 0 0 6.5px var(--ochre)}
+.plaque{border-radius:var(--r-md)}
 .feature,.tourbox,.cta-strip{border-radius:var(--r-md)}
 .ph{background:radial-gradient(circle at 50% 42%,var(--paper-deep),var(--paper-deep));border:1px solid var(--line);border-radius:var(--r-sm);color:var(--muted);font-family:var(--font-ui);font-size:.72rem;letter-spacing:.04em}
 .btn{border-radius:var(--r-sm)}
@@ -309,10 +316,8 @@ body{background:transparent}
 /* v10.1: panels are GLASS, not walls. The folk art must read through every card,
    top of the page to the footer, on every page. */
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
-  background-image:linear-gradient(180deg,rgba(255,255,255,.76),rgba(253,248,241,.72)),var(--weave);
+  background-image:var(--weave);background-color:var(--panel);
   background-blend-mode:normal,multiply;
-}
-.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div{
 }
 .feature,.cta-strip,.tourbox,.plaque,.familyband{
   background-color:rgba(43,38,32,.14);
@@ -398,8 +403,6 @@ html{
 }
 body{background:transparent}
 /* glass panels: content stays fully legible while the folk art keeps moving under it */
-.card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details,.costrows>div{
-}
 .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,.plaque,.statrow>div,.faq details{
   border-color:rgba(232,224,212,.9);
   box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
@@ -412,8 +415,7 @@ p,li{text-shadow:0 1px 0 rgba(255,255,255,.35)}
 .ripplelotus{opacity:.11;mix-blend-mode:multiply}
 @media(max-width:760px){.ripplelotus{opacity:.09}}
 /* keep it cheap on phones: fewer, larger motifs */
-@media(max-width:640px){
-}
+
 
 /* ---------- v9: one continuous surface, top to bottom ---------- */
 /* every band takes the same woven ground so nothing cuts the page in half */
@@ -475,7 +477,7 @@ body, html, main, .wrap, section, header, footer, .pagehead, .hero,
 /* glass, not walls: 45-52% so the folk art is plainly visible through every panel */
 .card, .promises div, .amen div, .menucard .day, .post, .mapbox,
 form.pform, .plaque, .statrow>div, .faq details, .costrows>div, .voice {
-  background-image: linear-gradient(180deg, rgba(255,255,255,.78), rgba(253,248,241,.74)) !important;
+  background-image: none !important;
   background-color: transparent !important;
 }
 
@@ -498,28 +500,26 @@ form.pform, .plaque, .statrow>div, .faq details, .costrows>div, .voice {
 /* the sticky header is a thin glass lid, never a slab */
 header {
   background: rgba(250,246,240,.55) !important;
-  backdrop-filter: blur(14px) saturate(1.08) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(1.08) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
 }
 
 /* the bottom bar too */
-.mobilebar { background: rgba(255,255,255,.62) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; }
+.mobilebar { background: var(--panel) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; }
 
 /* footer fades into the ground rather than covering it */
 footer { background-image: linear-gradient(180deg, rgba(255,255,255,0), rgba(244,236,223,.35)) !important; background-color: transparent !important; }
 
 /* form fields stay readable: paper-white but see-through enough */
-.pform input, .pform select, .pform textarea { background: rgba(255,255,255,.72) !important; }
+.pform input, .pform select, .pform textarea { background: var(--panel) !important; border:1px solid rgba(58,50,42,.18) !important; }
 
 /* photo placeholders keep their wash but let motion through */
 .ph { background-color: rgba(239,231,218,.62) !important; }
 
 /* on phones keep it cheap */
 @media(max-width:640px){
-  .card, .promises div, .amen div, .menucard .day, .post, .mapbox, form.pform,
-  .plaque, .statrow>div, .faq details, .costrows>div, .voice {
-  }
-  .feature, .cta-strip, .tourbox, header { backdrop-filter: blur(5px) !important; -webkit-backdrop-filter: blur(5px) !important; }
+  /* v42: content panels never blur; only the two scrolling chrome bars may. */
+  .feature, .cta-strip, .tourbox { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
 
 /* ============================================================
@@ -630,7 +630,7 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 .pform input,.pform select,.pform textarea{border:none!important}
 .pform input:focus,.pform select:focus,.pform textarea:focus{border:none!important;box-shadow:0 0 0 2.5px rgba(217,164,65,.35)!important}
 /* one side-padding rhythm for every page */
-.wrap{padding-left:clamp(18px,4vw,28px)!important;padding-right:clamp(18px,4vw,28px)!important}
+.wrap{padding-left:var(--pad-x)!important;padding-right:var(--pad-x)!important}
 
 /* ============ v19 LIVE VACANCY + VECTOR LOTUS ============ */
 .fmark{background:none!important}
@@ -654,20 +654,51 @@ footer,.fbottom,.mobilebar,.familyband{border:none!important}
 .lotusmid{width:34px;height:23px;display:inline-block;vertical-align:-6px;margin:0 .45rem .15rem 0;filter:drop-shadow(0 2px 5px rgba(154,69,34,.10))}
 @media(max-width:520px){.lotusbig{width:48px;height:32px}.lotusmid{width:28px;height:19px;vertical-align:-5px}}
 
-/* ============ v22 GLASS SLAB — the foreground glides over the pond ============ */
+/* ============ v42 SOLID — panels are opaque paper, not glass ============
+   This block used to be "v22 GLASS SLAB": every panel got a translucent
+   rgba(250,246,240,.82) fill plus inset white highlights, and the header got
+   backdrop-filter blur(10px) saturate(1.05). That is what read as "glass
+   fluid" - milky panels floating on the moving water, soft baked-in edges,
+   and body text sitting on a backdrop that shifts underneath it. Panels are
+   now FULLY OPAQUE paper with one crisp border and one soft shadow, so text
+   always sits on a still, solid surface and the edges line up cleanly. The
+   header keeps a light blur because it genuinely scrolls over content - that
+   is the only glass left in the site. */
 .card,.promises div,.amen div,.post,.voice,.statrow>div,.tourbox,.costrows>div,
 .plaque,.menucard .day,.step,.mapbox,.pitstats,.board .post{
-  background:rgba(250,246,240,.82)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.42), inset 0 0 0 1px rgba(255,255,255,.10), 0 14px 34px rgba(58,50,42,.09)!important;
+  background:var(--panel)!important;
+  border:1px solid rgba(58,50,42,.14)!important;
+  box-shadow:0 1px 2px rgba(58,50,42,.05), 0 10px 26px -16px rgba(58,50,42,.20)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
 }
 header{
   backdrop-filter:blur(10px) saturate(1.05)!important;
   -webkit-backdrop-filter:blur(10px) saturate(1.05)!important;
-  box-shadow:inset 0 -1px 0 rgba(255,255,255,.25), 0 10px 30px rgba(58,50,42,.06)!important;
+  box-shadow:0 1px 0 rgba(58,50,42,.08), 0 10px 30px rgba(58,50,42,.06)!important;
 }
-.flow{opacity:0;transform:translateY(26px) scale(.988)!important;transition:opacity .9s var(--ease),transform .9s var(--ease)!important;will-change:opacity,transform}
-.flow.flow-in{opacity:1;transform:none}
-.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px) scale(.984)!important}
+.flow{opacity:0;transform:translateY(26px) scale(.988);transition:opacity .9s var(--ease),transform .9s var(--ease);will-change:opacity,transform}
+.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px) scale(.984)}
+/* v42 FIX: the arrival END state must out-rank the START state. These two rules
+   used to be !important on the start values only, so .card.flow (specificity
+   0,2,0 + !important) beat .flow.flow-in (0,2,0 + no !important) and every card
+   in the page sat PERMANENTLY at translateY(20px) scale(.984) - 20px low and
+   1.6% small, never animating in. On mobile, where a card is nearly full width,
+   that read as the whole layout being subtly off. The end state now carries
+   !important and matches the start state's specificity, so it always wins. */
+.flow.flow-in{opacity:1!important;transform:none!important;filter:none!important}
+/* v42: the card/panel start states further down the file are .card.flow etc
+   at specificity (0,2,0). A bare .flow.flow-in ties on specificity and the
+   later rule wins, which left every card parked at translate3d(0,26px,0)
+   scale(.988) - 26px low, 1.2% small, never arriving. This selector list
+   out-ranks them all at (0,3,0) and is the single authority for the arrival
+   END state. */
+.card.flow.flow-in,.promises div.flow.flow-in,.menucard .day.flow.flow-in,
+.amen div.flow.flow-in,.post.flow.flow-in,.voice.flow.flow-in,
+.costrows>div.flow.flow-in,.statrow>div.flow.flow-in,.plaque.flow.flow-in,
+.step.flow.flow-in,.faq details.flow.flow-in,.loc.flow.flow-in,.day.flow.flow-in,
+.familyband.flow.flow-in,.tourbox.flow.flow-in,.board .post.flow.flow-in,
+.hero .cta-row.flow.flow-in{opacity:1!important;transform:none!important;filter:none!important}
 html.reduce .flow{opacity:1!important;transform:none!important}
 
 /* v24: the vacancy badge is a tap now */
@@ -730,15 +761,21 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
 .ss-track{display:flex;transition:transform .65s var(--ease);will-change:transform}
 .ss figure{flex:0 0 100%;margin:0;position:relative}
 .ss img{width:100%;height:auto;display:block}
-.ss figcaption{position:absolute;left:0;right:0;bottom:0;padding:.65rem 1.1rem;background:linear-gradient(transparent,rgba(43,38,32,.55));color:#faf5ec;font-family:var(--font-ui);font-size:.82rem;letter-spacing:.02em;opacity:0;transition:opacity .4s var(--ease)}
-.ss:hover figcaption{opacity:1}
+/* v42: the caption was an absolutely-positioned overlay ON the photo. On a
+   phone :hover sticks to the last tapped element and the mobile rule forced
+   opacity:1, so every slide's caption sat permanently over its photo and the
+   track's neighbours stacked on top of each other. It now sits BELOW the image
+   as a normal block on solid paper - always visible, never overlapping, one
+   caption per slide, and the photo is never covered. */
+.ss figcaption{position:static;padding:.6rem 1.1rem;background:var(--panel);border-top:1px solid rgba(58,50,42,.12);color:var(--ink);font-family:var(--font-ui);font-size:.82rem;letter-spacing:.02em;opacity:1}
+/* v42: the caption is always visible now, so the hover reveal is gone. */
 .ss-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(250,246,240,.2);color:#faf5ec;font-size:1.9rem;line-height:1;cursor:pointer;font-family:Georgia,serif;transition:background .3s var(--ease)}
 .ss-btn:hover{background:rgba(217,164,65,.5)}
 .ss-prev{left:12px}.ss-next{right:12px}
 .ss-dots{position:absolute;bottom:.9rem;left:0;right:0;display:flex;justify-content:center;gap:.45rem}
 .ss-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(250,246,240,.45);cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
 .ss-dot.on{background:var(--ochre);transform:scale(1.25)}
-@media(max-width:640px){.ss-btn{width:40px;height:40px;font-size:1.5rem}.ss figcaption{opacity:1;font-size:.75rem}}
+@media(max-width:640px){.ss-btn{width:40px;height:40px;font-size:1.5rem}.ss figcaption{font-size:.75rem}}
 
 /* ==========================================================================
    v34 — SEAMLESS PASS
@@ -750,17 +787,13 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
 /* --- 1. The mobile blur reduction was DEAD: it sat before the v22 slab which
    re-set 9-10px with !important. This is the same intent, last in the file. --- */
 @media (max-width:640px){
-  .card,.promises div,.amen div,.menucard .day,.post,.mapbox,form.pform,
-  .plaque,.statrow>div,.faq details,.costrows>div,.voice,.step,.pitstats,
-  .board .post{
-  }
   header{
-    backdrop-filter:blur(5px)!important;
-    -webkit-backdrop-filter:blur(5px)!important;
+    backdrop-filter:blur(4px)!important;
+    -webkit-backdrop-filter:blur(4px)!important;
   }
   .mobilebar{
-    backdrop-filter:blur(5px)!important;
-    -webkit-backdrop-filter:blur(5px)!important;
+    backdrop-filter:blur(4px)!important;
+    -webkit-backdrop-filter:blur(4px)!important;
   }
 }
 
@@ -768,12 +801,23 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
    promoting each panel to its own GPU layer. The blur we keep; the promotion
    we now ask for explicitly, so the canvas repaint can't drag every panel
    back through the main paint pass. translate3d is the cheap promotion. --- */
+/* v42: this promotion was applied to ~15 element classes UNCONDITIONALLY,
+   so every card, plaque, stat row and post carried a permanent GPU layer on
+   every page. On a phone that is dozens of composited layers alive at once,
+   which is what made the mobile scroll feel rough - the compositor runs out
+   of headroom and starts dropping frames. It is now scoped to the elements
+   that actually need it (the ones that genuinely animate or tilt), and the
+   .flow elements are promoted only WHILE they are animating, because
+   will-change on .flow already handles that hand-off. */
 .card,.promises div,.amen div,.post,.voice,.statrow>div,.costrows>div,
 .plaque,.menucard .day,.step,.mapbox,.pitstats,.board .post,
 .teasercard,.fbrand,.fcols>div{
-  transform:translate3d(0,0,0);
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
+}
+/* only these two genuinely move in 3D on interaction */
+.post:hover,.gal figure:hover{
+  transform:translate3d(0,0,0);
 }
 /* hover lifts must stay 3D translates or the layer decomposes mid-interaction */
 .post:hover{transform:translate3d(4px,0,0)}
@@ -804,7 +848,8 @@ body::before{transition:opacity .22s linear}
    give the rail its own floor, and reserve the frame so an odd-sized photo
    can never bounce the track. --- */
 .ss figure img{aspect-ratio:3/2;object-fit:cover;width:100%;height:auto;display:block}
-.ss figcaption{bottom:2.35rem!important;padding-bottom:.45rem}
+/* v42: caption is in flow below the image, so the old overlay offset is removed. */
+.ss figure{background:var(--panel)}
 .ss-dots{bottom:.85rem}
 .ss{contain:layout paint}
 /* the caption faded on every auto-advance frame; promote it */
@@ -831,7 +876,7 @@ body::before{transition:opacity .22s linear}
    an !important override; restore the call button to paper so the bar reads
    as two decisions, not one slab. --- */
 .mobilebar .call{
-  background:rgba(250,246,240,.94)!important;
+  background:var(--panel)!important;
   color:var(--ochre-ink)!important;
   border-right:1px solid var(--line);
 }
@@ -888,7 +933,19 @@ body::before{
   background-repeat:repeat,repeat;
   background-size:auto,3px 3px;
   animation:siltdrift 61s linear infinite;
-  transition:opacity .5s linear;
+}
+/* v42 MOBILE: two full-screen position:fixed layers (multiply grain + screen
+   light) blended over a canvas that is itself repainting is the single most
+   expensive thing on this page for a phone GPU, and it is what makes the
+   mobile scroll feel rough. On phones we drop the grain layer entirely (it is
+   a 3px tiled texture at 50% - invisible at phone pixel density) and flatten
+   the screen-blend light to a plain overlay, so the compositor has one
+   animated layer instead of three. The canvas water is what people actually
+   see; the grain was competing with it for headroom. */
+@media(max-width:700px){
+  body::before{display:none!important}
+  body::after{mix-blend-mode:normal!important;opacity:.5!important}
+  .bgfx{transition:none}
 }
 @keyframes siltdrift{
   0%   {transform:translate3d(0,0,0)}

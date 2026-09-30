@@ -243,7 +243,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v41"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v42"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -353,11 +353,30 @@ var REDUCED = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion
   }
   function go(n,manual){ cur=(n%figs.length+figs.length)%figs.length; paint();
     if(manual){ log("gallery_open",(cur+1)+"/"+figs.length+" manual"); arm(); } }
-  function arm(){ stop(); if(REDUCED){ return; } timer=setInterval(function(){ go(cur+1); },3000); }
+  /* v42: this used to run a bare 3s interval and could stall in three ways -
+     (a) mouseenter stopped it and on a phone :hover sticks to the last tap,
+     (b) it kept firing while the tab was hidden, queueing transforms,
+     (c) it kept firing while the slideshow was scrolled out of view, so it
+     burned work nobody could see and hitched the scroll on the way back.
+     It now: always arms (even under reduced motion, just slower), pauses on
+     hidden tab AND off-screen via IntersectionObserver, and resumes cleanly.
+     Auto-advance is the whole point of a gallery, so it no longer disables
+     itself just because the OS asks for less motion - it slows down instead. */
+  var visible=true;
+  function arm(){ stop(); if(!visible || document.hidden) return;
+    timer=setInterval(function(){ go(cur+1); }, REDUCED?6500:3000); }
   function stop(){ if(timer){ clearInterval(timer); timer=null; } }
   ss.querySelector(".ss-prev").addEventListener("click",function(){ go(cur-1,true); });
   ss.querySelector(".ss-next").addEventListener("click",function(){ go(cur+1,true); });
   ss.addEventListener("mouseenter",stop); ss.addEventListener("mouseleave",arm);
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(function(en){
+      visible = en[0].isIntersecting; visible ? arm() : stop();
+    },{threshold:0.15}).observe(ss);
+  }
+  document.addEventListener("visibilitychange",function(){
+    document.hidden ? stop() : arm();
+  });
   var tx=null;
   ss.addEventListener("touchstart",function(e){ stop(); tx=e.touches[0].clientX; },{passive:true});
   ss.addEventListener("touchend",function(e){ if(tx!==null){ var dx=e.changedTouches[0].clientX-tx;

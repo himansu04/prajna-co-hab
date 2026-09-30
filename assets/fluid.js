@@ -606,17 +606,41 @@
       Array.prototype.forEach.call(items, function(el){ el.classList.add("flow-in"); });
       return;
     }
+    /* v42: a reveal that depends on an observer callback firing is a reveal that
+       can silently fail. On a phone a fast flick can scroll past an element
+       before its entry is processed, and if the entry is dropped the element
+       stays at opacity:0 FOREVER - invisible content that the layout still
+       reserves space for, which is exactly what "elements not in their proper
+       position" looks like. So the observer is now only an ENHANCER: a
+       failsafe sweeps anything already at or above the fold, and a scroll-idle
+       sweep catches anything the observer missed. Nothing can stay hidden. */
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){
         if(en.isIntersecting){ en.target.classList.add("flow-in"); io.unobserve(en.target); }
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.02 });
+    function sweep(){
+      Array.prototype.forEach.call(items, function(el){
+        if(el.classList.contains("flow-in")) return;
+        var r = el.getBoundingClientRect();
+        if(r.top < (window.innerHeight || 800) + 40) el.classList.add("flow-in");
+      });
+    }
     Array.prototype.forEach.call(items, function(el){
-      if(el.hasAttribute("data-flow")) return;
+      if(el.hasAttribute("data-flow")){ el.classList.add("flow-in"); return; }
       el.setAttribute("data-flow","");
       el.classList.add("flow");
       io.observe(el);
     });
+    sweep();
+    /* a slow backstop: if an entry is ever dropped, this still reveals it */
+    var t = null;
+    window.addEventListener("scroll", function(){
+      if(t) clearTimeout(t);
+      t = setTimeout(sweep, 180);
+    }, { passive: true });
+    setTimeout(function(){ Array.prototype.forEach.call(items, function(el){
+      el.classList.add("flow-in"); }); }, 1400);
   }
 
   /* 5 — scroll chrome moved into site.js so only one listener
