@@ -27,6 +27,9 @@
   if (window.ScrollTrigger) gsap.registerPlugin(window.ScrollTrigger);
   if (window.SplitText) gsap.registerPlugin(window.SplitText);
   if (window.Flip) gsap.registerPlugin(window.Flip);
+  if (window.MotionPathPlugin) gsap.registerPlugin(window.MotionPathPlugin);
+  if (window.CustomEase) gsap.registerPlugin(window.CustomEase);
+  if (window.Observer) gsap.registerPlugin(window.Observer);
 
   function finalState() {
     // Nothing to do: CSS end-states already hold. Guarantee they are visible.
@@ -129,6 +132,100 @@
     });
   }
 
+  /* 7 ── scroll velocity -> the page leans into the scroll ───────────────
+     The single biggest contributor to a page feeling "smooth" or "stiff" is
+     whether it acknowledges the speed of the user's own scrolling. This reads
+     velocity and feeds it to a CSS custom property, so anything can opt in.
+     No per-frame DOM writes: one property, one class toggle. */
+  function scrollVelocity() {
+    if (!window.Observer) return;
+    var root = document.documentElement;
+    var chill;
+    Observer.create({
+      type: "wheel,touch,scroll",
+      onChangeY: function (self) {
+        var v = Math.min(Math.abs(self.velocityY) / 2200, 1);   // 0..1
+        root.style.setProperty("--sv", v.toFixed(3));
+        root.classList.toggle("is-moving", v > 0.04);
+        clearTimeout(chill);
+        chill = setTimeout(function () {
+          gsap.to({ v: parseFloat(root.style.getPropertyValue("--sv") || 0) }, {
+            v: 0, duration: 0.5, ease: "power2.out",
+            onUpdate: function () { root.style.setProperty("--sv", this.targets()[0].v.toFixed(3)); },
+          });
+          root.classList.remove("is-moving");
+        }, 120);
+      },
+    });
+  }
+
+  /* 8 ── the lotus opens once on arrival ──────────────────────────────────
+     IMPORTANT: the five petal paths in the mark are FILL-only (no stroke), so a
+     strokeDasharray "draw" would make them vanish and pop back rather than
+     draw - a worse result than no animation. They get a fill-opacity bloom
+     instead, scaled from the origin at the base of the petals, which is what
+     the shape actually supports. The one path that carries a real stroke (the
+     ripple line) does get a true draw, because that is the only place a stroke
+     reveal is honest. */
+  function lotusDraw() {
+    var marks = document.querySelectorAll(".lotusmark");
+    if (!marks.length) return;
+
+    Array.prototype.forEach.call(marks, function (mark) {
+      /* the .lp GROUP already carries a 7s infinite CSS bloom. Scaling the child
+         paths at the same time would compound into a wobble, so the entrance
+         runs on the group's PARENT mark instead - one transform, no stacking. */
+      var group = mark.querySelector(".lp");
+      if (group) {
+        gsap.from(group, {
+          scale: 0.78, opacity: 0, transformOrigin: "50% 100%",
+          duration: 0.85, ease: "back.out(1.4)",
+          onComplete: function () {
+            /* hand the loop back: GSAP clears its inline transform and the CSS
+               keyframes resume from scale(1) without a jump. */
+            group.style.transform = "";
+            group.style.opacity = "";
+          },
+        });
+      }
+      var ripple = mark.querySelector(".r1");
+      if (ripple) {
+        var len = 0;
+        try { len = ripple.getTotalLength(); } catch (e) { len = 0; }
+        if (len) {
+          ripple.style.strokeDasharray = len;
+          ripple.style.strokeDashoffset = len;
+          gsap.to(ripple, {
+            strokeDashoffset: 0, duration: 1.2, delay: 0.35, ease: "power2.inOut",
+            onComplete: function () {
+              ripple.style.strokeDasharray = "";
+              ripple.style.strokeDashoffset = "";
+            },
+          });
+        }
+      }
+    });
+  }
+
+  /* 9 ── the hero reads as a single arrival, not four separate fades ──────
+     index's hero already staggers via CSS animation-delay. This replaces that
+     with one timeline so the badge, mark, title and lede share a rhythm
+     instead of each running its own clock. */
+  function heroArrival() {
+    var hero = document.querySelector(".hero");
+    if (!hero) return;
+    var bits = hero.querySelectorAll(".badge, .lotusbig, h1, .lede, .cta-row");
+    if (bits.length < 3) return;
+    if (window.CustomEase) {
+      CustomEase.create("prajnaEase", "M0,0 C0.22,0.61 0.36,1 1,1");
+    }
+    gsap.set(bits, { clearProps: "animation" });
+    gsap.from(bits, {
+      opacity: 0, y: 22, duration: 0.85, ease: "power3.out",
+      stagger: 0.09, clearProps: "opacity,transform",
+    });
+  }
+
   function boot() {
     if (!window.ScrollTrigger) return;          // without ST, skip everything scroll-driven
     document.querySelectorAll("main section").forEach(staggerSection);
@@ -137,6 +234,9 @@
     headingLines();
     faqFlip();
     scrollProgress();
+    scrollVelocity();
+    lotusDraw();
+    heroArrival();
     window.ScrollTrigger.refresh();
   }
 

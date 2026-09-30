@@ -1165,3 +1165,82 @@ body::after{
       radial-gradient(70% 50% at 50% -8%,rgba(255,252,244,.18),transparent 60%);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v48 — ONE MOTION SCALE
+   The site had ~8 different durations (.2s .22s .25s .32s .45s .65s .7s .8s)
+   for the same class of interaction, which is what makes a page feel assembled
+   rather than designed: nothing shares a rhythm. Everything below is derived
+   from four steps, so every hover, press and reveal is on the same beat.
+   0 = instant feedback, 1 = hover, 2 = state change, 3 = arrival.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --t0:140ms;   /* press / click feedback - must feel instant */
+  --t1:220ms;   /* hover, colour, small transforms */
+  --t2:380ms;   /* state changes: open, close, swap */
+  --t3:760ms;   /* arrival: reveals, entrances */
+
+  /* one entering curve, one exiting. Material's, because they are the pair
+     that actually reads as "smooth" rather than "bouncy" or "dull". */
+  --e-out:cubic-bezier(.22,.61,.36,1);     /* decelerate - things arriving */
+  --e-in-out:cubic-bezier(.4,0,.2,1);      /* both ends - things moving */
+}
+
+/* ---- hover + press: one duration, one curve, everywhere ---- */
+.btn,.navlinks a,.fcols a,.mobilebar a{transition:transform var(--t1) var(--e-out),
+  background-color var(--t1) var(--e-in-out),color var(--t1) var(--e-in-out),
+  box-shadow var(--t1) var(--e-in-out)}
+.btn:active{transform:translateY(1px) scale(.985);transition-duration:var(--t0)}
+a:active{transition-duration:var(--t0)}
+
+.card,.promises div,.amen div,.menucard .day,.post,.tourbox,
+.pitstats,.board .post,.voice,.statrow>div,.faq details,.costrows>div{
+  transition:transform var(--t1) var(--e-out),box-shadow var(--t1) var(--e-out),
+             border-color var(--t1) var(--e-in-out)}
+
+/* ---- the whole-document scroll: kill the browser's own smoothing on
+   touch, keep it on desktop where it feels intentional ---- */
+@media (hover:none){
+  html{scroll-behavior:auto}
+}
+
+/* ---- focus: visible, on the same beat, never removed ---- */
+:focus-visible{outline:2px solid var(--terra);outline-offset:3px;
+  transition:outline-offset var(--t1) var(--e-out)}
+:focus:not(:focus-visible){outline:none}
+
+/* ---- the one genuinely new thing: a soft scroll-linked settle.
+   A held element that eases its own entrance reads as weight; a hard
+   intersection snap reads as a jump cut. This only sets a custom property
+   from scroll position - no per-frame JS, no rAF loop. ---- */
+@property --settle{syntax:"<number>";inherits:false;initial-value:0}
+
+/* v48 — the scroll-velocity response.
+   --sv is set by motion.js from the user's actual scroll speed (0..1) and
+   decays back to 0. Nothing here animates on its own; the page just leans
+   into the scroll and settles when you stop. That settle is the "seamless"
+   part - a page that reacts to how you move, not just where you are. */
+:root{--sv:0}
+
+/* the marks lift and lean very slightly with scroll speed */
+html.is-moving .lotusmark{
+  transform:translateY(calc(var(--sv) * -1.5px));
+  transition:transform 90ms linear;
+}
+html:not(.is-moving) .lotusmark{
+  transform:translateY(0);
+  transition:transform var(--t2) var(--e-out);
+}
+
+/* the water surface brightens a touch as you move through it */
+html.is-moving body::after{opacity:calc(.6 + var(--sv) * .3)}
+
+/* the scroll bar fills a little faster than the page, so it leads the eye */
+html.is-moving .scrollbar-progress{filter:brightness(1.12)}
+
+/* reduced motion: the response is decoration, so remove it entirely */
+@media (prefers-reduced-motion: reduce){
+  html.is-moving .lotusmark{transform:none}
+  html.is-moving body::after{opacity:.6}
+}
+html.reduce .lotusmark{transform:none}
