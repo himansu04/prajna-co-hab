@@ -200,7 +200,10 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 .lb{display:none;position:fixed;inset:0;background:rgba(30,25,18,.92);z-index:100;align-items:center;justify-content:center;cursor:zoom-out}
 .lb.show{display:flex}
 .lb img{max-width:92vw;max-height:88vh;border-radius:8px;animation:fadeUp .3s ease both}
-.lb .cap{position:fixed;bottom:1.2rem;left:0;right:0;text-align:center;color:var(--line);font-family:var(--font-ui);font-size:.8rem}
+/* v46: this caption was position:FIXED, so it was pinned to the VIEWPORT rather
+   than to the lightbox - it floated over whatever was underneath, including
+   the open image and any content behind the overlay. Anchor it inside .lb. */
+.lb .cap{position:absolute;bottom:1.2rem;left:0;right:0;text-align:center;color:var(--line);font-family:var(--font-ui);font-size:.8rem}
 @media(max-width:720px){.loc{grid-template-columns:1fr}.pform .row{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -754,9 +757,15 @@ input,select,textarea{font-size:max(16px,.95rem)}
 
 /* ============ v29 MOBILE FOCUS — de-cluttered, thumb-first ============ */
 .miniopen{flex:1.1;text-align:center;font-family:var(--font-ui);font-size:.72rem;font-weight:700;color:var(--ochre-ink);background:rgba(246,234,208,.95);padding:.45rem .2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mobilebar{padding-bottom:env(safe-area-inset-bottom,0)}
+/* v46: the footer's last line sat FLUSH against the fixed bottom bar on a phone
+   - measured zero gap in a real render. body{padding-bottom} alone does not
+   fix it because the bar is position:fixed and overlays the flow. One variable
+   now drives the bar's real height AND the space reserved beneath the page,
+   so the two cannot drift apart again. */
+:root{--bar-h:56px}
+.mobilebar{padding-bottom:env(safe-area-inset-bottom,0);min-height:var(--bar-h)}
 .mobilebar a{padding:.7rem 0}
-body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0))}
+body{padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom,0) + 10px)}
 @media(max-width:640px){
   .gal{grid-template-columns:repeat(2,1fr)!important;gap:.55rem!important}
   .card,.post,.voice,.menucard .day,.step,.faq details,.tourbox,.pitstats>div{padding:.85rem .8rem!important}
@@ -1124,3 +1133,14 @@ html{
 }
 @media (prefers-reduced-motion: reduce){ .scrollbar-progress{display:none} }
 html.reduce .scrollbar-progress{display:none}
+
+/* v46: clearance for the fixed bottom bar.
+   The bar is position:fixed, so it is OUT of flow and the page's last flow box
+   (the footer) ends exactly where the bar begins - measured 0px gap in a real
+   mobile render, which is the "overlap" he saw. body{padding-bottom} cannot fix
+   this because nothing follows the footer in the flow. Reserve the space on the
+   footer itself, driven by the same --bar-h variable the bar uses. */
+@media (max-width:860px){
+  footer{padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom,0) + 14px)}
+  body{padding-bottom:0}
+}
