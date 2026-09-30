@@ -46,7 +46,7 @@ a{color:var(--terra)}
 img{max-width:100%}
 .tag{font-family:var(--font-ui);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--terra)}
 /* v38: ochre as text was 2.07:1. Ornament colour, never text. */
-.tag.gold{color:var(--ochre)}
+.tag.gold{color:var(--ochre-ink)}
 /* reveal system */
 /* folk trim: dashes + dots, opens like a doorway */
 .folkline{height:6px;transform-origin:left;opacity:.85;background:
@@ -250,6 +250,9 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 .wa-float::after{content:"Need help? WhatsApp us";position:absolute;right:66px;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--paper);font-family:var(--font-ui);font-size:.72rem;padding:.4rem .7rem;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .wa-float:hover::after{opacity:1}
 @media(min-width:861px){.wa-float{display:flex}}
+/* v43: .mobilebar is display:flex at every width, so the phone bottom bar
+   also rendered on desktop where the floating button already covers it. */
+@media(min-width:861px){.mobilebar{display:none!important}}
 
 /* ---------- v6: type system, modern hand ---------- */
 :root{
@@ -538,7 +541,7 @@ a { color: var(--terra); }
 .tag { color: var(--terra); }
 
 /* OCHRE = ornament only. Rules, dots, trim, watermark. Never text, never buttons. */
-.tag.gold { color: var(--ochre) !important; }
+.tag.gold { color: var(--ochre-ink) !important; }
 .folkline { background-color: var(--ochre); }
 .familyband .dia { background-color: var(--ochre); }
 .voice .q { color: var(--ochre) !important; }
@@ -558,7 +561,10 @@ p, .lede, .fbottom, .who, .muted, .familyband p, .fblarge { color: var(--muted);
   background-color: transparent !important;
 }
 .tourbox video { background: linear-gradient(135deg, rgba(58,50,42,.68), rgba(58,50,42,.58)) !important; }
-.feature h2, .feature h3, .cta-strip h2, .cta-strip h3, .plaque h3 { color: var(--paper) !important; }
+/* v43: .plaque h3 was in this dark-band selector list, so a paper-coloured
+   heading sat on the paper v42 panel - effectively invisible. Only the dark
+   bands keep paper text now. */
+.feature h2, .feature h3, .cta-strip h2, .cta-strip h3 { color: var(--paper) !important; }
 .feature .lotusdraw, .cta-strip .lotusdraw { color: var(--ochre) !important; opacity:.18; }
 
 /* ONE paper: the wash runs water-top -> water-deep and nothing else. */

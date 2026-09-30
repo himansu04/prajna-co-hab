@@ -646,7 +646,10 @@
   /* 5 — scroll chrome moved into site.js so only one listener
      toggles header.scrolled (two were racing). */
 
-  function boot(){ ambient(); lotuses(); ripples(); flow(); chrome(); }
+  /* v43: chrome() was called here but never defined anywhere - the header/chrome
+   handling moved to site.js in an earlier pass and the call was left behind,
+   so boot() threw ReferenceError on every page load. */
+  function boot(){ ambient(); lotuses(); ripples(); flow(); }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();

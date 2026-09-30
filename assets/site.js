@@ -163,46 +163,11 @@ window.PRAJNA = window.PRAJNA || {
   /* gallery lightbox */
 /* v38: the .gal lightbox was dead code on every page (gallery uses the
    #gal-ss slideshow with its own zoom). Removed. */
-  if(gal){
-    var figs = Array.prototype.slice.call(gal.querySelectorAll("figure"));
-    var cur = 0;
-    var lb = document.createElement("div"); lb.className = "lb";
-    lb.innerHTML = '<img alt=""><div class="cap"></div><button class="lbprev" aria-label="Previous photo">&#8249;</button><button class="lbnext" aria-label="Next photo">&#8250;</button>';
-    document.body.appendChild(lb);
-    function show(n){
-      if(!figs.length) return;
-      cur = (n + figs.length) % figs.length;
-      var fig = figs[cur], img = fig.querySelector("img");
-      if(!img || !img.getAttribute("src")) return;
-      lb.querySelector("img").src = img.src;
-      lb.querySelector(".cap").textContent = ((fig.querySelector("figcaption") || {}).textContent || "") + "  ·  " + (cur+1) + "/" + figs.length;
-      lb.className = "lb show";
-    }
-    gal.addEventListener("click", function(ev){
-      var fig = ev.target.closest("figure"); if(!fig){ return; }
-      show(figs.indexOf(fig));
-      log('gallery_open', String(cur+1)+'/'+figs.length);
-    });
-    lb.addEventListener("click", function(ev){
-      if(ev.target.className === "lbprev"){ show(cur-1); }
-      else if(ev.target.className === "lbnext"){ show(cur+1); }
-      else if(ev.target !== lb.querySelector("img")){ lb.className = "lb"; }
-    });
-    document.addEventListener("keydown", function(ev){
-      if(lb.className.indexOf("show") < 0) return;
-      if(ev.key === "Escape") lb.className = "lb";
-      else if(ev.key === "ArrowLeft") show(cur-1);
-      else if(ev.key === "ArrowRight") show(cur+1);
-    });
-    var tx = null;
-    lb.addEventListener("touchstart", function(e){ tx = e.touches[0].clientX; }, {passive:true});
-    lb.addEventListener("touchend", function(e){
-      if(tx === null) return;
-      var dx = e.changedTouches[0].clientX - tx;
-      if(dx < -40) show(cur+1); else if(dx > 40) show(cur-1);
-      tx = null;
-    }, {passive:true});
-  }
+  /* v43: the .gal lightbox block was removed in v38, but the `if(gal){`
+     wrapper and its body were left behind. `gal` is never declared, so this
+     threw ReferenceError on EVERY page and killed everything after it in this
+     IIFE - footer year, sticky-header shadow, 3D tilt, service-worker
+     registration. Deleted the whole block. */
 
   /* footer year */
   var yr = document.getElementById("yr"); if(yr){ yr.textContent = new Date().getFullYear(); }
@@ -243,7 +208,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v42"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v43"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
