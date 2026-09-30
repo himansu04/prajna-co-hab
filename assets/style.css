@@ -256,15 +256,36 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 
 /* ---------- v6: type system, modern hand ---------- */
 :root{
-  --font-head:Optima,'Optima Regular','Palatino Linotype',Palatino,'Book Antiqua',Candara,'Gill Sans',sans-serif;
-  --font-ui:ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
-  --font-body:var(--font-ui);
+  /* v44: self-hosted OFL fonts. Optima (the old --font-head) ships ONLY on
+     macOS, so Windows and Android - most of the phone traffic - silently fell
+     through to a generic sans and saw a different site than the Mac. Marcellus
+     + Alegreya Sans are vendored locally in assets/fonts/ (31KB total) so every
+     platform renders the same. No CDN request, nothing render-blocking. */
+  @font-face{
+    font-family:'Marcellus';
+    src:url('fonts/marcellus-latin.woff2') format('woff2');
+    font-weight:400;font-style:normal;font-display:swap;
+  }
+  @font-face{
+    font-family:'Alegreya Sans';
+    src:url('fonts/alegreya-sans-latin.woff2') format('woff2');
+    font-weight:400;font-style:normal;font-display:swap;
+  }
+  :root{
+    --font-head:'Marcellus',Optima,'Palatino Linotype',Palatino,Georgia,serif;
+    --font-ui:'Alegreya Sans',ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+    --font-body:var(--font-ui);
+  }
   --r-xs:2px;--r-sm:8px;--r-md:12px;--r-pill:999px;
 }
-body{font-family:var(--font-body);font-size:1rem;line-height:1.66;letter-spacing:.002em}
-h1,h2,h3,h4{font-family:var(--font-head);font-weight:400;letter-spacing:.002em;line-height:1.22}
-h1{font-size:clamp(2.35rem,5vw,3.3rem)}
-h2{font-size:clamp(1.6rem,3vw,2.1rem)}
+/* v44: a duplicate body/h1/h2/h3 block used to sit here and silently
+   overwrote the type scale above with a second, different set of numbers.
+   Merged into one scale; rem-based sizing so a user's browser font setting
+   actually scales the page. */
+body{font-size:1rem;line-height:1.66}
+h1,h2,h3,h4{font-family:var(--font-head);font-weight:400;line-height:1.2}
+h1{font-size:clamp(2.1rem,4.6vw,3rem)}
+h2{font-size:clamp(1.5rem,2.9vw,2rem)}
 h3{font-size:1.2rem}
 h4{font-size:1.02rem}
 p{color:var(--muted);font-family:var(--font-body)}
@@ -692,7 +713,11 @@ header{
    1.6% small, never animating in. On mobile, where a card is nearly full width,
    that read as the whole layout being subtly off. The end state now carries
    !important and matches the start state's specificity, so it always wins. */
-.flow.flow-in{opacity:1!important;transform:none!important;filter:none!important}
+/* v44: transform:none!important here beat the INLINE transform that the
+   .tilt handler in site.js writes on mousemove, so 3D tilt was dead on
+   every card once it revealed. opacity/filter keep !important (they settle
+   the reveal); the transform lock is dropped so tilt wins. */
+.flow.flow-in{opacity:1!important;filter:none!important}
 /* v42: the card/panel start states further down the file are .card.flow etc
    at specificity (0,2,0). A bare .flow.flow-in ties on specificity and the
    later rule wins, which left every card parked at translate3d(0,26px,0)
@@ -704,7 +729,7 @@ header{
 .costrows>div.flow.flow-in,.statrow>div.flow.flow-in,.plaque.flow.flow-in,
 .step.flow.flow-in,.faq details.flow.flow-in,.loc.flow.flow-in,.day.flow.flow-in,
 .familyband.flow.flow-in,.tourbox.flow.flow-in,.board .post.flow.flow-in,
-.hero .cta-row.flow.flow-in{opacity:1!important;transform:none!important;filter:none!important}
+.hero .cta-row.flow.flow-in{opacity:1!important;filter:none!important}
 html.reduce .flow{opacity:1!important;transform:none!important}
 
 /* v24: the vacancy badge is a tap now */
