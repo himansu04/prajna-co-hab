@@ -324,6 +324,7 @@ form.pform{box-shadow:none}
 @media(max-width:380px){h1{font-size:2.05rem}.wrap{padding:0 16px}}
 @media print{
   .bgfx,.lotusdraw,.wa-float,.mobilebar,header,.folkline,.nav,.cta-strip,.tourbox{display:none!important}
+  .flow,.reveal{opacity:1!important;transform:none!important;filter:none!important}
   body{background:#fff;font-size:11pt}
   .wrap{max-width:none;padding:0}
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:9pt;color:#555}
@@ -749,7 +750,7 @@ body{font-size:clamp(.95rem,1.7vw,1.02rem);overflow-x:clip;-webkit-text-size-adj
 .loc{gap:clamp(1.2rem,4vw,2.2rem)!important}
 .fcols{gap:clamp(1.2rem,3.5vw,2rem)!important}
 img{height:auto}
-.board .post,.pform,.faq details,.voice,.card p,.post p{overflow-wrap:anywhere}
+.board .post,.pform,.faq details,.voice,.card p,.post p{overflow-wrap:break-word;hyphens:auto}
 input,select,textarea{font-size:max(16px,.95rem)}
 .brand{font-size:clamp(.98rem,2.4vw,1.12rem)}
 .navlinks{gap:clamp(.9rem,2.4vw,1.6rem)}
@@ -785,37 +786,15 @@ body{padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom,0) + 10px)}
 .btn:active{transform:translateY(1px) scale(.985)}
 .btn:hover::after{opacity:1}
 .shead h2{position:relative;padding-bottom:.45rem}
-.shead h2::after{content:"";position:absolute;left:0;bottom:0;width:52px;height:3px;border-radius:2px;background:var(--ochre);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .15s}
+.shead h2::after{content:"";position:absolute;left:0;bottom:0;width:2.4em;height:3px;border-radius:2px;background:var(--ochre);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .15s}
 .flow-in .shead h2::after,html.reduce .shead h2::after{transform:scaleX(1)}
 .voice{position:relative}
-.voice::before{content:"\201C";position:absolute;top:-.4rem;left:.7rem;font-family:Georgia,serif;font-size:3.2rem;line-height:1;color:var(--ochre);opacity:.4;pointer-events:none}
 .gal figure{transition:transform .45s var(--ease),box-shadow .45s var(--ease);border-radius:150px 150px 10px 10px;overflow:hidden}
 .gal figure:hover{transform:translateY(-4px);box-shadow:0 16px 30px rgba(43,38,32,.14)}
 .lb .lbprev,.lb .lbnext{position:absolute;top:50%;transform:translateY(-50%);background:rgba(250,246,240,.14);color:#faf5ec;border:none;width:52px;height:52px;border-radius:50%;font-size:2rem;line-height:1;cursor:pointer;font-family:Georgia,serif}
 .lb .lbprev{left:14px}.lb .lbnext{right:14px}
 .lb .lbprev:hover,.lb .lbnext:hover{background:rgba(217,164,65,.45)}
 @media(pointer:coarse){.lb .lbprev,.lb .lbnext{width:44px;height:44px;opacity:.85}}
-
-/* ============ v32 GALLERY SLIDESHOW — full photos, no shapes, auto 3s ============ */
-.ss{position:relative;border-radius:14px;overflow:hidden;background:var(--paper-deep);box-shadow:0 18px 40px rgba(43,38,32,.13);margin-top:1.4rem}
-.ss-track{display:flex;transition:transform .65s var(--ease);will-change:transform}
-.ss figure{flex:0 0 100%;margin:0;position:relative}
-.ss img{width:100%;height:auto;display:block}
-/* v42: the caption was an absolutely-positioned overlay ON the photo. On a
-   phone :hover sticks to the last tapped element and the mobile rule forced
-   opacity:1, so every slide's caption sat permanently over its photo and the
-   track's neighbours stacked on top of each other. It now sits BELOW the image
-   as a normal block on solid paper - always visible, never overlapping, one
-   caption per slide, and the photo is never covered. */
-.ss figcaption{position:static;padding:.6rem 1.1rem;background:var(--panel);border-top:1px solid rgba(58,50,42,.12);color:var(--ink);font-family:var(--font-ui);font-size:.82rem;letter-spacing:.02em;opacity:1}
-/* v42: the caption is always visible now, so the hover reveal is gone. */
-.ss-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(250,246,240,.2);color:#faf5ec;font-size:1.9rem;line-height:1;cursor:pointer;font-family:Georgia,serif;transition:background .3s var(--ease)}
-.ss-btn:hover{background:rgba(217,164,65,.5)}
-.ss-prev{left:12px}.ss-next{right:12px}
-.ss-dots{position:absolute;bottom:.9rem;left:0;right:0;display:flex;justify-content:center;gap:.45rem}
-.ss-dot{width:8px;height:8px;border-radius:50%;border:none;background:rgba(250,246,240,.45);cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
-.ss-dot.on{background:var(--ochre);transform:scale(1.25)}
-@media(max-width:640px){.ss-btn{width:40px;height:40px;font-size:1.5rem}.ss figcaption{font-size:.75rem}}
 
 /* ==========================================================================
    v34 — SEAMLESS PASS
@@ -1244,3 +1223,66 @@ html.is-moving .scrollbar-progress{filter:brightness(1.12)}
   html.is-moving body::after{opacity:.6}
 }
 html.reduce .lotusmark{transform:none}
+
+/* v49 — Prajna gallery: real photos first, motion kept on a short leash. */
+.gallery-shell{padding:clamp(1rem,3vw,2rem) 0 3rem}
+.gallery-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem 1.5rem;flex-wrap:wrap;margin:0 0 1.25rem}
+.gallery-count{font-family:var(--font-ui);font-size:.8rem;color:var(--muted);margin:.45rem 0}
+.gallery-filters{display:flex;flex-wrap:wrap;gap:.45rem}
+.gallery-filters button{min-height:42px;padding:.55rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font:600 .78rem var(--font-ui);cursor:pointer;transition:background-color var(--t1) var(--e-in-out),color var(--t1) var(--e-in-out),border-color var(--t1) var(--e-in-out),transform var(--t1) var(--e-out)}
+.gallery-filters button:hover{transform:translateY(-2px);border-color:var(--terra)}
+.gallery-filters button[aria-pressed="true"]{background:var(--ink-deep);color:var(--paper);border-color:var(--ink-deep)}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.8vw,1.25rem);align-items:start}
+.gallery-item{min-width:0;margin:0;padding:.55rem;background:var(--panel);border:1px solid rgba(58,50,42,.08);border-radius:14px;box-shadow:0 8px 22px rgba(58,50,42,.06);overflow:hidden;transition:box-shadow var(--t2) var(--e-out),border-color var(--t2) var(--e-in-out)}
+.gallery-item-featured{grid-column:span 2}
+.gallery-item[hidden]{display:none!important}
+.gallery-image-link{--tilt-x:0deg;--tilt-y:0deg;position:relative;display:block;overflow:hidden;border-radius:10px;background:var(--paper-deep);aspect-ratio:3/2;perspective:900px;transform:perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transform-style:preserve-3d;transition:transform 180ms var(--e-out)}
+.gallery-item-featured .gallery-image-link{aspect-ratio:1.9/1}
+.gallery-image-link img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 650ms var(--e-out),filter 380ms var(--e-in-out)}
+.gallery-image-link:hover img,.gallery-image-link:focus-visible img{transform:scale(1.035);filter:saturate(1.04)}
+.gallery-image-link.is-tilting{transform:perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateY(-2px)}
+.gallery-zoom{position:absolute;right:.75rem;bottom:.75rem;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(250,245,236,.94);color:var(--ink-deep);font:500 1.35rem/1 var(--font-ui);opacity:0;transform:translateY(4px);transition:opacity var(--t1) var(--e-out),transform var(--t1) var(--e-out)}
+.gallery-image-link:hover .gallery-zoom,.gallery-image-link:focus-visible .gallery-zoom{opacity:1;transform:translateY(0)}
+.gallery-item figcaption{display:flex;justify-content:space-between;align-items:baseline;gap:.75rem;padding:.72rem .45rem .4rem;color:var(--ink);font-size:.9rem;font-weight:650}
+.gallery-kind{flex:none;color:var(--muted);font:500 .68rem var(--font-ui);letter-spacing:.035em}
+.gallery-motion-ready .gallery-item:not(.gallery-visible){opacity:0;transform:translateY(12px)}
+.gallery-motion-ready .gallery-item{transition:opacity 500ms var(--e-out),transform 500ms var(--e-out),box-shadow var(--t2) var(--e-out),border-color var(--t2) var(--e-in-out)}
+.gallery-motion-ready .gallery-item.gallery-visible{opacity:1;transform:translateY(0)}
+.gallery-item:hover{border-color:rgba(192,86,33,.22);box-shadow:0 14px 32px rgba(58,50,42,.12)}
+.gallery-dialog{width:100vw;height:100dvh;max-width:none;max-height:none;padding:clamp(.75rem,3vw,2rem);border:0;background:rgba(28,25,21,.97);color:#faf5ec;overflow:hidden}
+.gallery-dialog::backdrop{background:rgba(22,20,17,.82);backdrop-filter:blur(8px)}
+.gallery-viewer{position:relative;width:100%;height:100%;display:grid;grid-template-columns:clamp(42px,7vw,72px) minmax(0,1fr) clamp(42px,7vw,72px);grid-template-rows:minmax(0,1fr) auto;align-items:center;gap:.5rem;max-width:1500px;margin:0 auto}
+.gallery-viewer figure{grid-column:1/-1;grid-row:1;display:grid;justify-items:center;align-content:center;gap:.8rem;min-width:0;min-height:0;margin:0;padding:2.75rem 0 0}
+.gallery-dialog-image{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100dvh - 8rem);object-fit:contain;border-radius:8px;box-shadow:0 22px 70px rgba(0,0,0,.28)}
+.gallery-dialog-caption{color:#faf5ec;text-align:center;font-size:.95rem}
+.gallery-step{z-index:1;grid-row:1;align-self:center;width:48px;height:56px;border:1px solid rgba(250,245,236,.26);border-radius:999px;background:rgba(250,245,236,.1);color:#faf5ec;font-size:2rem;line-height:1;cursor:pointer;transition:background-color var(--t1) var(--e-in-out),transform var(--t1) var(--e-out)}
+.gallery-step:hover{background:rgba(250,245,236,.2);transform:scale(1.04)}
+.gallery-prev{grid-column:1}.gallery-next{grid-column:3;justify-self:end}
+.gallery-close{position:absolute;z-index:2;top:0;right:0;min-width:72px;min-height:44px;border:1px solid rgba(250,245,236,.26);border-radius:999px;background:rgba(250,245,236,.1);color:#faf5ec;font:600 .8rem var(--font-ui);cursor:pointer}
+.gallery-dialog-count{grid-column:1/-1;grid-row:2;margin:0 0 .4rem;text-align:center;color:rgba(250,245,236,.72);font:500 .8rem var(--font-ui);font-variant-numeric:tabular-nums}
+@media(max-width:900px){.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){
+  .gallery-toolbar{gap:.35rem;margin-bottom:1rem}
+  .gallery-filters{gap:.35rem}
+  .gallery-filters button{min-height:40px;padding:.45rem .7rem;font-size:.72rem}
+  .gallery-grid{grid-template-columns:minmax(0,1fr);gap:.85rem}
+  .gallery-item-featured{grid-column:span 1}
+  .gallery-item-featured .gallery-image-link,.gallery-image-link{aspect-ratio:3/2}
+  .gallery-zoom{opacity:1;transform:none;width:34px;height:34px}
+  .gallery-viewer{grid-template-columns:42px minmax(0,1fr) 42px;gap:.25rem}
+  .gallery-step{width:40px;height:48px;font-size:1.7rem}
+  .gallery-dialog-image{max-height:calc(100dvh - 9rem)}
+}
+@media(prefers-reduced-motion:reduce){
+  .gallery-image-link,.gallery-image-link img,.gallery-item,.gallery-filters button,.gallery-step,.gallery-zoom{transition:none!important}
+  .gallery-motion-ready .gallery-item:not(.gallery-visible){opacity:1;transform:none}
+}
+
+/* v50 — one owner per arrival transform, with hover states restored after it. */
+.promises div.flow.flow-in,.amen div.flow.flow-in,.post.flow.flow-in,
+.voice.flow.flow-in,.costrows>div.flow.flow-in,.menucard .day.flow.flow-in{
+  transform:translate3d(0,0,0) scale(1)
+}
+.promises div.flow.flow-in:hover{transform:translateY(-2px)}
+.post.flow.flow-in:hover{transform:translateX(4px)}
+.menucard .day.flow.flow-in:hover{transform:translateY(-2px)}

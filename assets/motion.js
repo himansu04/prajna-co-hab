@@ -45,7 +45,7 @@
      A section and its children currently arrive as one CSS transition. GSAP
      gives the children a small offset so the eye reads order instead of a slab. */
   function staggerSection(sec) {
-    var kids = sec.querySelectorAll(".card, .step, .promises > div, .amen > div, .statrow > div, .costrows > div, .menucard .day");
+    var kids = sec.querySelectorAll(".card:not(.step), .promises > div, .amen > div, .statrow > div, .costrows > div, .menucard .day");
     if (!kids.length) return;
     gsap.from(kids, {
       opacity: 0,
