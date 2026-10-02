@@ -1409,3 +1409,23 @@ a.vacancy{min-height:44px;padding:0 .55rem;display:inline-flex;align-items:cente
    page heading) but the jump is 1.4x, not 2x, so it reads as intent. */
 section{padding:clamp(2.2rem,4.5vw,3.4rem) 0}
 section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v55.1 — CONTRAST: the money must be readable.
+   Measured, not assumed:
+     .costrows b  (the rent + deposit figures) rendered #c05621 on #fdfaf4
+     = 4.39:1 at 0.83rem — normal-size text, so WCAG AA needs 4.5:1. It was
+     failing, on the single most important string on the page.
+     .price       #c05621 on #fdfaf4 = 4.39:1, but it is 1.9rem so it passes
+     as large text. Darkened anyway: the two prices should read as one voice,
+     and this is the content people came for.
+     Verified after the change: .costrows b 6.21:1, .price 6.21:1. Both PASS.
+
+   Static audit also flagged --ink-soft and --ochre as text. Both are false
+   positives: the .voice block that used ochre was removed in v50, and
+   ink-soft only ever paints on the dark .feature / .cta-strip bands, where
+   it reads at 5.7:1 or better.
+   ══════════════════════════════════════════════════════════════════════════ */
+.costrows b{color:var(--terra-dark)}
+.price{color:var(--terra-dark)}
+.price-alt span{color:var(--terra-dark)}
