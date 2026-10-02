@@ -1,0 +1,148 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   POND — scenes, seamless reveal, torn-paper assemblage
+   Loaded via assets/pond.js. Everything here is DOM + CSS so it adds nothing
+   to the per-frame canvas cost measured at ~0.7ms.
+
+   LAYER ORDER (back to front)
+     canvas.bgfx   the water                 z 0
+     .collage      torn paper pieces         z 1
+     .pondfloat    drifting folk motifs      z 2
+     page content                           z 3
+     .pondreveal   surface settling on load  z 90
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. DRIFTING FOLK MOTIFS ────────────────────────────────────────────
+   Position is set as a percentage of the layer and nudged with a transform.
+   Animating only transform/opacity keeps every floater on its own compositor
+   layer, so the whole set costs the GPU almost nothing. */
+.pondfloat{
+  position:fixed; inset:0; z-index:2; pointer-events:none;
+  contain:strict;
+}
+.pondfloat .pf{
+  position:absolute;
+  left:var(--pf-x); top:var(--pf-y);
+  width:var(--pf-size); height:calc(var(--pf-size) * .58);
+  background-image:var(--pf-m);
+  background-repeat:no-repeat; background-position:center; background-size:contain;
+  opacity:var(--pf-op);
+  filter:blur(.25px);
+  will-change:transform,opacity;
+  animation:pfdrift var(--pf-dur) linear infinite;
+  animation-delay:var(--pf-delay);
+}
+/* a slow rise, a lazy side-to-side, and a barely-there roll — three motions
+   on one transform so they compose instead of fighting */
+@keyframes pfdrift{
+  0%   { transform:translate3d(0,0,0) rotate(0deg); }
+  25%  { transform:translate3d(10px,calc(var(--pf-rise) * -26px),0) rotate(var(--pf-tilt)); }
+  50%  { transform:translate3d(-8px,calc(var(--pf-rise) * -54px),0) rotate(calc(var(--pf-tilt) * -.6)); }
+  75%  { transform:translate3d(6px,calc(var(--pf-rise) * -80px),0) rotate(calc(var(--pf-tilt) * .4)); }
+  100% { transform:translate3d(0,calc(var(--pf-rise) * -104px),0) rotate(0deg); }
+}
+
+/* ── 2. TORN-PAPER ASSEMBLAGE ───────────────────────────────────────────
+   Four fixed pieces sitting BEHIND the content, so they read as paper the
+   house is laid out on rather than decoration competing with the words.
+
+   What actually sells torn paper, learned by looking at it failing: the first
+   attempt had filter:blur(.3px) on each piece, which softened precisely the
+   edge that needs to be ragged, and a 13-point polygon at radius 50-66% is a
+   pebble. So: no blur, and .cp::before repeats the same clip-path as a pale
+   sheet nudged 2px up-left, which leaves a torn white lip along the top edge
+   — the cue that reads unmistakably as paper rather than wash. */
+.collage{
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  contain:strict;
+}
+.collage .cp{
+  position:absolute; display:block;
+  opacity:var(--o,.26);
+  background:var(--wash);
+  box-shadow:0 10px 22px -14px rgba(58,50,42,.55);
+}
+.collage .cp::before{
+  content:""; position:absolute; inset:0;
+  clip-path:inherit;
+  background:linear-gradient(160deg, rgba(255,253,248,.60), rgba(250,244,232,.34));
+  transform:translate(-2px,-2px);
+  z-index:-1;
+}
+/* paper fibre: a fine repeating grain so the washes are not flat gradients */
+.collage .cp::after{
+  content:""; position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(102deg, rgba(255,255,255,.30) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(14deg, rgba(58,50,42,.05) 0 1px, transparent 1px 4px);
+  mix-blend-mode:overlay;
+}
+.collage .cp1{--wash:linear-gradient(150deg, rgba(192,86,33,.30), rgba(217,164,65,.16));}
+.collage .cp2{--wash:linear-gradient(200deg, rgba(217,164,65,.34), rgba(245,222,179,.14));}
+.collage .cp3{--wash:linear-gradient(120deg, rgba(122,111,96,.26), rgba(240,230,208,.12));}
+.collage .cp4{--wash:linear-gradient(240deg, rgba(192,86,33,.24), rgba(217,164,65,.20));}
+
+/* ── 3. THE REVEAL — the pond settling on load ──────────────────────────
+   The page is already painted underneath, so this thins away rather than
+   wiping in. Rings spread once, the surface fades, and pond.js removes the
+   node entirely so nothing is left to intercept clicks. */
+.pondreveal{
+  position:fixed; inset:0; z-index:90; pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 42%, rgba(253,250,244,.86), rgba(240,230,208,.62) 62%, rgba(217,164,65,.30));
+  backdrop-filter:blur(2px);
+  animation:pondlift 1.05s cubic-bezier(.22,.61,.36,1) forwards;
+}
+.pondreveal .pring{
+  position:absolute; left:50%; top:42%;
+  width:22vmin; height:22vmin; margin:-11vmin 0 0 -11vmin;
+  border:1px solid rgba(192,86,33,.34); border-radius:50%;
+  animation:pring 1.15s cubic-bezier(.22,.61,.36,1) forwards;
+}
+.pondreveal .p2{animation-delay:.14s}
+.pondreveal .p3{animation-delay:.28s}
+
+@keyframes pondlift{
+  0%   { opacity:1; backdrop-filter:blur(2px); }
+  55%  { opacity:.55; backdrop-filter:blur(1px); }
+  100% { opacity:0; backdrop-filter:blur(0); visibility:hidden; }
+}
+@keyframes pring{
+  0%   { transform:scale(.18); opacity:.85; }
+  100% { transform:scale(5.2); opacity:0; }
+}
+
+/* ── 4. CROSS-PAGE TRANSITION ───────────────────────────────────────────
+   Only takes effect where the browser supports cross-document view
+   transitions. The title carries the name so it slides rather than cuts;
+   everything else cross-fades. Elsewhere this block is inert. */
+@media (prefers-reduced-motion: no-preference){
+  ::view-transition-old(root),
+  ::view-transition-new(root){ animation-duration:.42s; animation-timing-function:cubic-bezier(.22,.61,.36,1); }
+  ::view-transition-old(page-title){ animation:poldout .42s cubic-bezier(.4,0,.2,1) both; }
+  ::view-transition-new(page-title){ animation:pnewin  .52s cubic-bezier(.22,.61,.36,1) .06s both; }
+  @keyframes poldout{ to{ opacity:0; transform:translateY(-14px); } }
+  @keyframes pnewin { from{ opacity:0; transform:translateY(18px); } }
+}
+
+/* ── 5. REDUCED MOTION ──────────────────────────────────────────────────
+   Nothing drifts, nothing wipes in, the paper stays put. The house is still
+   a house, it just holds still. */
+@media (prefers-reduced-motion: reduce){
+  .pondfloat{display:none}
+  .pondreveal{display:none}
+  .collage .cp{animation:none !important; transform:none !important}
+}
+
+/* ── 6. SMALL SCREENS ───────────────────────────────────────────────────
+   Fewer, smaller pieces: on a phone the same count reads as clutter and
+   costs more compositing than it is worth. */
+@media (max-width:700px){
+  .pondfloat .pf{width:calc(var(--pf-size) * .72); height:calc(var(--pf-size) * .42)}
+  .collage .cp{opacity:calc(var(--o,1) * .8)}
+  .collage .cp3,.collage .cp4{display:none}
+}
+
+/* ── 7. PRINT ───────────────────────────────────────────────────────────
+   Paper collage on a printed page is just grey mud. */
+@media print{
+  .pondfloat,.collage,.pondreveal{display:none !important}
+}

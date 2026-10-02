@@ -22,6 +22,16 @@
   ];
   var COLS = ["%23c05621", "%23d9a441", "%237a5a1c"];
 
+  /* Publish the motifs as CSS custom properties so pond.js can float the very
+     same artwork on the page instead of shipping a second copy of each SVG. */
+  (function exposeMotifs(){
+    var rs = document.documentElement.style;
+    for (var i = 0; i < MOTIFS.length; i++){
+      rs.setProperty("--motif-" + i,
+        'url("data:image/svg+xml,' + MOTIFS[i].replace(/COL/g, COLS[i % COLS.length]) + '")');
+    }
+  })();
+
   function uri(i){ return 'url("data:image/svg+xml,' + MOTIFS[i % MOTIFS.length].replace(/COL/g, COLS[i % COLS.length]) + '")'; }
 
   /* 1 — the pond: clear spring water behind every page (v22).
