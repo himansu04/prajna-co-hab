@@ -3,14 +3,14 @@
    Fill these once; every page reads from here.
    ===================================================== */
 window.PRAJNA = window.PRAJNA || {
-  phone: null,              // co-hab WhatsApp number, digits only e.g. "919812345678"
+  phone: null,              // NEVER publish. left blank on purpose.
   twinRent: null,           // e.g. 6500
   singleRent: null,         // e.g. 9500
   deposit: null,            // e.g. 6500
   foodIncluded: null,       // "included" | "optional" | "notprovided"
   availability: null,       // e.g. "3 twin beds open — singles full"
   endpoint: "",             // Google Apps Script /exec URL (free data capture). Empty = demo mode.
-  community: "",            // WhatsApp Community/Group invite link for the Automotive Hub
+  community: "",            // optional: any invite URL you want the Pit button to use
   ownerNote: "Family-run. Owner-managed. No broker."
 };
 
@@ -86,7 +86,7 @@ window.PRAJNA = window.PRAJNA || {
     }
   }
 
-  /* whatsapp + call links (data-wamsg allows custom prefill per button) */
+  /* email CTAs (data-mailsubject lets each button pre-fill its own subject) */
   var mlinks = document.querySelectorAll(".mail-link");
   for(var j=0;j<mlinks.length;j++){
     var subj = mlinks[j].getAttribute("data-mailsubject") || "Prajna Co-hab enquiry";
@@ -181,12 +181,12 @@ window.PRAJNA = window.PRAJNA || {
               if (sub) { sub.disabled = false; sub.textContent = sub.dataset.label || "Send"; }
               showResult(f, data.type === "board"
                 ? "Posted. It appears on the board once the owner clears it."
-                : "Got it. The owner will get back to you on WhatsApp or by call.");
+                : "Got it. The owner replies by email, and can call you if you left a number.");
             })
             .catch(function(){
               if (tries > 0) { setTimeout(function(){ send(payload, tries - 1); }, 1200); return; }
               if (sub) { sub.disabled = false; sub.textContent = sub.dataset.label || "Send"; }
-              showResult(f, "Network hiccup \u2014 please try once more, or just WhatsApp us.");
+              showResult(f, "Network hiccup \u2014 please try once more, or just email " + C.email + ".");
             });
         }
       });
@@ -279,7 +279,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v53"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v54"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -353,7 +353,7 @@ window.PRAJNA = window.PRAJNA || {
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') dwell(); });
   document.addEventListener('click', function(e){
     var a=e.target.closest ? e.target.closest('a') : null; if(!a) return;
-    if(a.classList.contains('mail-link')) log('mail_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
+    if(a.classList.contains('mail-link')) log('mail_click', (a.getAttribute('data-mailsubject')||'enquiry').slice(0,60));
     else if(a.classList.contains('share-btn')){ log('share_tap',''); }
     else if(a.getAttribute('href') && a.getAttribute('href').indexOf('tel:')===0) log('call_tap','');
     else if(a.closest('.gal')) log('gallery_open', (a.getAttribute('href')||'').split('/').pop().slice(0,40));

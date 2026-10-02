@@ -97,11 +97,38 @@ The site is on `github.io` for testing. When the real domain is ready:
 1. Repo → **Settings → Pages → Custom domain** → enter it, save.
 2. At the registrar add the four GitHub A records plus a `www` CNAME.
 3. Tick **Enforce HTTPS**.
-4. Update the hardcoded URLs. They are all of the form
-   `https://himansu04.github.io/prajna-co-hab/` and appear in:
-   - every page's `<link rel="canonical">`, `og:url` and `og:image`
-   - `sitemap.xml` (8 `<loc>` entries)
-   - `robots.txt` (the `Sitemap:` line)
+4. Update the hardcoded URLs. Do it as ONE scripted find-and-replace, because
+   there are 27 of them across 12 files and missing one silently breaks either
+   the social card or the SEO canonical:
+
+```bash
+cd ~/Media/prajna/prajna-repo
+grep -rlZ 'https://himansu04.github.io/prajna-co-hab/' \
+  --include='*.html' --include='*.xml' --include='*.txt' . \
+  | xargs -0 sed -i '' 's|https://himansu04\.github\.io/prajna-co-hab/|https://YOURDOMAIN/|g'
+```
+
+   That covers every page's `<link rel="canonical">`, `og:url` and `og:image`,
+   plus `sitemap.xml` (8 `<loc>` entries) and the `Sitemap:` line in `robots.txt`.
+
+   **`manifest.webmanifest` is the trap.** Its `id` used to be
+   `"/prajna-co-hab/index.html"` - root-relative, containing no domain string, so
+   the replace above will NOT catch it. It is already fixed to `"./index.html"`,
+   so just don't reintroduce an absolute path there.
+
+5. Verify before shipping - this must return nothing:
+
+```bash
+grep -rn 'himansu04\|github\.io' --include='*.html' --include='*.xml' \
+  --include='*.txt' --include='*.webmanifest' --include='*.js' .
+```
+
+**Why this must be done in the files, not in JavaScript:** `og:url` and
+`og:image` are read by Facebook, WhatsApp, LinkedIn and X by plain HTTP fetch
+with no JavaScript at all. A `site.js` that rewrites the canonical after load is
+invisible to exactly the scrapers that matter, and a canonical pointing at the
+old domain tells Google the authoritative copy lives on a domain you are
+retiring - which gets your new pages dropped from the index.
 
    A single find-and-replace across the nine HTML files, `sitemap.xml` and
    `robots.txt` covers all of it.
