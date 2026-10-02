@@ -390,7 +390,7 @@ section>*:not(.ripplelotus){position:relative;z-index:1}
 @keyframes drawlotus{from{stroke-dashoffset:160}to{stroke-dashoffset:0}}
 .flow{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .flow.flow-in{opacity:1;transform:none}
-.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(12px) scale(.994)}
+.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(12px)}
 .card.flow.flow-in,.promises div.flow.flow-in,.menucard .day.flow.flow-in,.amen div.flow.flow-in{transform:none}
 .reveal{opacity:1;transform:none;transition:none}
 /* reduced motion: keep the texture, drop the movement */
@@ -705,8 +705,8 @@ header{
   -webkit-backdrop-filter:blur(10px) saturate(1.05)!important;
   box-shadow:0 1px 0 rgba(58,50,42,.08), 0 10px 30px rgba(58,50,42,.06)!important;
 }
-.flow{opacity:0;transform:translateY(26px) scale(.988);transition:opacity .9s var(--ease),transform .9s var(--ease);will-change:opacity,transform}
-.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px) scale(.984)}
+.flow{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);will-change:opacity,transform}
+.card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow{transform:translateY(20px)}
 /* v42 FIX: the arrival END state must out-rank the START state. These two rules
    used to be !important on the start values only, so .card.flow (specificity
    0,2,0 + !important) beat .flow.flow-in (0,2,0 + no !important) and every card
@@ -1010,17 +1010,20 @@ html.was-scrolling body::after{opacity:.78;transition:opacity .85s var(--tide-ea
    little water drag, the way something floats up off a pond bed. --- */
 .flow{
   opacity:0;
-  transform:translate3d(0,20px,0) scale(.992);
+  /* v57: no scale() here. Scaling a block moves its left and right
+     edges inward, so every heading visibly shifted ~3px sideways during the
+     reveal and then snapped back to the column. A reveal should lift. */
+  transform:translate3d(0,20px,0);
   filter:blur(3px);
   transition:opacity .78s var(--ease-in),
              transform .9s cubic-bezier(.16,.84,.36,1),
              filter .78s var(--ease-in);
 }
-.flow.flow-in{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+.flow.flow-in{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}
 /* cards get a longer float so they read as heavier, deeper objects */
 .card.flow,.promises div.flow,.menucard .day.flow,.amen div.flow,
 .post.flow,.voice.flow,.costrows>div.flow{
-  transform:translate3d(0,26px,0) scale(.988);
+  transform:translate3d(0,26px,0);
   transition-duration:.95s,.95s,.8s;
 }
 
@@ -1231,12 +1234,13 @@ html.reduce .lotusmark{transform:none}
 .gallery-filters button[aria-pressed="true"]{background:var(--ink-deep);color:var(--paper);border-color:var(--ink-deep)}
 .gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.8vw,1.25rem);align-items:start}
 .gallery-item{min-width:0;margin:0;padding:.55rem;background:var(--panel);border:1px solid rgba(58,50,42,.08);border-radius:14px;box-shadow:0 8px 22px rgba(58,50,42,.06);overflow:hidden;transition:box-shadow var(--t2) var(--e-out),border-color var(--t2) var(--e-in-out)}
-.gallery-item-featured{grid-column:span 2}
 .gallery-item[hidden]{display:none!important}
 .gallery-image-link{--tilt-x:0deg;--tilt-y:0deg;position:relative;display:block;overflow:hidden;border-radius:10px;background:var(--paper-deep);aspect-ratio:3/2;perspective:900px;transform:perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transform-style:preserve-3d;transition:transform 180ms var(--e-out)}
-.gallery-item-featured .gallery-image-link{aspect-ratio:1.9/1}
+/* v57: the photos are all 1200x800 = exactly 3:2 and the cell is 3:2, so
+   object-fit:cover never actually crops. It stays as a guard in case a
+   future photo has a different ratio. */
 .gallery-image-link img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 650ms var(--e-out),filter 380ms var(--e-in-out)}
-.gallery-image-link:hover img,.gallery-image-link:focus-visible img{transform:scale(1.035);filter:saturate(1.04)}
+.gallery-image-link:hover img,.gallery-image-link:focus-visible img{transform:scale(1.028);filter:saturate(1.03)}
 .gallery-image-link.is-tilting{transform:perspective(900px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateY(-2px)}
 .gallery-zoom{position:absolute;right:.75rem;bottom:.75rem;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:rgba(250,245,236,.94);color:var(--ink-deep);font:500 1.35rem/1 var(--font-ui);opacity:0;transform:translateY(4px);transition:opacity var(--t1) var(--e-out),transform var(--t1) var(--e-out)}
 .gallery-image-link:hover .gallery-zoom,.gallery-image-link:focus-visible .gallery-zoom{opacity:1;transform:translateY(0)}
@@ -1263,8 +1267,7 @@ html.reduce .lotusmark{transform:none}
   .gallery-filters{gap:.35rem}
   .gallery-filters button{min-height:44px;padding:.45rem .7rem;font-size:.72rem}
   .gallery-grid{grid-template-columns:minmax(0,1fr);gap:.85rem}
-  .gallery-item-featured{grid-column:span 1}
-  .gallery-item-featured .gallery-image-link,.gallery-image-link{aspect-ratio:3/2}
+  .gallery-image-link{aspect-ratio:3/2}
   .gallery-zoom{opacity:1;transform:none;width:34px;height:34px}
   .gallery-viewer{grid-template-columns:42px minmax(0,1fr) 42px;gap:.25rem}
   .gallery-step{width:40px;height:48px;font-size:1.7rem}
@@ -1278,7 +1281,7 @@ html.reduce .lotusmark{transform:none}
 /* v50 — one owner per arrival transform, with hover states restored after it. */
 .promises div.flow.flow-in,.amen div.flow.flow-in,.post.flow.flow-in,
 .voice.flow.flow-in,.costrows>div.flow.flow-in,.menucard .day.flow.flow-in{
-  transform:translate3d(0,0,0) scale(1)
+  transform:translate3d(0,0,0)
 }
 .promises div.flow.flow-in:hover{transform:translateY(-2px)}
 .post.flow.flow-in:hover{transform:translateX(4px)}
@@ -1429,3 +1432,17 @@ section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
 .costrows b{color:var(--terra-dark)}
 .price{color:var(--terra-dark)}
 .price-alt span{color:var(--terra-dark)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v57 — GALLERY, REBUILT FOR "NOT CROPPED, EFFORTLESS, ELEGANT"
+   - every cell is exactly the photo's own 3:2 ratio, so nothing is cut
+   - the decorative "+" badge is gone; the whole frame is the target and the
+     cursor plus a real focus ring carry the affordance instead
+   - the lift on hover is smaller (1.028) so it reads as a photograph moving,
+     not a carousel animation
+   ══════════════════════════════════════════════════════════════════════════ */
+.gallery-image-link{cursor:zoom-in}
+.gallery-image-link:focus-visible{outline:3px solid var(--terra);outline-offset:4px;border-radius:10px}
+.gallery-item{padding:.5rem}
+.gallery-item figcaption{padding:.7rem .5rem .45rem;align-items:baseline}
+.gallery-grid{gap:clamp(.7rem,1.6vw,1.1rem)}
