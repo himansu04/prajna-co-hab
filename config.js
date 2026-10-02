@@ -1,53 +1,53 @@
 /* ============================================================
    Prajna Co-hab — site config
    ------------------------------------------------------------
-   PRE-LAUNCH BUILD. Rates and availability are left blank so the
-   site never shows an invented price or bed count. The phone is
-   blank so no WhatsApp / call button can ever point at a stranger.
+   LIVE DATA. Every figure below was supplied by the owner on
+   2026-10-02 and is now published on the site.
 
-   To go live: fill phone, twinRent, singleRent, deposit, and
-   availability (+ bedsOpen). The banner removes itself the moment
-   `phone` is a real number.
+   CONTACT MODEL: the owner's number is NEVER published. Visitors
+   email; the number is handed over in the reply if they want to
+   talk. So `email` is public and `phone` stays blank permanently -
+   leaving `phone` blank is deliberate, not an oversight.
    ============================================================ */
 window.PRAJNA = {
 
-  sample: true,
+  /* ---- CONTACT -------------------------------------------------
+     >>> REPLACE THIS WITH THE REAL ADDRESS. It is a visible
+     >>> placeholder until you do. The number below stays blank
+     >>> forever by design - it is handed out in email replies.
+     ------------------------------------------------------------ */
+  email: "prajna.cohab@gmail.com",
+  phone: "",                // NEVER publish this.
 
-  twinRent: null,           // set a real monthly rent to show it
-  singleRent: null,
-  deposit: null,
-  foodIncluded: "included", // home-style food is part of the offer
-  availability: null,       // set a real string to show the badge
-  bedsOpen: null,
+  /* ---- RENT ----------------------------------------------------
+     Two meal plans. "With dinner" means DINNER ONLY - breakfast
+     and lunch are not included at either price, and the site says
+     so plainly rather than letting people find out later.
+     ---------------------------------------------------------- */
+  twinRent: 7200,           // double sharing, WITHOUT dinner
+  twinRentMeal: 10000,      // double sharing, WITH dinner
+  singleRent: 9200,         // private, WITHOUT dinner
+  singleRentMeal: 12000,    // private, WITH dinner
 
-  /* ---- CONTACT: blank until the real number is supplied ---- */
-  phone: "",               // blank on purpose. wa() returns null with no
-                           // phone, so every WhatsApp CTA hides itself
-                           // instead of dialling a placeholder.
+  twinDeposit: 12000,
+  singleDeposit: 14000,
+
+  /* ---- AVAILABILITY: nothing free as of 2026-10-02 ---- */
+  bedsOpen: 0,
+  availability: "No beds free right now — tell us when you’re looking and we’ll put you first when one opens",
+
+  /* ---- TERMS ---- */
+  lockInMonths: 3,
+  noticeMonths: 1,
+
+  /* ---- FORM BACKEND ----
+     Optional Google Apps Script endpoint. Empty = the forms open
+     a pre-filled email to `email` instead, so they already work
+     with no backend at all. Set this when you have a /exec URL. */
   endpoint: "",
   community: "",
   ownerNote: "Family-run. Owner-managed. No broker."
 };
 
-/* ---- the pre-launch banner ----
-   Shows while the site is pre-launch. Kills itself the instant a real phone
-   number exists in the config above, so it can never ship to a live site. */
-(function(){
-  function banner(){
-    if(!window.PRAJNA || !window.PRAJNA.sample) return;
-    if(document.getElementById("sampleBanner")) return;
-    var b = document.createElement("div");
-    b.id = "sampleBanner";
-    b.setAttribute("role","status");
-    b.textContent = "Preview — rates, availability and contact details go live soon. Photos are real.";
-    b.style.cssText =
-      "position:fixed;top:0;left:0;right:0;z-index:9999;background:#6b6b2a;color:#fff;" +
-      "font-size:.72rem;letter-spacing:.1em;text-align:center;padding:.4rem .8rem;" +
-      "line-height:1.4;pointer-events:none;";
-    document.body.appendChild(b);
-    /* push the page down so the banner never covers the header */
-    document.body.style.paddingTop = b.offsetHeight + "px";
-  }
-  if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", banner); }
-  else { banner(); }
-})();
+/* No preview banner: the data above is real, so there is nothing
+   left to warn a visitor about. */

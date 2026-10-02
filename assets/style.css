@@ -1363,3 +1363,28 @@ header{
   backdrop-filter:blur(8px) saturate(1.04)!important;
   -webkit-backdrop-filter:blur(8px) saturate(1.04)!important;
 }
+/* ══════════════════════════════════════════════════════════════════════════
+   v53 — EMAIL CHANNEL + REAL RATES
+   .mail-link replaces .wa-link everywhere; the floating desktop button is
+   renamed too so no CSS still targets a channel we have closed.
+   ══════════════════════════════════════════════════════════════════════════ */
+.mail-float{position:fixed;right:22px;bottom:22px;z-index:60;width:56px;height:56px;border-radius:50%;background:var(--terra);display:none;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(154,69,34,.35),inset 0 0 0 1.5px rgba(250,246,240,.3),inset 0 0 0 4px var(--terra);transition:transform var(--t1) var(--e-out),background-color var(--t1) var(--e-in-out)}
+.mail-float:hover{transform:translateY(-3px) scale(1.05);background-color:var(--terra-dark)}
+.mail-float svg{width:24px;height:24px;fill:#fff}
+.mail-float::after{content:"Email the owner";position:absolute;right:66px;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--paper);font-family:var(--font-ui);font-size:.72rem;padding:.4rem .7rem;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--t1) var(--e-in-out)}
+.mail-float:hover::after{opacity:1}
+@media(min-width:861px){.mail-float{display:flex}}
+@media(max-width:860px){.mail-float{display:none!important}}
+
+/* the second price (with dinner) sits under the headline rate */
+.price-alt{margin:-.35rem 0 .5rem;font-family:var(--font-ui);font-size:.8rem;color:var(--ink)}
+.price-alt span{color:var(--terra-dark);font-weight:700}
+
+/* the terms strip under the cost card */
+#termsline{display:block;font-family:var(--font-ui);font-size:.8rem;color:var(--muted);margin-top:.7rem}
+
+/* the mobile bar is now a single email action - give it the full width */
+@media(max-width:860px){.mobilebar .wa{flex:1}}
+
+/* clipboard confirmation under the share button */
+#share-note{display:none;font-family:var(--font-ui);font-size:.78rem;color:var(--terra-dark);margin-top:.6rem}
