@@ -250,27 +250,32 @@ footer{margin-top:2.4rem;border-top:1px solid var(--line)}
 @media(min-width:861px){.mobilebar{display:none!important}}
 
 /* ---------- v6: type system, modern hand ---------- */
+/* v55 — THIS BLOCK WAS NEVER APPLIED. It was written as SCSS: @font-face and a
+   second :root nested INSIDE a :root rule. Plain CSS has no rule nesting, so
+   the browser's parser discarded all of it - meaning --font-head, --font-ui and
+   --font-body were never defined, and document.fonts.size was 0. Every
+   heading, button and paragraph on the site silently fell back to Times New
+   Roman. The font files were being fetched (HTTP 200) and then thrown away.
+   The custom properties and the @font-face rules are now at top level. */
+/* v44: self-hosted OFL fonts. Optima (the old --font-head) ships ONLY on
+   macOS, so Windows and Android - most of the phone traffic - silently fell
+   through to a generic sans and saw a different site than the Mac. Marcellus
+   + Alegreya Sans are vendored locally in assets/fonts/ (31KB total) so every
+   platform renders the same. No CDN request, nothing render-blocking. */
+@font-face{
+  font-family:'Marcellus';
+  src:url('fonts/marcellus-latin.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Alegreya Sans';
+  src:url('fonts/alegreya-sans-latin.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
 :root{
-  /* v44: self-hosted OFL fonts. Optima (the old --font-head) ships ONLY on
-     macOS, so Windows and Android - most of the phone traffic - silently fell
-     through to a generic sans and saw a different site than the Mac. Marcellus
-     + Alegreya Sans are vendored locally in assets/fonts/ (31KB total) so every
-     platform renders the same. No CDN request, nothing render-blocking. */
-  @font-face{
-    font-family:'Marcellus';
-    src:url('fonts/marcellus-latin.woff2') format('woff2');
-    font-weight:400;font-style:normal;font-display:swap;
-  }
-  @font-face{
-    font-family:'Alegreya Sans';
-    src:url('fonts/alegreya-sans-latin.woff2') format('woff2');
-    font-weight:400;font-style:normal;font-display:swap;
-  }
-  :root{
-    --font-head:'Marcellus',Optima,'Palatino Linotype',Palatino,Georgia,serif;
-    --font-ui:'Alegreya Sans',ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
-    --font-body:var(--font-ui);
-  }
+  --font-head:'Marcellus',Optima,'Palatino Linotype',Palatino,Georgia,serif;
+  --font-ui:'Alegreya Sans',ui-sans-serif,-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;
+  --font-body:var(--font-ui);
   --r-xs:2px;--r-sm:8px;--r-md:12px;--r-pill:999px;
 }
 /* v44: a duplicate body/h1/h2/h3 block used to sit here and silently
@@ -1381,3 +1386,26 @@ header{
 
 /* clipboard confirmation under the share button */
 #share-note{display:none;font-family:var(--font-ui);font-size:.78rem;color:var(--terra-dark);margin-top:.6rem}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v55 — POLISH PASS
+   1. The font stack was dead (SCSS nesting in a .css file) — fixed above.
+   2. Tap targets: the brand, the vacancy pill and the skip link were all under
+      44px, which is the WCAG 2.5.5 minimum and the single easiest thing to
+      get wrong on a phone.
+   3. Section rhythm: .flat sections were at 25.6px and normal ones at 51.2px -
+      a silent 2x jump that read as a mistake rather than a choice.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 2. tap targets — hit area grows, the visual stays the same size */
+.brand{min-height:44px;padding:.4rem 0;display:inline-flex;align-items:center}
+a.vacancy{min-height:44px;padding:0 .55rem;display:inline-flex;align-items:center}
+.skip{min-height:44px;display:inline-flex;align-items:center}
+.fcols a,.mobilebar a{min-height:44px;display:flex;align-items:center}
+.fcols a{padding:.55rem 0}
+.btn{min-height:46px;display:inline-flex;align-items:center;justify-content:center}
+
+/* 3. one section rhythm. .flat keeps a lighter top gap (it always follows a
+   page heading) but the jump is 1.4x, not 2x, so it reads as intent. */
+section{padding:clamp(2.2rem,4.5vw,3.4rem) 0}
+section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
