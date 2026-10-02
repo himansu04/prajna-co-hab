@@ -11,7 +11,7 @@ window.PRAJNA = window.PRAJNA || {
   availability: null,       // e.g. "3 twin beds open — singles full"
   endpoint: "",             // Google Apps Script /exec URL (free data capture). Empty = demo mode.
   community: "",            // optional: any invite URL you want the Pit button to use
-  ownerNote: "Family-run. Owner-managed. No broker."
+  ownerNote: "Family-run. Run by us. No broker."
 };
 
 (function(){
@@ -180,8 +180,8 @@ window.PRAJNA = window.PRAJNA || {
               f.reset();
               if (sub) { sub.disabled = false; sub.textContent = sub.dataset.label || "Send"; }
               showResult(f, data.type === "board"
-                ? "Posted. It appears on the board once the owner clears it."
-                : "Got it. The owner replies by email, and can call you if you left a number.");
+                ? "Posted. We read it before it goes up."
+                : "Got it. We reply by email, and we'll call you if you left a number.");
             })
             .catch(function(){
               if (tries > 0) { setTimeout(function(){ send(payload, tries - 1); }, 1200); return; }
@@ -197,7 +197,7 @@ window.PRAJNA = window.PRAJNA || {
   var board = document.getElementById("board");
   if(board){
     var seed = [
-      { name:"Owner", topic:"Welcome", msg:"Mechanics you trust, spare-part shops, used bikes, RTO doubts, carpooling \u2014 ask. Keep it on-topic." }
+      { name:"Prajna", topic:"Welcome", msg:"Mechanics you trust, spare-part shops, used bikes, RTO doubts, carpooling \u2014 ask. Keep it on-topic." }
     ];
     function render(list, demo){
       board.innerHTML = "";
@@ -309,7 +309,7 @@ window.PRAJNA = window.PRAJNA || {
   if(C.email && !document.querySelector(".mail-float")){
     var wf = document.createElement("a");
     wf.className = "mail-float";
-    wf.setAttribute("aria-label", "Email the owner");
+    wf.setAttribute("aria-label", "Email us");
     wf.href = mail("Prajna Co-hab enquiry");
     wf.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3C9.4 3 4 8.3 4 14.9c0 2.6.8 5 2.3 7L4.6 28l6.3-1.6c1.6.9 3.3 1.3 5.1 1.3 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.8c-1.6 0-3.2-.4-4.6-1.2l-.3-.2-3.7 1 1-3.6-.2-.3c-1.2-1.9-1.8-4-1.8-6.1 0-5.5 4.5-9.9 9.6-9.9s9.6 4.4 9.6 9.9-4.5 10.4-9.6 10.4zm5.5-7.4c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.1-.8 1-1 1.2-.4.2-.7.1c-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1s0-.5.1-.6l.5-.6c.2-.2.2-.3.3-.5s0-.4 0-.6-.7-1.7-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.1 1.3 3.3c.2.2 2.3 3.6 5.7 5 3.4 1.3 3.4.9 4 .8.6-.1 1.8-.7 2.1-1.5.3-.7.3-1.3.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg>';
     document.body.appendChild(wf);
