@@ -71,7 +71,16 @@ window.PRAJNA = window.PRAJNA || {
     wlinks[j].setAttribute("rel", "noopener");
   }
   var call = document.getElementById("calllink");
-  if(call && C.phone){ call.setAttribute("href", "tel:+" + C.phone); }
+  if(call){
+    if(C.phone){ call.setAttribute("href", "tel:+" + C.phone); }
+    else{
+      /* no number yet: take the dead Call link out of the tab order and layout,
+         same as the WhatsApp CTAs, instead of leaving a focusable "#" jump. */
+      call.setAttribute("aria-hidden","true");
+      call.setAttribute("tabindex","-1");
+      call.style.display = "none";
+    }
+  }
   var ld = document.getElementById("ldjson");
   if(ld && C.phone){
     try{ var o = JSON.parse(ld.textContent); o.telephone = "+" + C.phone; ld.textContent = JSON.stringify(o); }catch(e){}
@@ -101,7 +110,9 @@ window.PRAJNA = window.PRAJNA || {
         var sub = f.querySelector("button[type=submit]");
         if(sub && !sub.dataset.label) sub.dataset.label = sub.textContent;
         if(!C.endpoint){
-          showResult(f, "Saved in demo mode. Connect the free Google Sheets backend (5-minute setup in DEPLOY.md) and this lands in your sheet for real.");
+          /* v50: this used to tell visitors about DEPLOY.md, an internal file
+             they will never see. Say what actually happened, in their language. */
+          showResult(f, "Saved for now. This form is being connected — message us on WhatsApp or call and the owner will pick it up directly.");
           f.reset();
           return;
         }
@@ -134,24 +145,32 @@ window.PRAJNA = window.PRAJNA || {
   var board = document.getElementById("board");
   if(board){
     var seed = [
-      { name:"Owner", topic:"Welcome", msg:"Mechanics you trust, spare-part shops, used bikes, RTO doubts, carpooling \u2014 ask. Keep it on-topic." },
-      { name:"Sample post", topic:"Mechanic", msg:"Need a trusted mechanic on the Moshi gaon side for a Pulsar 150 clutch-plate change. Who do you people go to? Asking for a friend on night shift." },
-      { name:"Sample post", topic:"Spare parts", msg:"Looking for an original headlamp assembly for an Activa 6G. The shop near Moshi chowk quoted \u20B92,200. Anyone know a better rate around the belt?" },
-      { name:"Sample post", topic:"Used bike / sale", msg:"Selling my 2019 Splendor \u2014 28,000 km, single owner, papers clear, new tyres. Serious buyers can reach me through the owner." },
-      { name:"Sample post", topic:"Carpool", msg:"I ride to Gate 4, MIDC Moshi for the 7:30 shift. Anyone from the Moshi / Borhadewadi side want to split fuel? Same timing, same gate." },
-      { name:"Sample post", topic:"RTO / insurance", msg:"Renewed my two-wheeler insurance online last week \u2014 took ten minutes, no agent. Happy to walk anyone through it. Ask here, not in DMs." }
+      { name:"Owner", topic:"Welcome", msg:"Mechanics you trust, spare-part shops, used bikes, RTO doubts, carpooling \u2014 ask. Keep it on-topic." }
     ];
     function render(list, demo){
       board.innerHTML = "";
       for(var n=0;n<list.length;n++){
         var el = document.createElement("div"); el.className = "post";
         var meta = document.createElement("div"); meta.className = "meta";
-        meta.innerHTML = list[n].name + ' <span class="topic">' + (list[n].topic || "General") + "</span> " + (demo ? '<span class="demo-tag">demo</span>' : "");
+        /* v50: this used to build the meta line with innerHTML, splicing the
+           post's name and topic straight from the endpoint into markup. Any
+           markup in those fields executed. Built with real nodes + textContent
+           now, so a bad value renders as text and nothing else. */
+        meta.appendChild(document.createTextNode(list[n].name || ""));
+        var topic = document.createElement("span"); topic.className = "topic";
+        topic.textContent = list[n].topic || "General";
+        meta.appendChild(topic);
+        if(demo){
+          var dt = document.createElement("span"); dt.className = "demo-tag";
+          dt.textContent = "demo";
+          meta.appendChild(document.createTextNode(" "));
+          meta.appendChild(dt);
+        }
         var body = document.createElement("p"); body.textContent = list[n].message || list[n].msg || "";
         el.appendChild(meta); el.appendChild(body); board.appendChild(el);
       }
     }
-    render(seed, true);
+    render(seed, false);
     if(C.endpoint){
       fetch(C.endpoint + "?type=board")
         .then(function(r){ return r.json(); })
@@ -208,7 +227,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v49"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v50"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");

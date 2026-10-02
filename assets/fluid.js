@@ -345,18 +345,22 @@
         for(var li=0; li<LINES; li++){
           /* scatter the lanes so adjacent filaments are not evenly spaced */
           var band = (li + 0.5 + 0.34*Math.sin(li*2.399 + ca.ph))/LINES;
-          var yBase = band*h;
+          /* v50: this was `yBase`, which collides with the identically-named
+             variable in the skin loop below. `var` is function-scoped, so both
+             hoisted to draw() and shared ONE binding - the skin loop silently
+             overwrote the caustic loop's value. Renamed so each keeps its own. */
+          var lineBase = band*h;
           var started = false;
           /* v41 PERF: everything below depends only on `li`, never on sx2, so it
              is hoisted out of the inner loop instead of being recomputed for
              all ~40 samples. Same numbers, a fraction of the trig. */
-          var yN = yBase/(sc*3.1) + t*0.9;
+          var yN = lineBase/(sc*3.1) + t*0.9;
           var ph1 = Math.sin(yN)*w1a + t*1.3 + vx*0.02;
-          var ph2 = yBase/sc*1.9 - t*0.9 + b1*0.004;
+          var ph2 = lineBase/sc*1.9 - t*0.9 + b1*0.004;
           var wPh1 = t*0.7 + li*1.9;
           var wPh2 = -t*0.45 + ca.ph + li*2.7;
           var wAmp1 = stepY * 6.5, wAmp2 = stepY * 4.2;
-          var yShift = vx*(1 - yBase/h);
+          var yShift = vx*(1 - lineBase/h);
           for(var si=0; si<=nx2; si++){
             var x = si*xStep + yShift;
             /* the crossing wavefronts, same math as before: where they agree
@@ -368,7 +372,7 @@
             /* the filament wanders vertically along its own crest. The wander
                is LARGER than the lane spacing so filaments cross and braid;
                two incommensurate terms so no two lines march together */
-            var y = yBase
+            var y = lineBase
                   + Math.sin(x*0.0034*ca.rf + wPh1) * wAmp1
                   + Math.sin(x*0.0011 + wPh2) * wAmp2;
             if(v < 0.10){ started = false; continue; }

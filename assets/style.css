@@ -41,7 +41,7 @@ h1{font-size:clamp(1.95rem,4.2vw,2.75rem)}
 h2{font-size:clamp(1.35rem,2.6vw,1.8rem)}
 h3{font-size:1.08rem}
 p{color:var(--muted)}
-a{color:var(--terra)}
+a{color:var(--terra-dark)}
 .lede{font-size:1.05rem;max-width:40rem}
 img{max-width:100%}
 .tag{font-family:var(--font-ui);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--terra)}
@@ -49,7 +49,7 @@ img{max-width:100%}
 .tag.gold{color:var(--ochre-ink)}
 /* reveal system */
 /* folk trim: dashes + dots, opens like a doorway */
-.folkline{height:6px;transform-origin:left;opacity:.85;background:
+.folkline{height:6px;transform-origin:left;background:
   radial-gradient(circle at 10px 3.5px, var(--paper) 1.6px, transparent 2px) 0 0/28px 7px,
   repeating-linear-gradient(90deg,var(--terra) 0 12px,var(--ochre) 12px 20px,var(--terra-dark) 20px 30px);opacity:.9;animation:folkopen .9s var(--ease) both}
 @keyframes folkopen{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -157,7 +157,6 @@ form.pform{background:var(--panel);border:1px solid rgba(58,50,42,.14);border-ra
 .pform input:focus,.pform select:focus,.pform textarea:focus{outline:none;border-color:var(--ochre);box-shadow:0 0 0 3px rgba(217,164,65,.22)}
 .pform .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .stars{display:flex;gap:.3rem;flex-direction:row-reverse;justify-content:flex-end}
-.stars input{display:none}
 .stars label{font-size:1.55rem;color:var(--line);cursor:pointer;margin:0;transition:color .15s ease,transform .15s ease}
 .stars label:hover,.stars label:hover~label,.stars input:checked~label{color:var(--terra);transform:scale(1.08)}
 .fresult{display:none;margin-top:1rem;padding:.8rem 1rem;border-radius:6px;background:var(--ochre-soft);border:1px solid var(--ochre);font-family:var(--font-ui);font-size:.8rem;color:var(--ochre-ink)}
@@ -1079,7 +1078,7 @@ html{
 .vacancy[hidden]{display:none!important}
 
 /* star labels were 32px tall; WCAG target is 44 */
-.stars label{padding:.4rem .12rem;min-width:26px;min-height:44px;display:inline-flex;
+.stars label{padding:.4rem .12rem;min-width:44px;min-height:44px;display:inline-flex;
              align-items:center;justify-content:center}
 
 /* lightboxes had no dialog semantics */
@@ -1229,7 +1228,7 @@ html.reduce .lotusmark{transform:none}
 .gallery-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem 1.5rem;flex-wrap:wrap;margin:0 0 1.25rem}
 .gallery-count{font-family:var(--font-ui);font-size:.8rem;color:var(--muted);margin:.45rem 0}
 .gallery-filters{display:flex;flex-wrap:wrap;gap:.45rem}
-.gallery-filters button{min-height:42px;padding:.55rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font:600 .78rem var(--font-ui);cursor:pointer;transition:background-color var(--t1) var(--e-in-out),color var(--t1) var(--e-in-out),border-color var(--t1) var(--e-in-out),transform var(--t1) var(--e-out)}
+.gallery-filters button{min-height:44px;padding:.55rem .9rem;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font:600 .78rem var(--font-ui);cursor:pointer;transition:background-color var(--t1) var(--e-in-out),color var(--t1) var(--e-in-out),border-color var(--t1) var(--e-in-out),transform var(--t1) var(--e-out)}
 .gallery-filters button:hover{transform:translateY(-2px);border-color:var(--terra)}
 .gallery-filters button[aria-pressed="true"]{background:var(--ink-deep);color:var(--paper);border-color:var(--ink-deep)}
 .gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.8vw,1.25rem);align-items:start}
@@ -1264,7 +1263,7 @@ html.reduce .lotusmark{transform:none}
 @media(max-width:560px){
   .gallery-toolbar{gap:.35rem;margin-bottom:1rem}
   .gallery-filters{gap:.35rem}
-  .gallery-filters button{min-height:40px;padding:.45rem .7rem;font-size:.72rem}
+  .gallery-filters button{min-height:44px;padding:.45rem .7rem;font-size:.72rem}
   .gallery-grid{grid-template-columns:minmax(0,1fr);gap:.85rem}
   .gallery-item-featured{grid-column:span 1}
   .gallery-item-featured .gallery-image-link,.gallery-image-link{aspect-ratio:3/2}
