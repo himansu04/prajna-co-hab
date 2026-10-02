@@ -353,8 +353,8 @@ window.PRAJNA = window.PRAJNA || {
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') dwell(); });
   document.addEventListener('click', function(e){
     var a=e.target.closest ? e.target.closest('a') : null; if(!a) return;
-    if(a.classList.contains('wa-link')) log('wa_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
-    else if(a.classList.contains('share-btn')){ /* logged separately */ }
+    if(a.classList.contains('mail-link')) log('mail_click', (a.getAttribute('data-wamsg')||'').slice(0,60));
+    else if(a.classList.contains('share-btn')){ log('share_tap',''); }
     else if(a.getAttribute('href') && a.getAttribute('href').indexOf('tel:')===0) log('call_tap','');
     else if(a.closest('.gal')) log('gallery_open', (a.getAttribute('href')||'').split('/').pop().slice(0,40));
     else if(a.classList.contains('btn')) log('cta_click', (a.textContent||'').trim().slice(0,40));

@@ -15,17 +15,18 @@
  */
 
 var TZ = 'Asia/Kolkata';
-var DIGEST_TO = '';          // e.g. 'owner@example.com' — blank = digest off
+var DIGEST_TO = 'srijna2b@gmail.com';   // set 2026-10-02 — alerts land here
 var MAX_ROWS = 200000;       // safety valve so the sheet never becomes unreadable
 
 /* ---------------------------------------------------------------- setup */
 function setup() {
   var ss = SpreadsheetApp.getActive();
   var spec = {
-    Inquiries: ['Time', 'Name', 'Phone', 'Interest', 'Move-in', 'Message', 'Source', 'Status', 'Notes'],
+    Inquiries: ['Time', 'Name', 'Phone', 'Email', 'Interest', 'Move-in', 'Message', 'Source', 'Status', 'Notes'],
     Feedback:  ['Time', 'Name', 'Role', 'Rating', 'Message', 'Published'],
     Board:     ['Time', 'Name', 'Topic', 'Message', 'Approved'],
-    Errors:    ['Time', 'Kind', 'Detail']
+    Errors:    ['Time', 'Kind', 'Detail'],
+    Visits:    ['Time', 'Event', 'Page', 'Referrer', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Screen', 'Language', 'Detail']
   };
   Object.keys(spec).forEach(function (name) {
     var sh = ss.getSheetByName(name) || ss.insertSheet(name);
@@ -80,11 +81,18 @@ function doPost(e) {
       var stars = Number(d.rating) || 0;
       if (stars > 0 && stars <= 3) notify_('Low rating (' + stars + '/5) — worth a call back', cut(d.message, 600));
     } else {
-      row = [stamp(), cut(d.name, 60), cut(d.phone, 20), cut(d.interest, 30), cut(d.movein, 30), cut(d.message, 400),
+      /* v53: phone is OPTIONAL - we publish no number and ask rather than
+         demand. Store the visitor's email if they left one, since that is the
+         channel we actually reply on. */
+      row = [stamp(), cut(d.name, 60), cut(d.phone, 20), cut(d.email, 60),
+             cut(d.interest, 30), cut(d.movein, 30), cut(d.message, 400),
              cut(d.source, 40) || 'website', 'NEW', ''];
-      appendRow(ss, 'Inquiries', ['Time','Name','Phone','Interest','Move-in','Message','Source','Status','Notes'], row);
-      notify_('Enquiry: ' + (cut(d.name, 60) || 'no name') + ' · ' + (cut(d.phone, 20) || 'no number'),
-              [cut(d.interest, 30), cut(d.movein, 30), cut(d.message, 400)].filter(String).join(' | '));
+      appendRow(ss, 'Inquiries',
+        ['Time','Name','Phone','Email','Interest','Move-in','Message','Source','Status','Notes'], row);
+      notify_('Enquiry: ' + (cut(d.name, 60) || 'no name') + ' · ' +
+              (cut(d.phone, 20) ? 'phone ' + cut(d.phone, 20) : 'no number left'),
+              [cut(d.email, 60) ? 'email ' + cut(d.email, 60) : '',
+               cut(d.interest, 30), cut(d.movein, 30), cut(d.message, 400)].filter(String).join(' | '));
     }
 
     trim_(ss);
@@ -171,7 +179,7 @@ function digest() {
       '\nTotal feedback: ' + sheetCount_(ss, 'Feedback') +
       '\nBoard posts awaiting your approval: ' + pendingPosts_(ss) +
       '\nVisits logged: ' + sheetCount_(ss, 'Visits') +
-      '\nWhatsApp clicks: ' + countEvent_(ss, 'wa_click') +
+      '\nEmail clicks: ' + countEvent_(ss, 'mail_click') +
       '\nTop pages: ' + (topPages_(ss, 3).join(', ') || 'none yet') +
       '\n\nOpen "Prajna Data" to review.');
   }
@@ -190,7 +198,7 @@ function rebuildStats_(ss) {
     else { ev[e] = (ev[e] || 0) + 1; ev[e + ' · ' + p] = (ev[e + ' · ' + p] || 0) + 1; }
     if (s) src[s] = (src[s] || 0) + 1;
   }
-  var MEAN = { page_view: 'Page visits', wa_click: 'WhatsApp taps', cta_click: 'Button taps',
+  var MEAN = { page_view: 'Page visits', mail_click: 'Email taps', cta_click: 'Button taps',
     share_tap: 'Shares sent', gallery_open: 'Photos opened', call_tap: 'Call taps', dwell: 'Time on page' };
   Object.keys(pv).sort(function(a,b){ return pv[b]-pv[a]; }).forEach(function(k){
     st.appendRow(['page_view', k, pv[k], MEAN.page_view]); });

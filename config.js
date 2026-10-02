@@ -12,11 +12,11 @@
 window.PRAJNA = {
 
   /* ---- CONTACT -------------------------------------------------
-     >>> REPLACE THIS WITH THE REAL ADDRESS. It is a visible
-     >>> placeholder until you do. The number below stays blank
-     >>> forever by design - it is handed out in email replies.
+     The owner's real address, supplied 2026-10-02. This is the ONLY
+     public contact point on the site. The number below stays blank
+     permanently - it is handed out in email replies, never published.
      ------------------------------------------------------------ */
-  email: "prajna.cohab@gmail.com",
+  email: "srijna2b@gmail.com",
   phone: "",                // NEVER publish this.
 
   /* ---- RENT ----------------------------------------------------
