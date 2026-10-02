@@ -1446,3 +1446,26 @@ section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
 .gallery-item{padding:.5rem}
 .gallery-item figcaption{padding:.7rem .5rem .45rem;align-items:baseline}
 .gallery-grid{gap:clamp(.7rem,1.6vw,1.1rem)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v58.1 — FORM CONTROLS MEET THE 44px TOUCH TARGET
+   Measured at 390px: name 37.8px, phone 37.8px, interest select 39.8px,
+   move-in 37.8px. All under the 44px minimum, and these are the four controls
+   a visitor has to touch to reach you, so they matter more than a nav link.
+   padding .68rem + .85rem line-height gave 37.8; a min-height keeps the
+   comfortable desktop size untouched and only lifts the small end.
+   ══════════════════════════════════════════════════════════════════════════ */
+.pform input,.pform select,.pform textarea{min-height:46px}
+.pform textarea{min-height:110px}
+.pform select{padding-right:2.2rem}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   v59 — SENTENCE-LEVEL LINK GETS A REAL HIT AREA
+   pune.html's lede is a single link wrapping the whole sentence, so its hit
+   area was only 19px tall - the visitor has to land on the glyphs. Padding
+   grows the target to ~44px; the negative margin cancels the layout shift so
+   the line spacing on screen is unchanged.
+   Inline links inside a sentence (discover.html "feedback form") are left
+   alone - WCAG 2.5.8 exempts those, and padding there would break the flow.
+   ══════════════════════════════════════════════════════════════════════════ */
+.lede > a:only-child{display:inline-block;padding:.72rem 0;margin:-.72rem 0}
