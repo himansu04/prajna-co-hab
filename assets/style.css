@@ -1285,3 +1285,81 @@ html.reduce .lotusmark{transform:none}
 .promises div.flow.flow-in:hover{transform:translateY(-2px)}
 .post.flow.flow-in:hover{transform:translateX(4px)}
 .menucard .day.flow.flow-in:hover{transform:translateY(-2px)}
+/* ══════════════════════════════════════════════════════════════════════════
+   v51 — FRESH WATER. One coherent pond.
+
+   MEASURED BEFORE (this is why, not vibes):
+   The caustics were drawing at alpha 0.30/0.20 with additive 'lighter'
+   compositing, onto a bed already sitting at luminance 247-251. Adding light
+   to near-white can only push toward 255 — the measured per-tile standard
+   deviation was 2.8-7, which is flat paper. The water could not possibly
+   read, because there was no headroom left to draw into.
+
+   Meanwhile two warm ground systems were fighting: this file set the html to a
+   tan column (#efe5d2 -> #e4d8bd, lum 230->217) while the canvas painted its
+   own near-white bed on top of it. Neither one was ever fully seen. On top of
+   that, a full-screen multiply grain at 0.5 plus a vignette was dragging tiles
+   down to luminance 155 with sd 22 — that is the mud, not water.
+
+   THE FIX, three parts:
+   1. The ground is ONE column, tuned mid-tone so light has somewhere to go.
+   2. The caustic filaments are brighter and thicker (done in fluid.js), so the
+      bed-to-filament contrast is what your eye reads as water.
+   3. The grain and vignette stop muddying it. Texture, not fog.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root{
+  /* The column. A shallow pond over warm earth: the light end is lifted and
+     barely cooled so it reads CLEAN, the deep end keeps the earth warmth so
+     it never goes grey. Luminance runs ~235 down to ~205 — deliberately NOT
+     near-white, because near-white is exactly what killed the caustics. */
+  --water-top:#f4ecdc;
+  --water-mid:#ede3cd;
+  --water-deep:#e2d5b9;
+
+  --paper:#faf5ec;
+  --panel:#fdfaf4;
+}
+html{
+  background:linear-gradient(180deg,
+    var(--water-top) 0%,
+    var(--water-mid) 42%,
+    var(--water-deep) 100%)!important;
+  background-attachment:fixed!important;
+}
+
+/* The silt grain: texture you can feel, not fog you can see. Multiply was
+   turning the whole column to mud at 0.5; this is a whisper. */
+body::before{
+  opacity:.22!important;
+  mix-blend-mode:multiply;
+}
+/* The pond edge. Barely there — it should frame the water, not dim it. */
+.vignette{
+  background:
+    radial-gradient(128% 96% at 50% 44%,transparent 58%,rgba(58,50,42,.045) 100%),
+    radial-gradient(150% 110% at 50% 122%,rgba(58,50,42,.03),transparent 62%);
+}
+html.is-scrolling .vignette{opacity:.78}
+html.was-scrolling .vignette{opacity:.88}
+
+/* The surface light. Cool white, because fresh water catches a clean sky.
+   Screen blend stays, but it lifts rather than yellows. */
+body::after{
+  background:radial-gradient(84% 58% at 50% -10%,rgba(255,255,252,.26),transparent 64%),
+             radial-gradient(62% 42% at 10% 106%,rgba(230,214,176,.10),transparent 62%);
+  mix-blend-mode:screen;
+  opacity:.62;
+}
+
+/* Panels sit ON the water, so they need to read as sitting on it: a hair of
+   warmth at the top edge where light would catch, not a flat white slab. */
+.card,form.pform,.faq details,.promises div,.amen div,.statrow>div,
+.menucard .day,.post,.teasercard,.pitstats>div,.plaque{
+  background:linear-gradient(180deg,rgba(253,250,244,.94),rgba(250,246,238,.90));
+}
+/* The one hard edge that used to fight the water: the header. */
+header{
+  background:rgba(250,246,238,.72)!important;
+  backdrop-filter:blur(8px) saturate(1.04)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(1.04)!important;
+}

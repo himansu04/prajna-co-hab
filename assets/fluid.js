@@ -85,11 +85,20 @@
       /* CAUSTICS — light folding through the surface. Same math as a real
          caustic: the squared sum of two crossing wavefronts, which naturally
          leaves bright filaments rather than blobs. */
+      /* v51 — THE CAUSTIC WAVE WAS SUB-PIXEL.
+         `sc` used to be 0.0022, which put one full sine cycle every 0.009
+         PIXELS. With samples 32px apart, consecutive samples landed ~3500
+         cycles apart in phase, so f1 and f2 were uncorrelated noise and the
+         layer drew flat grain - never water. sc is now derived from a target
+         wavelength of ~100px (a broad pond ripple) that the sample density
+         can actually resolve. This is the reason the water never appeared. */
+      /* sc is chosen so wavelength = 2*PI*sc/(2.4*rf) ~= 100px. Solve for sc. */
+      var SCALE = (100 * 2.4 * 0.63) / (2 * Math.PI);
       caustics = [];
       var cn = 2;   /* v39: was 3 - the third pass cost a full wavefront sweep for almost no visible gain */
       for(var k=0;k<cn;k++){
         caustics.push({
-          sc: 0.0022 + 0.0016*k + 0.0004*((alt+k)%4),
+          sc: SCALE*(1 - k*0.26),
           rf: 0.63 + 0.21*k,
           ph: k*1.7 + alt*0.23,
           sp: 0.00011 + 0.00007*k,
@@ -98,7 +107,7 @@
              could ever draw, so nobody ever saw them. Live, the old values
              put 18% of the viewport under lum 200 and pushed warmth to +31:
              a warm haze rather than moving water. Halved and narrowed. */
-          a:  (k===0 ? 0.30 : 0.20) - 0.04*k
+          a:  (k===0 ? 0.52 : 0.34) - 0.08*k
         });
       }
 
@@ -334,14 +343,17 @@
            than the line spacing so they weave through each other instead of
            sitting in their own horizontal lane. That is what a real caustic
            field looks like from above - a net, not a comb. */
-        var LINES = phone ? 18 : 30;
+        var LINES = phone ? 9 : 16;   /* v51: was 18/30 - at a 100px wavelength a fine net reads as a comb, not water */
         /* v41 PERF: the sample step is 2 columns instead of 1 - a filament is a
            smooth slow curve, so half the samples read identically while costing
            a full sin() each. Halving the density plus halving the line count
            keeps the same woven look (the lines still cross, because the wander
            still exceeds the lane spacing) at ~1/3 the cost. */
-        var xStep = stepX * 2;
-        var nx2 = Math.round(nx/2);
+        /* v51: was stepX*2 (32px steps), which gives only 3 samples per
+           100px wavelength - the wave aliases into noise no matter how
+           correct sc is. ~10px steps give 10 samples per cycle: smooth. */
+        var xStep = Math.max(8, w/105);
+        var nx2 = Math.round(w/xStep);
         for(var li=0; li<LINES; li++){
           /* scatter the lanes so adjacent filaments are not evenly spaced */
           var band = (li + 0.5 + 0.34*Math.sin(li*2.399 + ca.ph))/LINES;
@@ -354,9 +366,9 @@
           /* v41 PERF: everything below depends only on `li`, never on sx2, so it
              is hoisted out of the inner loop instead of being recomputed for
              all ~40 samples. Same numbers, a fraction of the trig. */
-          var yN = lineBase/(sc*3.1) + t*0.9;
+          var yN = lineBase/(sc*0.55) + t*0.9;
           var ph1 = Math.sin(yN)*w1a + t*1.3 + vx*0.02;
-          var ph2 = lineBase/sc*1.9 - t*0.9 + b1*0.004;
+          var ph2 = lineBase/sc*0.42 - t*0.9 + b1*0.02;
           var wPh1 = t*0.7 + li*1.9;
           var wPh2 = -t*0.45 + ca.ph + li*2.7;
           var wAmp1 = stepY * 6.5, wAmp2 = stepY * 4.2;
@@ -373,16 +385,16 @@
                is LARGER than the lane spacing so filaments cross and braid;
                two incommensurate terms so no two lines march together */
             var y = lineBase
-                  + Math.sin(x*0.0034*ca.rf + wPh1) * wAmp1
-                  + Math.sin(x*0.0011 + wPh2) * wAmp2;
+                  + Math.sin(x*0.012*ca.rf + wPh1) * wAmp1
+                  + Math.sin(x*0.0043 + wPh2) * wAmp2;
             if(v < 0.10){ started = false; continue; }
             if(!started){ ctx.moveTo(x,y); started = true; }
             else { ctx.lineTo(x,y); }
           }
         }
         ctx.globalAlpha = ca.a;
-        ctx.strokeStyle = "rgb(255,246,222)";   /* a warm filament, not a wash */
-        ctx.lineWidth = phone ? 1.1 : 1.3;
+        ctx.strokeStyle = "rgb(252,250,242)";   /* bright filament, reads as light on the mid bed */
+        ctx.lineWidth = phone ? 1.3 : 1.6;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.stroke();
@@ -409,9 +421,9 @@
         var col = sk.light ? "255,247,228" : "240,196,110";
         var aa = sk.a * (0.55 + 0.45*Math.sin(e*0.00026 + q2*1.1 + sy1*0.004)) * (1 + wakeAmp*0.010);
         g2.addColorStop(0,   "rgba("+col+",0)");
-        g2.addColorStop(0.42,"rgba("+col+","+Math.max(0,Math.min(0.30,aa))+")");
-        g2.addColorStop(0.5, "rgba("+col+","+Math.max(0,Math.min(0.4,aa*1.45))+")");
-        g2.addColorStop(0.58,"rgba("+col+","+Math.max(0,Math.min(0.40,aa))+")");
+        g2.addColorStop(0.42,"rgba("+col+","+Math.max(0,Math.min(0.42,aa))+")");
+        g2.addColorStop(0.5, "rgba("+col+","+Math.max(0,Math.min(0.55,aa*1.45))+")");
+        g2.addColorStop(0.58,"rgba("+col+","+Math.max(0,Math.min(0.50,aa))+")");
         g2.addColorStop(1,   "rgba("+col+",0)");
         ctx.fillStyle = g2;
         /* the sliver tapers at both ends so the band has no cut edge */
