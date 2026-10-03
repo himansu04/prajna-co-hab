@@ -46,7 +46,7 @@ window.PRAJNA = {
      with no backend at all. Set this when you have a /exec URL. */
   endpoint: "",
   community: "",
-  ownerNote: "Family-run. Owner-managed. No broker."
+  ownerNote: "Owner-run. Owner-managed. No broker."
 };
 
 /* No preview banner: the data above is real, so there is nothing

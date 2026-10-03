@@ -11,7 +11,7 @@ window.PRAJNA = window.PRAJNA || {
   availability: null,       // e.g. "3 twin beds open — singles full"
   endpoint: "",             // Google Apps Script /exec URL (free data capture). Empty = demo mode.
   community: "",            // optional: any invite URL you want the Pit button to use
-  ownerNote: "Family-run. Run by us. No broker."
+  ownerNote: "Owner-run. Run by us. No broker."
 };
 
 (function(){
@@ -279,7 +279,7 @@ window.PRAJNA = window.PRAJNA || {
   /* one-time heal: if a previous deploy left a stale offline cache, clear it and reload once */
   if ("serviceWorker" in navigator && "caches" in window && !sessionStorage.getItem("prajna-healed")) {
     caches.keys().then(function(keys){
-      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v65"; });
+      var stale = keys.filter(function(k){ return k.indexOf("prajna-") === 0 && k !== "prajna-v66"; });
       if (!stale.length) return;
       Promise.all(stale.map(function(k){ return caches.delete(k); })).then(function(){
         sessionStorage.setItem("prajna-healed", "1");
@@ -366,7 +366,7 @@ window.PRAJNA = window.PRAJNA || {
   function share(){
     var url=location.href;
     log('share_tap','');
-    var txt = 'Prajna Co-hab - family-run co-living in Moshi, Pimpri-Chinchwad. Rooms from Rs 7,200 a month.';
+    var txt = 'Prajna Co-hab - owner-run co-living in Moshi, Pimpri-Chinchwad. Rooms from Rs 7,200 a month.';
     if(navigator.share){ navigator.share({title:'Prajna Co-hab', text:txt, url:url}).catch(function(){}); }
     else if(navigator.clipboard && navigator.clipboard.writeText){
       /* v53: the old fallback opened a wa.me share link. The number is never
