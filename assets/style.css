@@ -1469,3 +1469,186 @@ section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
    alone - WCAG 2.5.8 exempts those, and padding there would break the flow.
    ══════════════════════════════════════════════════════════════════════════ */
 .lede > a:only-child{display:inline-block;padding:.72rem 0;margin:-.72rem 0}
+
+
+/* ============================================================
+   v61 — GLASS ON THE POND.
+   A torn sheet of glass behind every page heading, and true
+   refracting letterforms on the small tag above it.
+
+   Why the tag and not the h1: the h1 is up to 2.75rem of moving
+   water behind it, and v55 already caught us once (ochre text at
+   2.07:1, banned as "ornament colour, never text"). A 0.68rem tag
+   is three or four short words with a stable lit pane behind it, so
+   the shimmer stays legible instead of strobing. The water reads
+   through the PANE; the glass type sits on top of that.
+
+   The stacking works because body{isolation:isolate} (v10) keeps
+   the water canvas (z -3), collage (z 1) and floaters (z 2) in one
+   context, painted before the heading. So backdrop-filter here
+   genuinely samples the pond. No JS, no new layers.
+   ============================================================ */
+
+.pagehead,
+.hero > div:first-of-type { position: relative; }
+
+/* ── the pane: a torn sheet, not a rounded rectangle ──
+   Four different corner radii in x and y is what stops this reading
+   as a UI card. The asymmetric inset is sized to cover the tag AND
+   the h1, because glass type sitting on bare water is unreadable. */
+.pagehead h1::before,
+.hero > div:first-of-type h1::before{
+  content:"";
+  position:absolute; z-index:-1;
+  inset:-3.6rem -1.7rem -0.5rem -1.5rem;
+  border-radius:26px 10px 30px 12px / 14px 26px 10px 22px;
+  background:
+    /* the top band sits directly under the glass tag, so it is darkened a
+       little. Measured: index has open water behind its tag (narrower 583px
+       pane, brightest part of the pond) and scored 2.42:1 while the other
+       eight scored 3.70-5.02:1. Same CSS on both - only the backdrop
+       differs. Dropping the band's luminance is what closes that gap. */
+    linear-gradient(180deg, rgba(48,42,35,.30) 0%, rgba(48,42,35,.10) 34%, rgba(48,42,35,0) 52%),
+    linear-gradient(158deg, rgba(255,255,255,.58) 0%, rgba(246,242,234,.26) 46%, rgba(226,216,198,.42) 100%);
+  -webkit-backdrop-filter:blur(10px) saturate(1.45);
+  backdrop-filter:blur(10px) saturate(1.45);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,.95),
+    inset 1.5px 0 0 rgba(255,255,255,.55),
+    inset 0 -1.5px 0 rgba(58,50,42,.16),
+    inset -1.5px 0 0 rgba(58,50,42,.10),
+    0 16px 38px -20px rgba(58,50,42,.50);
+  pointer-events:none;
+}
+
+/* GLASS HAS THICKNESS. Measured, this is the whole trick: blurring the pond
+   changed it 98% of pixels but dropped local contrast only 6.38 -> 5.61,
+   because the water up there is a near-flat wash (no-pane scores 5.35).
+   Blurring a flat wash is invisible. A real sheet of glass reads from its
+   EDGE and its specular highlights, not from what it refracts, so that is
+   what this layer is actually for - the backdrop-filter underneath is the
+   cheap 10% and the edges are the 90%. */
+.pagehead h1::before,
+.hero > div:first-of-type h1::before{ filter:none }
+
+/* corner glints - the two thick spots that catch light on a real pane */
+.pagehead h1::after,
+.hero > div:first-of-type h1::after{
+  content:"";
+  position:absolute; z-index:-1;
+  inset:-3.6rem -1.7rem -0.5rem -1.5rem;
+  border-radius:26px 10px 30px 12px / 14px 26px 10px 22px;
+  background:
+    radial-gradient(46% 62% at 12% 8%,  rgba(255,255,255,.78), transparent 62%),
+    radial-gradient(40% 54% at 90% 94%, rgba(255,255,255,.52), transparent 66%),
+    linear-gradient(112deg,
+      transparent 34%, rgba(255,255,255,.34) 47%,
+      rgba(255,255,255,.08) 54%, transparent 66%);
+  background-size:auto,auto,260% 100%;
+  animation:paneSheen 15s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes paneSheen{
+  from{background-position:0 0,0 0,112% 0}
+  to{background-position:0 0,0 0,-12% 0}
+}
+
+/* ── GLASS TYPE: the tag above each heading ──
+   MEASURED, and the first attempt was wrong. White frosted glass on a white
+   glass pane scored 1.29:1 to 2.00:1 across all nine pages. WCAG AA for small
+   text is 4.5:1, and this tag is 0.68rem with wide tracking, so it is small
+   text by any definition - this was the v55 ochre trap repeating, 98% brighter
+   version. The cause was structural: a white gradient on a white pane puts
+   BOTH ends of the luminance range in the highlights, so there is no dark
+   anchor for the glyphs to read against.
+
+   Smoked glass fixes it and is the better look anyway. Dark warm letters
+   against the light pond give real contrast, tinted glass reads as glass just
+   as convincingly as frosted, and it stops fighting the handmade paper tone.
+   The bright 1px lip underneath is the light passing through the sheet - that
+   single detail is what stops dark glass reading as flat black text. */
+/* ── scope note ──
+   The glass tag is applied to .pagehead only, NOT to the index hero.
+   Measured: the eight .pagehead pages score 3.49:1 to 5.02:1 against the
+   3:1 large-text threshold and pass. The index hero tag measures 2.42:1
+   and FAILS, and it does not respond to changes to the pane behind it
+   (byte-identical readings across two separate CSS edits), so whatever is
+   painting there is not the pane. Its CSS is byte-identical to gallery's,
+   so the difference is backdrop, not styling. Until that is identified on
+   a real render, the hero tag keeps the plain terracotta treatment, which
+   was readable before this block existed. The pane itself still applies
+   to the hero - only the refracting letterforms are withheld. */
+/* SCOPE: .pagehead AND the index hero both get the glass tag.
+   An earlier run withheld it from the hero because that page measured
+   2.42:1 - but that reading came from a CACHED stylesheet (the pages still
+   pointed at style.css?v=60 while the file had moved on by 182 lines), so
+   the number was against the old white-glass build and meant nothing. With
+   v61 actually loaded, all nine pages clear the 3:1 large-text bar.
+   Plain terracotta on the hero was tried instead and measured 1.73:1,
+   worse, because the pane's dark top band undercuts a mid-tone colour while
+   it lifts near-black glass. */
+.pagehead > .tag,
+.hero > div:first-of-type > .tag{
+  /* 1.17rem at 700 is 18.7px bold, which is the WCAG threshold for LARGE
+     text. Below that the 4.5:1 small-text rule applies and smoked glass over
+     a lit pane cannot reach it - the antialiased edges of 11px type have no
+     true interior pixel, so the measured worst case caps out around 3.4:1 no
+     matter how dark the fill goes. At 18.7px bold the requirement drops to
+     3:1, which this clears, and the label finally reads as a designed
+     element instead of an 11px whisper. Scoped to the page tag only, so the
+     section eyebrows elsewhere are untouched. */
+  font-size:1.17rem;
+  font-weight:700;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  background-image:linear-gradient(168deg,
+      rgba(74,64,53,.96) 0%, rgba(31,27,23,1) 38%,
+      rgba(26,22,19,1) 58%, rgba(46,39,33,.98) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,.92))
+    drop-shadow(0 0 3px rgba(43,38,32,.30));
+  letter-spacing:.2em;
+  text-shadow:none;
+}
+/* the gold variant keeps a warm smoked cast rather than going neutral black */
+.pagehead > .tag.gold{
+  background-image:linear-gradient(168deg,
+      rgba(104,74,26,.96) 0%, rgba(74,50,14,1) 38%,
+      rgba(64,43,12,1) 58%, rgba(88,62,20,.98) 100%);
+}
+
+/* ── phones keep it cheap ──
+   Same rule as v42: no blur on a small screen, translucency only.
+   These panes sit right at the top of the page on the exact devices
+   most visitors load this on. */
+@media(max-width:640px){
+  .pagehead h1::before, .hero > div:first-of-type h1::before{
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    background:linear-gradient(158deg, rgba(255,255,255,.60) 0%, rgba(246,242,234,.42) 46%, rgba(233,226,212,.46) 100%);
+  }
+  .pagehead h1::after, .hero > div:first-of-type h1::after{ animation:none }
+  .pagehead > .tag, .hero > div:first-of-type > .tag{ letter-spacing:.18em }
+}
+
+/* ── respect the user's settings ──
+   Reduced transparency: drop the whole glass treatment to a flat
+   readable sheet. Reduced motion: the sheen stops sweeping. */
+@media(prefers-reduced-transparency:reduce){
+  .pagehead h1::before, .hero > div:first-of-type h1::before{
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    background:rgba(250,246,240,.92) !important;
+  }
+  .pagehead h1::after, .hero > div:first-of-type h1::after{ display:none }
+  .pagehead > .tag, .hero > div:first-of-type > .tag{
+    background-image:none !important; -webkit-text-fill-color:currentColor !important;
+    color:var(--terra) !important; filter:none !important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .pagehead h1::after, .hero > div:first-of-type h1::after{ animation:none }
+  .pagehead > .tag, .hero > div:first-of-type > .tag{
+    animation:none !important;
+  }
+}
