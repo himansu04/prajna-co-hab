@@ -1503,12 +1503,11 @@ section.flat{padding-top:clamp(1.6rem,3vw,2.2rem)}
   inset:-3.6rem -1.7rem -0.5rem -1.5rem;
   border-radius:26px 10px 30px 12px / 14px 26px 10px 22px;
   background:
-    /* the top band sits directly under the glass tag, so it is darkened a
-       little. Measured: index has open water behind its tag (narrower 583px
-       pane, brightest part of the pond) and scored 2.42:1 while the other
-       eight scored 3.70-5.02:1. Same CSS on both - only the backdrop
-       differs. Dropping the band's luminance is what closes that gap. */
-    linear-gradient(180deg, rgba(48,42,35,.30) 0%, rgba(48,42,35,.10) 34%, rgba(48,42,35,0) 52%),
+    /* No dark band. Measured: adding one dropped the backdrop luminance
+       0.90 -> 0.65 and made contrast WORSE (gallery 4.10:1 -> 3.54:1, pune
+       3.48 -> 2.99 and failing). The type is near-black smoked glass, so it
+       needs a LIGHT ground - darkening the backdrop reduces contrast with
+       dark text, it does not raise it. The polarity was simply backwards. */
     linear-gradient(158deg, rgba(255,255,255,.58) 0%, rgba(246,242,234,.26) 46%, rgba(226,216,198,.42) 100%);
   -webkit-backdrop-filter:blur(10px) saturate(1.45);
   backdrop-filter:blur(10px) saturate(1.45);
