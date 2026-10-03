@@ -70,7 +70,15 @@
     var phone = window.innerWidth < 700;
 
     function resize(){
-      w = window.innerWidth; h = window.innerHeight;
+      /* clientWidth/Height, NOT innerWidth/innerHeight. inner* INCLUDE the
+         scrollbar gutter, so sizing the canvas to them made it 9px wider than
+         the content area on a 390px phone - measured scrollWidth 399 against
+         clientWidth 390, i.e. a horizontal scrollbar on every page. This
+         inline width also overrides any CSS width, so fixing it in the
+         stylesheet alone does nothing: it has to be fixed here. */
+      var cw = document.documentElement.clientWidth;
+      var ch = document.documentElement.clientHeight;
+      w = cw || window.innerWidth; h = ch || window.innerHeight;
       c.width = Math.floor(w*dpr); c.height = Math.floor(h*dpr);
       c.style.width = w+"px"; c.style.height = h+"px";
       ctx.setTransform(dpr,0,0,dpr,0,0);
