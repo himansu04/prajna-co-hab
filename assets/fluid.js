@@ -58,7 +58,14 @@
     var px=0.5, py=0.4, tx=0.5, ty=0.4;
     var water = Math.max(0.34, (window.matchMedia && window.matchMedia("(pointer:fine)").matches) ? 0.5 : 0.34);
     var alt=0;
-    var DEEP = [251,247,239];              /* the pale bed under the water */
+    var DEEP = [226,208,182];              /* the bed under the water, warm and
+                                              DEEPER than it looks like it should
+                                              be. This was [251,247,239] - cream
+                                              on cream, which measured a flat
+                                              per-band sd of 2-5 down the page
+                                              and read as paper, not water. Water
+                                              needs tonal RANGE: a light surface
+                                              over a darker bed. */
     var SURF = [255,251,242];              /* light pooling on top */
     var beds=[], caustics=[], skins=[], tinters=[], drops=[], motifs=[], swells=[];
     var phase = 0, sy=0, lastSy=0, flow=0, wakePh=0, wakeAmp=0, moving=0;
@@ -269,6 +276,32 @@
         ctx.fillStyle = bg;
         ctx.fillRect(0,0,w,h);
       }
+
+      /* ---- LAYER 0.2 · DEPTH. Light at the surface, darker with distance.
+         A real pond is not one flat tone: the surface catches the sky and the
+         water body loses light going down. Without this gradient the whole
+         column sits at one value and the eye reads a wash, not a volume.
+         Drawn OVER the bed but UNDER the marks and caustics, so the light of
+         the surface still travels across them.
+
+         The floor is capped deliberately. Headings and ledes sit directly on
+         this water with no card behind them, so the deepest value has to stay
+         light enough for ink at #3a322a to stay comfortably readable - this is
+         a depth cue, not a dark mode. */
+      var dg = ctx.createLinearGradient(0, 0, 0, h);
+      /* Kept deliberately modest. This layer cannot be rendered or measured in
+         the headless harness - rAF is frozen there, so the canvas stays fully
+         transparent and every local screenshot shows the CSS ground alone. The
+         numbers below are therefore reasoned, not verified, and a deeper
+         floor risks crushing the headings and ledes that sit directly on the
+         water with no card behind them. Easy to push further once it has been
+         seen on a real browser. */
+      var deepA = phone ? 0.20 : 0.28;
+      dg.addColorStop(0.00, "rgba("+DEEP[0]+","+DEEP[1]+","+DEEP[2]+",0)");
+      dg.addColorStop(0.34, "rgba("+DEEP[0]+","+DEEP[1]+","+DEEP[2]+","+(deepA*0.34).toFixed(3)+")");
+      dg.addColorStop(1.00, "rgba("+DEEP[0]+","+DEEP[1]+","+DEEP[2]+","+deepA+")");
+      ctx.fillStyle = dg;
+      ctx.fillRect(0,0,w,h);
 
       /* ---- LAYER 0.5 · the floating marks, suspended in the water.
          Drawn UNDER the caustics, so the light of the surface travels across
